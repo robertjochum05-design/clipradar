@@ -193,6 +193,9 @@ table.vt tbody tr:hover{background:var(--hover)}
 .row .t small{display:block;color:var(--faint);font-weight:400;font-size:12px}
 .dist{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;margin:4px 0 10px}
 .dist span{display:block;height:100%}
+.thresholds{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:12px;font-size:12px;color:var(--muted)}
+.thresholds .ctl{width:96px;height:28px;padding:0 8px;font-size:12.5px}
+.thresholds label+input+label{margin-left:6px}
 .sub-head{font-size:12px;font-weight:500;color:var(--muted);margin:20px 0 4px}
 
 /* Streamer */
@@ -340,6 +343,10 @@ input[type=number].inp{font-family:var(--mono)}
         <div class="title-row"><label class="label" for="flopInput">Flop-Grenze</label><span data-info="flop"></span></div>
         <input id="flopInput" type="number" min="0" step="500" value="9000">
       </div>
+      <div class="field-mini">
+        <div class="title-row"><label class="label" for="viralInput">Viral-Grenze</label><span data-info="viral"></span></div>
+        <input id="viralInput" type="number" min="0" step="5000" value="100000">
+      </div>
       <p class="side-note" id="dataNote"></p>
       <div class="side-actions">
         <button class="btn danger" data-clear>Alles löschen</button>
@@ -379,7 +386,7 @@ const DAYS=['So','Mo','Di','Mi','Do','Fr','Sa'];
 const MONTHS=['Jan.','Feb.','März','Apr.','Mai','Juni','Juli','Aug.','Sept.','Okt.','Nov.','Dez.'];
 const dateStr=d=>`${d.getDate()}. ${MONTHS[d.getMonth()]}`;
 const timeStr=d=>`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-let FLOP=9000; const VIRAL=100000;
+let FLOP=9000, VIRAL=100000;
 const status=v=>v.views<FLOP?'flop':v.views>=VIRAL?'viral':'gut';
 const STATUS_LABEL={flop:'Flop',gut:'Gut',viral:'Viral'};
 const badge=v=>`<span class="badge ${status(v)}">${STATUS_LABEL[status(v)]}</span>`;
@@ -627,15 +634,16 @@ function explain(v){
 
 /* ---------- Erklärungen (ⓘ) ---------- */
 const TIPS={
-  flop:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>Flop</b> gilt. Aktuell: unter ${fmt(FLOP)} Views.</p><p>Die Grenze beeinflusst die Flop-Quote, die Einfärbung in allen Grafiken und die Status-Spalte. Ab 100.000 Views gilt ein Video als <b>viral</b>, alles dazwischen als <b>gut</b>.</p><p>Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
+  flop:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>Flop</b> gilt. Aktuell: unter ${fmt(FLOP)} Views.</p><p>Die Grenze beeinflusst die Flop-Quote, die Einfärbung in allen Grafiken und die Status-Spalte. Ab ${fmt(VIRAL)} Views gilt ein Video als <b>viral</b>, alles dazwischen als <b>gut</b>.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
+  viral:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>viral</b> gilt. Aktuell: ab ${fmt(VIRAL)} Views.</p><p>Die Grenze beeinflusst die Verteilung in der Karte „Ergebnisse“, die grüne Einfärbung in den Grafiken und die Status-Spalte. Sie muss über der Flop-Grenze liegen.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
   demo:`<p>Du siehst <b>72 erfundene Videos</b>, damit du ausprobieren kannst, wie Clipradar Zusammenhänge erkennt. In die Daten sind absichtlich Muster eingebaut, z. B. dass Untertitel helfen und eine späte Pointe schadet.</p><p>Die Beispieldaten landen <b>nie in deiner Datenbank</b>. Änderungen daran sind nur eine Vorschau. Sie verschwinden, wenn du sie ausblendest, die Seite neu lädst oder dein erstes eigenes Video einträgst.</p>`,
   empty:`<p>Trag jedes Video <b>24 Stunden nach dem Upload</b> ein. Die Zahlen findest du in TikTok Studio unter dem jeweiligen Video.</p><p>Ab etwa 10 Videos erscheinen erste Muster, ab 20 bis 50 Videos werden die Ergebnisse verlässlich.</p><p>Mit den <b>Beispieldaten</b> siehst du vorher, wie die Auswertung aussieht. Sie werden nicht gespeichert.</p>`,
   kpiFollower:`<p>Summe der <b>neuen Follower</b> aus allen eingetragenen Videos, jeweils der Wert nach 24 Stunden aus TikTok Studio.</p><p>Der Balken zeigt den Fortschritt zu deinem Ziel von <b>10.000 Followern</b>.</p><p>Follower, die später als 24 Stunden nach dem Upload oder direkt über dein Profil dazukommen, sind nicht enthalten. Deine echte Followerzahl kann deshalb höher sein.</p>`,
   kpiMedian:`<p>Der <b>Median</b> ist der mittlere Wert: Die Hälfte deiner Videos hat mehr Views, die andere Hälfte weniger.</p><p>Anders als der Durchschnitt wird der Median nicht von einzelnen Viral-Hits verzerrt. Ein Video mit 400.000 Views würde den Durchschnitt stark nach oben ziehen, den Median kaum.</p>`,
-  kpiFlop:()=>`<p>Anteil deiner Videos, die nach 24 Stunden unter der Flop-Grenze von <b>${fmt(FLOP)} Views</b> lagen.</p><p>Die Grenze kannst du links unten in der Seitenleiste ändern.</p>`,
+  kpiFlop:()=>`<p>Anteil deiner Videos, die nach 24 Stunden unter der Flop-Grenze von <b>${fmt(FLOP)} Views</b> lagen.</p><p>Die Grenze kannst du in der Karte „Ergebnisse“ oder links in der Seitenleiste ändern.</p>`,
   kpiVideos:`<p>Anzahl aller eingetragenen Videos.</p><p>Die Zahl pro Woche ist der Durchschnitt zwischen deinem ersten und deinem letzten eingetragenen Video.</p>`,
   trend:`<p>Zeigt, wie sich <b>neue Follower</b>, <b>Views</b> oder <b>Likes</b> im gewählten Zeitraum aufsummieren. Die Linie steigt an den Tagen, an denen du Videos hochgeladen hast.</p><p>Gezählt wird jedes Video mit seinen Werten nach 24 Stunden, einsortiert nach dem <b>Upload-Datum</b>. Spätere Views nach den ersten 24 Stunden sind nicht enthalten, weil du nur den 24-Stunden-Stand einträgst.</p><p>Die Prozentzahl vergleicht mit dem gleich langen Zeitraum direkt davor, z. B. die letzten 30 Tage mit den 30 Tagen davor.</p>`,
-  dist:()=>`<p>Verteilung deiner Videos nach ihrem Ergebnis nach 24 Stunden:</p><ul><li><b>Flop:</b> unter ${fmt(FLOP)} Views</li><li><b>Gut:</b> ${fmt(FLOP)} bis 99.999 Views</li><li><b>Viral:</b> ab 100.000 Views</li></ul><p>Darunter siehst du das Video mit den meisten Views aus den letzten 7 Tagen deiner Einträge.</p>`,
+  dist:()=>`<p>Verteilung deiner Videos nach ihrem Ergebnis nach 24 Stunden:</p><ul><li><b>Flop:</b> unter ${fmt(FLOP)} Views</li><li><b>Gut:</b> ${fmt(FLOP)} bis ${fmt(VIRAL-1)} Views</li><li><b>Viral:</b> ab ${fmt(VIRAL)} Views</li></ul><p>Beide Grenzen kannst du direkt darunter ändern, am PC auch links in der Seitenleiste.</p><p>Ganz unten siehst du das Video mit den meisten Views aus den letzten 7 Tagen deiner Einträge.</p>`,
   insightsShort:`<p>Die drei stärksten Muster, die Clipradar in deinen Daten gefunden hat. Ein grüner Pfeil bedeutet: Videos mit dieser Eigenschaft laufen besser als der Rest, ein roter: schlechter.</p><p>Wie die Erkennung genau funktioniert, steht im Tab <b>Analyse</b>.</p>`,
   recent:`<p>Deine zuletzt hochgeladenen Videos. Ein Klick öffnet die Details mit allen Zahlen, deinen Tags und der Auswertung „Warum lief es so?“.</p>`,
   videos:`<p>Alle eingetragenen Videos mit ihren Werten nach 24 Stunden.</p><ul><li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, ein zweiter Klick dreht die Reihenfolge um.</li><li><b>Suchen</b> durchsucht Titel, Spiel, Sound, Hook, Thema und Emotion.</li><li><b>Engagement:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views. Zeigt, wie stark Zuschauer reagieren, unabhängig davon, wie viele es waren.</li></ul><p>Ein Klick auf eine Zeile öffnet die Details. Dort kannst du das Video auch bearbeiten oder löschen.</p>`,
@@ -677,6 +685,7 @@ const S={tab:'uebersicht',sortKey:'date',sortDir:-1,q:'',fStatus:'alle',fStreame
 try{
   const t=localStorage.getItem('clipradar-tab');if(t)S.tab=t;
   const f=parseInt(localStorage.getItem('clipradar-flop'),10);if(f>=0)FLOP=f;
+  const vi=parseInt(localStorage.getItem('clipradar-viral'),10);if(vi>FLOP)VIRAL=vi;
   const tr=JSON.parse(localStorage.getItem('clipradar-trend')||'null');if(tr){S.trendMetric=tr.m||S.trendMetric;S.trendRange=tr.r||S.trendRange}
 }catch(e){}
 const remember=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
@@ -763,6 +772,7 @@ function renderOverview(){
         <div class="card-head">${titled('h2','Ergebnisse','dist')}</div>
         <div class="dist"><span style="flex:${flops};background:var(--bad)"></span><span style="flex:${gut};background:var(--faint);opacity:.55"></span><span style="flex:${viral};background:var(--good)"></span></div>
         <div class="legend" style="margin-top:0"><span><i style="background:var(--bad)"></i>Flop ${flops}</span><span><i style="background:var(--faint);opacity:.55"></i>Gut ${gut}</span><span><i style="background:var(--good)"></i>Viral ${viral}</span></div>
+        <div class="thresholds"><label for="flopInput2">Flop unter</label><input class="ctl num" id="flopInput2" type="number" min="0" step="500" value="${FLOP}"><label for="viralInput2">Viral ab</label><input class="ctl num" id="viralInput2" type="number" min="0" step="5000" value="${VIRAL}"></div>
         ${best?`<p class="sub-head">Bestes Video der letzten 7 Tage</p>
         <div class="row" data-vid="${best.id}"><div class="t">${esc(best.title)}<small>${dateStr(best.date)} · ${timeStr(best.date)} Uhr</small></div><span class="num">${short(best.views)}</span>${badge(best)}</div>`:''}
       </div>
@@ -1194,11 +1204,16 @@ document.addEventListener('change',e=>{
     vv.weights=vv.weights||{};if(+v!==1)vv.weights[k]=+v;else delete vv.weights[k];
     renderAll();$('#whyBox').innerHTML=whyHtml(vv);updateVideo(vv).then(()=>toast(DEMO?'Nur in der Vorschau geändert':'Einschätzung gespeichert')).catch(fail);
   }
-  else if(id==='flopInput'){const n=parseInt(v,10);if(n>=0){FLOP=n;remember('clipradar-flop',n);renderAll()}}
+  else if(id==='flopInput'||id==='flopInput2'||id==='viralInput'||id==='viralInput2'){
+    const n=parseInt(v,10),isFlop=id.startsWith('flop');
+    if(!(n>=0)||(isFlop?n>=VIRAL:n<=FLOP)){toast(isFlop?`Die Flop-Grenze muss unter der Viral-Grenze (${fmt(VIRAL)}) liegen.`:`Die Viral-Grenze muss über der Flop-Grenze (${fmt(FLOP)}) liegen.`);e.target.value=isFlop?FLOP:VIRAL;return}
+    if(isFlop){FLOP=n;remember('clipradar-flop',n)}else{VIRAL=n;remember('clipradar-viral',n)}
+    $('#flopInput').value=FLOP;$('#viralInput').value=VIRAL;renderAll();
+  }
 });
 
 fillInfoSlots();
-$('#flopInput').value=FLOP;
+$('#flopInput').value=FLOP;$('#viralInput').value=VIRAL;
 show(location.hash.slice(1)||S.tab);
 $('#view-'+S.tab).innerHTML='<p class="loading">Lade deine Videos …</p>';
 loadVideos().then(renderAll).catch(e=>{$('#view-'+S.tab).innerHTML=`<div class="card empty-state"><h2>Daten konnten nicht geladen werden</h2><p>${esc(e.message)}</p><button class="btn" onclick="location.reload()">Neu laden</button></div>`});
