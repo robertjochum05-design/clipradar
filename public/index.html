@@ -222,7 +222,7 @@ table.vt tbody tr:hover{background:var(--hover)}
 .x:hover{background:var(--hover);color:var(--ink)}
 .x svg{width:16px;height:16px}
 .section-title{display:flex;align-items:center;gap:6px;margin-bottom:10px}
-.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
+.mgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
 .mgrid div{background:var(--surface);padding:9px 12px;display:flex;flex-direction:column}
 .mgrid span{font-size:11.5px;color:var(--muted)}
 .mgrid b{font-family:var(--mono);font-size:14.5px;font-weight:500;font-variant-numeric:tabular-nums}
@@ -506,8 +506,6 @@ const CAT=[
 ];
 const catByKey=k=>CAT.find(f=>f.k===k);
 const NUM=[
-  {k:'ret3',l:'Zuschauer nach 3 s',g:v=>v.ret3,phrase:'Je mehr Zuschauer nach 3 Sekunden noch da sind'},
-  {k:'completion',l:'Komplett angesehen',g:v=>v.completion,phrase:'Je öfter das Video komplett angesehen wird'},
   {k:'pointe',l:'Zeit bis zur Pointe (s)',g:v=>v.pointe,phrase:'Je später die Pointe kommt'},
   {k:'laenge',l:'Videolänge (s)',g:v=>v.laenge,phrase:'Je länger das Video ist'},
   {k:'hour',l:'Upload-Uhrzeit',g:v=>v.date.getHours()+v.date.getMinutes()/60,phrase:'Je später am Tag du hochlädst'},
@@ -521,15 +519,14 @@ function wmedian(vals,ws){
   return p[p.length-1][0];
 }
 const ONE=()=>1;
+const eng=v=>v.views?(v.likes+v.comments+v.saves)/v.views*100:0;
 const W=(v,f)=>S.useWeights&&f&&f.wk?FACTOR[(v.weights&&v.weights[f.wk])||1]||1:1;
 const wm=(vs,get,wf)=>wmedian(vs.map(get),vs.map(wf));
 const METRICS={
   views:{l:'Median-Views (24 h)',f:(vs,wf=ONE)=>wm(vs,v=>v.views,wf),fmt:short},
   follower:{l:'Median neue Follower',f:(vs,wf=ONE)=>wm(vs,v=>v.follower,wf),fmt:fmt},
   flop:{l:'Flop-Quote',f:(vs,wf=ONE)=>{const t=vs.reduce((s,v)=>s+wf(v),0);return t?vs.reduce((s,v)=>s+(v.views<FLOP?wf(v):0),0)/t*100:0},fmt:pct,lowerBetter:true},
-  ret3:{l:'Zuschauer nach 3 s',f:(vs,wf=ONE)=>wm(vs,v=>v.ret3,wf),fmt:pct},
-  completion:{l:'Komplett angesehen',f:(vs,wf=ONE)=>wm(vs,v=>v.completion,wf),fmt:pct},
-  engagement:{l:'Engagement-Rate',f:(vs,wf=ONE)=>wm(vs,v=>v.views?(v.likes+v.comments+v.shares+v.saves)/v.views*100:0,wf),fmt:n=>dec(n)+' %'}
+  engagement:{l:'Engagement-Rate',f:(vs,wf=ONE)=>wm(vs,eng,wf),fmt:n=>dec(n)+' %'}
 };
 const marks=(vs,f)=>vs.filter(v=>f.wk&&v.weights&&v.weights[f.wk]>1).length;
 function groups(f,list=VIDEOS){const m=new Map();for(const v of list)for(const val of f.g(v)){if(!m.has(val))m.set(val,[]);m.get(val).push(v)}return m}
@@ -597,9 +594,6 @@ function explain(v){
   const good=facs.filter(x=>x.ok);
   const pos=good.filter(x=>x.r>1.2).sort((a,b)=>b.r-a.r).slice(0,4).map(x=>({t:esc(x.txt)+tag(x),d:`läuft bei dir ${dec(x.r)}× so gut wie der Rest · ${x.n} Videos`}));
   const neg=good.filter(x=>x.r<.83).sort((a,b)=>a.r-b.r).slice(0,4).map(x=>({t:esc(x.txt)+tag(x),d:`läuft bei dir ${Math.round((1-x.r)*100)} % schlechter · ${x.n} Videos`}));
-  const r3=median(VIDEOS.map(x=>x.ret3));
-  if(VIDEOS.length>=MIN_N&&v.ret3>=r3+6)pos.unshift({t:`Starker Einstieg: ${v.ret3} % nach 3 s`,d:`dein Median liegt bei ${Math.round(r3)} %`});
-  if(VIDEOS.length>=MIN_N&&v.ret3<=r3-6)neg.unshift({t:`Schwacher Einstieg: nur ${v.ret3} % nach 3 s`,d:`dein Median liegt bei ${Math.round(r3)} %`});
   const above=v.views>=allMed;
   /* Deine Einschätzung gegen die Daten prüfen */
   const beliefs=Object.entries(v.weights||{}).filter(([,w])=>w>1).map(([k,w])=>{
@@ -629,22 +623,20 @@ const TIPS={
   dist:()=>`<p>Verteilung deiner Videos nach ihrem Ergebnis nach 24 Stunden:</p><ul><li><b>Flop:</b> unter ${fmt(FLOP)} Views</li><li><b>Gut:</b> ${fmt(FLOP)} bis 99.999 Views</li><li><b>Viral:</b> ab 100.000 Views</li></ul><p>Darunter siehst du das Video mit den meisten Views aus den letzten 7 Tagen deiner Einträge.</p>`,
   insightsShort:`<p>Die drei stärksten Muster, die Clipradar in deinen Daten gefunden hat. Ein grüner Pfeil bedeutet: Videos mit dieser Eigenschaft laufen besser als der Rest, ein roter: schlechter.</p><p>Wie die Erkennung genau funktioniert, steht im Tab <b>Analyse</b>.</p>`,
   recent:`<p>Deine zuletzt hochgeladenen Videos. Ein Klick öffnet die Details mit allen Zahlen, deinen Tags und der Auswertung „Warum lief es so?“.</p>`,
-  videos:`<p>Alle eingetragenen Videos mit ihren Werten nach 24 Stunden.</p><ul><li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, ein zweiter Klick dreht die Reihenfolge um.</li><li><b>Suchen</b> durchsucht Titel, Spiel, Sound, Hook, Thema und Emotion.</li><li><b>Nach 3 s:</b> wie viel Prozent der Zuschauer nach 3 Sekunden noch dabei waren.</li><li><b>Komplett:</b> wie viel Prozent das Video bis zum Ende angesehen haben.</li></ul><p>Ein Klick auf eine Zeile öffnet die Details. Dort kannst du das Video auch bearbeiten oder löschen.</p>`,
+  videos:`<p>Alle eingetragenen Videos mit ihren Werten nach 24 Stunden.</p><ul><li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, ein zweiter Klick dreht die Reihenfolge um.</li><li><b>Suchen</b> durchsucht Titel, Spiel, Sound, Hook, Thema und Emotion.</li><li><b>Engagement:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views. Zeigt, wie stark Zuschauer reagieren, unabhängig davon, wie viele es waren.</li></ul><p>Ein Klick auf eine Zeile öffnet die Details. Dort kannst du das Video auch bearbeiten oder löschen.</p>`,
   insights:`<p>Clipradar vergleicht für jede Eigenschaft, z. B. Hook „Frage“, den <b>Median</b> aller Videos mit dieser Eigenschaft mit dem Median aller anderen Videos.</p><p>Angezeigt wird ein Muster nur, wenn</p><ul><li>beide Gruppen mindestens ${MIN_N} Videos haben und</li><li>der Unterschied mindestens 25 % beträgt.</li></ul><p>Pro Eigenschaft siehst du nur den stärksten Wert. Bei Zahlen wie der Videolänge wird geprüft, ob höhere Werte mit mehr oder weniger Views einhergehen (Rangkorrelation ρ ab 0,2).</p><p><b>Sicherheit:</b> berücksichtigt Größe des Unterschieds und Anzahl der Videos. „Stark“ ist ziemlich sicher kein Zufall, „schwach“ kann noch Zufall sein.</p><p>Ein Zusammenhang ist nicht automatisch die Ursache. Laufen z. B. Papaplatte-Clips besser, kann das auch daran liegen, dass du sie öfter abends postest. Mit den <b>Kombinationen</b> weiter unten kannst du das prüfen.</p><p>Ein Klick auf eine Zeile springt zur passenden Grafik.</p>`,
   weights:`<p>Bei jedem Video kannst du markieren, woran es deiner Meinung nach lag:</p><ul><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Die Gewichtung gilt nur für die jeweilige Eigenschaft. Markierst du bei einem Video den Hook als Hauptgrund, zählt dieses Video beim Vergleich der Hooks 1,75-fach, bei allen anderen Eigenschaften normal.</p><p>Schalte die Gewichtung aus, um die reinen Daten zu sehen. Taucht ein Muster nur mit Gewichtung auf, beruht es vor allem auf deiner Einschätzung.</p>`,
-  compare:`<p>Wählt eine Eigenschaft und eine Kennzahl. Jeder Balken ist eine Gruppe, z. B. jeder Streamer.</p><ul><li>Die <b>senkrechte Linie</b> zeigt den Wert über alle Videos.</li><li><b>Graue Balken</b> beruhen auf weniger als ${MIN_N} Videos und sind noch nicht aussagekräftig.</li><li>Unter dem Namen stehen Anzahl der Videos und Flop-Quote.</li></ul><p><b>Kennzahlen:</b></p><ul><li><b>Median-Views / Median neue Follower:</b> mittlerer Wert der Gruppe</li><li><b>Flop-Quote:</b> Anteil unter der Flop-Grenze, niedriger ist besser</li><li><b>Zuschauer nach 3 s:</b> wie gut der Einstieg hält</li><li><b>Komplett angesehen:</b> wie viele bis zum Ende schauen</li><li><b>Engagement-Rate:</b> (Likes + Kommentare + Shares + Gespeichert) geteilt durch Views</li></ul>`,
+  compare:`<p>Wählt eine Eigenschaft und eine Kennzahl. Jeder Balken ist eine Gruppe, z. B. jeder Streamer.</p><ul><li>Die <b>senkrechte Linie</b> zeigt den Wert über alle Videos.</li><li><b>Graue Balken</b> beruhen auf weniger als ${MIN_N} Videos und sind noch nicht aussagekräftig.</li><li>Unter dem Namen stehen Anzahl der Videos und Flop-Quote.</li></ul><p><b>Kennzahlen:</b></p><ul><li><b>Median-Views / Median neue Follower:</b> mittlerer Wert der Gruppe</li><li><b>Flop-Quote:</b> Anteil unter der Flop-Grenze, niedriger ist besser</li><li><b>Engagement-Rate:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views</li></ul>`,
   heat:`<p>Kombiniert zwei Eigenschaften, z. B. Streamer und Hook. Jedes Feld zeigt den Wert für alle Videos, die beides haben, und darunter die Anzahl der Videos.</p><p>Je kräftiger die Farbe, desto besser der Wert. Blasse Felder beruhen auf nur einem Video, ein Strich bedeutet: diese Kombination gibt es noch nicht.</p><p>So findest du z. B. heraus, ob ein Hook bei allen Streamern funktioniert oder nur bei einem.</p>`,
   scatter:`<p>Jeder Punkt ist ein Video. Waagerecht steht die gewählte Zahl, senkrecht die Views nach 24 Stunden.</p><p>Die Views-Achse ist <b>logarithmisch</b>: Jede Linie bedeutet zehnmal so viele Views. So passen kleine und virale Videos in dieselbe Grafik. Die gestrichelte Linie ist deine Flop-Grenze.</p><p><b>ρ (Rangkorrelation)</b> misst den Zusammenhang von −1 bis +1. Positiv heißt: mehr davon, mehr Views. Negativ: mehr davon, weniger Views. Ab 0,25 ist der Zusammenhang mittel, ab 0,45 deutlich.</p><p>Ein Klick auf einen Punkt öffnet das Video.</p>`,
   streamer:`<p>Eine Karte pro Streamer, sortiert nach Median-Views. Collab-Videos mit mehreren Streamern zählen bei jedem Beteiligten.</p><ul><li><b>Median-Views:</b> mittlerer Wert seiner Videos</li><li><b>Flops:</b> Anteil unter der Flop-Grenze</li><li><b>Follower:</b> Summe der neuen Follower aus seinen Videos</li><li><b>Balken:</b> Views jedes Videos in zeitlicher Reihenfolge, rot = Flop, grün = viral</li><li><b>Bester Hook, Emotion, Spiel:</b> der Wert mit den höchsten Median-Views, mindestens 2 Videos nötig</li></ul><p>Ein Klick auf eine Karte zeigt alle Videos dieses Streamers.</p>`,
-  why:`<p>Clipradar vergleicht jede Eigenschaft dieses Videos mit deinen anderen Videos.</p><ul><li><b>Hat geholfen:</b> Videos mit dieser Eigenschaft laufen bei dir mindestens 20 % besser als der Rest.</li><li><b>Hat gebremst:</b> mindestens 17 % schlechter.</li><li><b>Einstieg:</b> wenn „Zuschauer nach 3 s“ mindestens 6 Prozentpunkte über oder unter deinem Median liegt.</li></ul><p>Berücksichtigt werden nur Eigenschaften mit mindestens ${MIN_N} Videos.</p><p><b>Deine Einschätzung:</b> Was du als wichtig oder Hauptgrund markiert hast, wird gegen die Daten geprüft. ✓ heißt, die Daten zeigen in dieselbe Richtung wie das Ergebnis dieses Videos. ! heißt, die Daten sehen das bisher nicht.</p>`,
+  why:`<p>Clipradar vergleicht jede Eigenschaft dieses Videos mit deinen anderen Videos.</p><ul><li><b>Hat geholfen:</b> Videos mit dieser Eigenschaft laufen bei dir mindestens 20 % besser als der Rest.</li><li><b>Hat gebremst:</b> mindestens 17 % schlechter.</li></ul><p>Berücksichtigt werden nur Eigenschaften mit mindestens ${MIN_N} Videos.</p><p><b>Deine Einschätzung:</b> Was du als wichtig oder Hauptgrund markiert hast, wird gegen die Daten geprüft. ✓ heißt, die Daten zeigen in dieselbe Richtung wie das Ergebnis dieses Videos. ! heißt, die Daten sehen das bisher nicht.</p>`,
   weightsVideo:`<p>Markier die Eigenschaften, die deiner Meinung nach für das Ergebnis verantwortlich waren, egal ob gut oder schlecht.</p><ul><li><b>wichtig:</b> zählt in der Analyse 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Änderungen werden sofort gespeichert. Oben unter „Warum lief es so?“ siehst du, ob die Daten deine Einschätzung bestätigen.</p>`,
   fStudio:`<p>Alle Werte findest du in <b>TikTok Studio</b> bei deinem Video unter <b>Analysen</b>. Trag sie möglichst genau 24 Stunden nach dem Upload ein, damit alle Videos fair verglichen werden.</p><p>Pflicht sind nur die Views, alle anderen Felder sind optional. Je vollständiger, desto mehr kann Clipradar auswerten.</p>`,
   fViews:`<p>Die Aufrufe nach 24 Stunden, in TikTok Studio unter „Videoaufrufe“.</p>`,
   fFollower:`<p>Wie viele Leute dir über dieses Video gefolgt sind, in TikTok Studio unter „Neue Follower“.</p>`,
   fAvg:`<p>„Durchschnittliche Wiedergabedauer“ in Sekunden. Wie lange ein Zuschauer im Schnitt zugeschaut hat.</p><p>Komma oder Punkt als Dezimalzeichen geht beides.</p>`,
   fTotal:`<p>„Gesamte Wiedergabezeit“ in <b>Stunden</b>. TikTok zeigt sie oft als Stunden:Minuten:Sekunden an. Trag einfach die Stunden ein, gerundet reicht.</p>`,
-  fCompl:`<p>„Video vollständig angesehen“ in Prozent. Wie viele Zuschauer bis zum Ende geschaut haben.</p>`,
-  fRet3:`<p>Lies im <b>Retention-Diagramm</b> (Zuschauerbindung) den Wert bei Sekunde 3 ab: Wie viel Prozent der Zuschauer sind nach 3 Sekunden noch da?</p><p>Das ist die wichtigste Zahl, um zu sehen, ob dein <b>Hook</b> funktioniert.</p>`,
   fTitle:`<p>Ein kurzer Name, an dem du das Video wiedererkennst. Lässt du ihn leer, wird er aus Streamer und Spiel gebildet.</p>`,
   fLaenge:`<p>Die Länge des Videos in Sekunden.</p>`,
   fTags:`<p>Mit diesen Tags findet Clipradar heraus, <b>was</b> deine Videos erfolgreich macht. Ohne Tags gibt es nur Zahlen, aber keine Zusammenhänge.</p><p>Neben den Textfeldern öffnet der Pfeil deine <b>zuletzt verwendeten Antworten</b>. Bei Emotion, Text-Overlay und Kommentarstimmung legst du mit <b>+</b> eine neue Option an.</p><p>Bleib bei den Bezeichnungen einheitlich, z. B. immer „Fortnite“ statt mal „fortnite“, sonst zählt das Tool sie als verschiedene Werte.</p>`,
@@ -666,7 +658,7 @@ const tipHtml=k=>{const t=TIPS[k];return typeof t==='function'?t():t||''};
 /* ---------- State ---------- */
 const S={tab:'uebersicht',sortKey:'date',sortDir:-1,q:'',fStatus:'alle',fStreamer:'alle',vAll:false,insAll:false,
   trendMetric:'follower',trendRange:'30',
-  useWeights:true,insMetric:'views',groupField:'streamer',groupMetric:'views',heatA:'streamer',heatB:'hook',heatMetric:'views',scatterX:'ret3'};
+  useWeights:true,insMetric:'views',groupField:'streamer',groupMetric:'views',heatA:'streamer',heatB:'hook',heatMetric:'views',scatterX:'pointe'};
 try{
   const t=localStorage.getItem('clipradar-tab');if(t)S.tab=t;
   const f=parseInt(localStorage.getItem('clipradar-flop'),10);if(f>=0)FLOP=f;
@@ -775,8 +767,8 @@ const COLS=[
   {k:'title',l:'Video',v:v=>v.title.toLowerCase()},
   {k:'views',l:'Views',n:1,v:v=>v.views},
   {k:'follower',l:'Follower',n:1,v:v=>v.follower},
-  {k:'ret3',l:'Nach 3 s',n:1,v:v=>v.ret3},
-  {k:'completion',l:'Komplett',n:1,v:v=>v.completion},
+  {k:'likes',l:'Likes',n:1,v:v=>v.likes},
+  {k:'eng',l:'Engagement',n:1,v:v=>eng(v)},
   {k:'status',l:'Status',v:v=>v.views}
 ];
 const VLIMIT=10;
@@ -805,7 +797,7 @@ function renderVideoTable(){
   $('#vtable').innerHTML=`<table class="vt"><thead><tr>${COLS.map(c=>`<th class="${c.n?'n':''}" data-sort="${c.k}">${c.l}${S.sortKey===c.k?(S.sortDir>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead>
     <tbody>${shown.map(v=>`<tr data-vid="${v.id}"><td class="d">${dateStr(v.date)}<br><span>${timeStr(v.date)}</span></td>
       <td class="t">${esc(v.title)}<small>${esc(v.streamers.join(', '))} · ${esc(v.hook)} · ${v.laenge} s</small></td>
-      <td class="n">${fmt(v.views)}</td><td class="n">${fmt(v.follower)}</td><td class="n">${v.ret3} %</td><td class="n">${v.completion} %</td><td>${badge(v)}</td></tr>`).join('')}
+      <td class="n">${fmt(v.views)}</td><td class="n">${fmt(v.follower)}</td><td class="n">${fmt(v.likes)}</td><td class="n">${v.views?dec(eng(v))+' %':'–'}</td><td>${badge(v)}</td></tr>`).join('')}
     ${list.length?'':`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px">Keine Videos passen zu diesem Filter.</td></tr>`}</tbody></table>
     <div class="table-foot"><span>${shown.length} von ${list.length} Video${list.length===1?'':'s'}${list.length<VIDEOS.length?` (gefiltert, insgesamt ${VIDEOS.length})`:''}</span>
       ${list.length>VLIMIT?`<button class="btn" data-vall>${S.vAll?'Weniger anzeigen':`Alle ${list.length} Videos anzeigen`}</button>`:''}</div>`;
@@ -938,8 +930,8 @@ let openId=null;
 function openVideo(id){
   const v=VIDEOS.find(x=>x.id===+id);if(!v)return;
   openId=v.id;
-  const m=[['Views',fmt(v.views)],['Neue Follower',fmt(v.follower)],['Likes',fmt(v.likes)],['Kommentare',fmt(v.comments)],['Shares',fmt(v.shares)],['Gespeichert',fmt(v.saves)],
-    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Komplett angesehen',v.completion+' %'],['Nach 3 s',v.ret3+' %'],['Länge',v.laenge+' s'],['Pointe nach',v.pointe+' s']];
+  const m=[['Views',fmt(v.views)],['Neue Follower',fmt(v.follower)],['Likes',fmt(v.likes)],['Kommentare',fmt(v.comments)],['Gespeichert',fmt(v.saves)],['Engagement',v.views?dec(eng(v))+' %':'–'],
+    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s'],['Pointe nach',v.pointe+' s']];
   const tags=[['Streamer',v.streamers.join(', ')],['Spiel',v.spiel],['Thema',v.thema],['Hook',v.hook],['Emotion',v.emotion],['Text-Overlay',v.overlay],['Untertitel',v.untertitel],['Audio',v.audio],['Sound',v.sound],['Kommentare',v.stimmung]];
   openDrawer(v.title,`<span>${DAYS[v.date.getDay()]}, ${dateStr(v.date)} ${v.date.getFullYear()} · ${timeStr(v.date)} Uhr</span>${badge(v)}`,`
     <div class="why" id="whyBox">${whyHtml(v)}</div>
@@ -978,11 +970,10 @@ function openForm(edit){
       ${numF('flaenge','Videolänge','28','s',e0.laenge,'fLaenge')}
     </div></fieldset>
     <fieldset><legend>${titled('h3','Zahlen aus TikTok Studio','fStudio')}</legend><div class="fgrid">
-      ${numF('fviews','Views','12000','',e0.views,'fViews')}${numF('ffollower','Neue Follower','45','',e0.follower,'fFollower')}
-      ${numF('flikes','Likes','900','',e0.likes)}${numF('fcomments','Kommentare','40','',e0.comments)}
-      ${numF('fshares','Shares','60','',e0.shares)}${numF('fsaves','Gespeichert','35','',e0.saves)}
+      ${numF('fviews','Views','12000','',e0.views,'fViews').replace('class="f"','class="f full"')}
+      ${numF('ffollower','Neue Follower','45','',e0.follower,'fFollower')}${numF('flikes','Likes','900','',e0.likes)}
+      ${numF('fcomments','Kommentare','40','',e0.comments)}${numF('fsaves','Gespeichert','35','',e0.saves)}
       ${numF('favg','Ø Wiedergabedauer','14,5','s',e0.avgWatch,'fAvg')}${numF('ftotal','Gesamte Wiedergabezeit','48','h',e0.totalWatch,'fTotal')}
-      ${numF('fcompl','Komplett angesehen','32','%',e0.completion,'fCompl')}${numF('fret3','Zuschauer nach 3 s','58','%',e0.ret3,'fRet3')}
     </div></fieldset>
     <fieldset><legend>${titled('h3','Tags','fTags')}</legend>
       <div class="fgrid">
@@ -1018,8 +1009,8 @@ function openForm(edit){
       spiel:raw('fspiel')||'Unbekannt',thema:raw('fthema')||'Unbekannt',hook:raw('fhook')||'Unbekannt',sound:raw('fsound')||'Originalton',
       emotion:fd.get('femo')||'unbekannt',overlay:fd.get('fov')||'keins',untertitel:fd.get('fut'),audio:fd.get('fau'),stimmung:fd.get('fmood')||'gemischt',
       weights:Object.fromEntries(WKEYS.map(w=>[w.k,+fd.get('w_'+w.k)||1]).filter(([,x])=>x>1)),
-      pointe:n('fpointe')??3,laenge,views:n('fviews'),follower:n('ffollower')??0,likes:n('flikes')??0,comments:n('fcomments')??0,shares:n('fshares')??0,saves:n('fsaves')??0,
-      avgWatch:n('favg')??laenge*.5,totalWatch:n('ftotal')??0,completion:n('fcompl')??0,ret3:n('fret3')??0};
+      pointe:n('fpointe')??3,laenge,views:n('fviews'),follower:n('ffollower')??0,likes:n('flikes')??0,comments:n('fcomments')??0,saves:n('fsaves')??0,
+      avgWatch:n('favg')??laenge*.5,totalWatch:n('ftotal')??0};
     delete v.link;
     const btn=$('#fsubmit');btn.disabled=true;btn.textContent='Speichert …';
     try{
