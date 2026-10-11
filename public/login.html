@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Clipradar – Anmelden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDEFF4;--surface:#FFFFFF;--ink:#141722;--muted:#5D6375;--line:#DCE0E9;--accent:#3346E0;--accent-ink:#FFFFFF;--accent-soft:rgba(51,70,224,.11);--bad:#D33A44;color-scheme:light}
+@media (prefers-color-scheme: dark){:root{color-scheme:dark;--bg:#0E1016;--surface:#171A23;--ink:#E8EAF1;--muted:#949AAC;--line:#2A2F3D;--accent:#8190FF;--accent-ink:#0E1016;--accent-soft:rgba(129,144,255,.16);--bad:#FF6B74}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;display:grid;place-items:center;padding:16px}
+form{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:28px;width:min(360px,100%);display:flex;flex-direction:column;gap:14px}
+.brand{font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;font-size:24px;font-weight:700;display:flex;align-items:center;gap:10px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+label{font-size:12px;font-weight:500;color:var(--muted)}
+input{font:inherit;color:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);width:100%}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+button{font:inherit;font-weight:600;padding:10px;border:none;border-radius:8px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.err{color:var(--bad);font-size:13px;margin:0}
+p.sub{color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+<form method="post" action="/api/login">
+  <div class="brand"><span class="dot"></span>Clipradar</div>
+  <p class="sub">Dein TikTok-Studio für Streamer-Clips</p>
+  <div><label for="password">Passwort</label><input id="password" name="password" type="password" autocomplete="current-password" required autofocus></div>
+  <p class="err" id="err" hidden>Das Passwort stimmt nicht. Versuch es nochmal.</p>
+  <button type="submit">Anmelden</button>
+</form>
+<script>if(new URLSearchParams(location.search).has('fehler'))document.getElementById('err').hidden=false</script>
+</body>
+</html>
