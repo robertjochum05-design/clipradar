@@ -5,4 +5,4 @@ compatibility_date = "2026-10-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "clipradar"
-database_id = "WIRD_BEIM_EINRICHTEN_EINGETRAGEN"
+database_id = "cb5a45a7-bab8-4b92-a1c0-e12db1f99f8b"
