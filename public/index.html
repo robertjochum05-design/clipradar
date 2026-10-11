@@ -233,7 +233,7 @@ svg text.pie-sub{font-family:var(--sans);font-size:10px;fill:var(--muted)}
 .x:hover{background:var(--hover);color:var(--ink)}
 .x svg{width:16px;height:16px}
 .section-title{display:flex;align-items:center;gap:6px;margin-bottom:10px}
-.mgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
+.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
 .mgrid div{background:var(--surface);padding:9px 12px;display:flex;flex-direction:column}
 .mgrid span{font-size:11.5px;color:var(--muted)}
 .mgrid b{font-family:var(--mono);font-size:14.5px;font-weight:500;font-variant-numeric:tabular-nums}
@@ -302,8 +302,6 @@ input[type=number].inp{font-family:var(--mono)}
 .wseg input:focus-visible + span{outline:2px solid var(--accent)}
 .form-actions{display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:-40px;background:var(--surface);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
 .err{color:var(--bad);font-size:13px}
-.check{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer;margin-top:3px;width:max-content}
-.check input{accent-color:var(--accent);margin:0}
 .inp:disabled{opacity:.45}
 
 /* Sonstiges */
@@ -425,7 +423,7 @@ const MUSIK=['Lo-Fi Beat','Sad Violin','Epic Orchestra'], TREND=['Phonk Drift','
 const HOURS=[{h:9,w:1},{h:11,w:1},{h:13,w:2},{h:15,w:2},{h:17,w:3},{h:18,w:3},{h:19,w:3},{h:20,w:3},{h:21,w:2},{h:22,w:2},{h:23,w:1}];
 const TITLE={lustig:'Lachflash',Rage:'Rage-Ausraster',Schock:'Schockmoment',wholesome:'Wholesome-Moment',Drama:'Streit eskaliert',Skill:'Krasser Clutch'};
 
-const SAMPLE_WKEYS=['hook','emotion','streamer','overlay','untertitel','pointe','upload','thema'];
+const SAMPLE_WKEYS=['hook','emotion','streamer','overlay','untertitel','upload','thema'];
 function makeSample(){
   rnd=mulberry32(20261011);
   const out=[];
@@ -452,7 +450,7 @@ function makeSample(){
     out.push({weights,
       id:i+1,title:`${streamers.join(' & ')}: ${TITLE[emo.n]} in ${game.n}`,date,streamers,
       spiel:game.n,thema:thema.n,hook:hook.n,emotion:emo.n,overlay:ov.n,untertitel:ut.n,audio:au.n,sound,
-      pointe,laenge,views,follower,ret3,completion,avgWatch,
+      laenge,views,follower,ret3,completion,avgWatch,
       likes:Math.round(views*(.06+rnd()*.05)),comments:Math.round(views*(.003+rnd()*.004)),
       shares:Math.round(views*(.003+rnd()*.01)),saves:Math.round(views*(.002+rnd()*.006)),
       totalWatch:Math.round(views*avgWatch/3600),
@@ -472,12 +470,11 @@ async function api(method,path,body){
   return r.status===204?null:r.json();
 }
 const toData=v=>{const {id,link,...rest}=v;return {...rest,date:v.date.toISOString()}};
-const NUM_FIELDS=['views','follower','likes','comments','shares','saves','avgWatch','totalWatch','completion','ret3','laenge','pointe'];
+const NUM_FIELDS=['views','follower','likes','comments','shares','saves','avgWatch','totalWatch','completion','ret3','laenge'];
 const TEXT_DEFAULTS={title:'Ohne Titel',spiel:'Unbekannt',thema:'Unbekannt',hook:'Unbekannt',sound:'Originalton',emotion:'unbekannt',overlay:'keins',untertitel:'nein',audio:'nur Original',stimmung:'gemischt'};
 const fromRow=r=>{
   const v={...TEXT_DEFAULTS,...r.data,id:r.id,date:new Date(r.data.date),weights:r.data.weights||{},streamers:r.data.streamers||[]};
   for(const k of NUM_FIELDS)v[k]=Number.isFinite(+v[k])?+v[k]:0;
-  if(v.keinePointe)v.pointe=null;
   return v;
 };
 async function loadVideos(){const rows=await api('GET','/videos');VIDEOS.length=0;VIDEOS.push(...rows.map(fromRow))}
@@ -495,12 +492,11 @@ const WLABEL={0:'nicht wichtig',2:'wichtig',3:'Hauptgrund'};
 const FACTOR={0:.5,1:1,2:1.25,3:1.75};
 const lvl=(v,k)=>(v.weights&&v.weights[k]!=null)?v.weights[k]:1; // 0 = nicht wichtig, 1 = normal
 const WKEYS=[{k:'streamer',l:'Streamer'},{k:'spiel',l:'Spiel'},{k:'thema',l:'Thema'},{k:'hook',l:'Hook'},{k:'emotion',l:'Emotion'},{k:'overlay',l:'Text-Overlay'},
-  {k:'untertitel',l:'Untertitel'},{k:'audio',l:'Audio'},{k:'sound',l:'Sound'},{k:'upload',l:'Uploadzeitpunkt'},{k:'laenge',l:'Videolänge'},{k:'pointe',l:'Zeit bis zur Pointe'}];
+  {k:'untertitel',l:'Untertitel'},{k:'audio',l:'Audio'},{k:'sound',l:'Sound'},{k:'upload',l:'Uploadzeitpunkt'},{k:'laenge',l:'Videolänge'}];
 function tagValue(v,k){
   if(k==='streamer')return v.streamers.join(', ');
   if(k==='upload')return `${DAYS[v.date.getDay()]} ${timeStr(v.date)} Uhr`;
-  if(k==='pointe'&&v.keinePointe)return 'keine Pointe';
-  if(k==='laenge'||k==='pointe')return v[k]+' s';
+  if(k==='laenge')return v[k]+' s';
   return v[k];
 }
 function weightRows(prefix,weights,v){
@@ -523,12 +519,10 @@ const CAT=[
   {k:'tageszeit',l:'Uploadzeit',wk:'upload',g:v=>[hourBucket(v.date.getHours())]},
   {k:'wochentag',l:'Wochentag',wk:'upload',g:v=>[DAYS[v.date.getDay()]]},
   {k:'laengeB',l:'Videolänge',wk:'laenge',g:v=>[v.laenge<20?'unter 20 s':v.laenge<=40?'20–40 s':'über 40 s']},
-  {k:'pointeB',l:'Zeit bis zur Pointe',wk:'pointe',g:v=>[v.keinePointe?'keine Pointe':v.pointe<=3?'0–3 s':v.pointe<=6?'4–6 s':'7 s und mehr']},
   {k:'stimmung',l:'Kommentarstimmung',g:v=>[v.stimmung],after:true}
 ];
 const catByKey=k=>CAT.find(f=>f.k===k);
 const NUM=[
-  {k:'pointe',l:'Zeit bis zur Pointe (s)',g:v=>v.keinePointe?null:v.pointe,phrase:'Je später die Pointe kommt'},
   {k:'laenge',l:'Videolänge (s)',g:v=>v.laenge,phrase:'Je länger das Video ist'},
   {k:'hour',l:'Upload-Uhrzeit',g:v=>v.date.getHours()+v.date.getMinutes()/60,phrase:'Je später am Tag du hochlädst'},
   {k:'avgWatch',l:'Ø Wiedergabedauer (s)',g:v=>v.avgWatch,phrase:'Je länger die durchschnittliche Wiedergabedauer'}
@@ -620,7 +614,7 @@ function explain(v){
   const neg=good.filter(x=>x.r<.83).sort((a,b)=>a.r-b.r).slice(0,4).map(x=>({t:esc(x.txt)+tag(x),d:`läuft bei dir ${Math.round((1-x.r)*100)} % schlechter · ${x.n} Videos`}));
   const above=v.views>=allMed;
   /* Deine Einschätzung gegen die Daten prüfen */
-  const beliefs=Object.entries(v.weights||{}).filter(([,w])=>w!==1&&WLABEL[w]).map(([k,w])=>{
+  const beliefs=Object.entries(v.weights||{}).filter(([k,w])=>w!==1&&WLABEL[w]&&WKEYS.some(q=>q.k===k)&&CAT.some(c=>c.wk===k)).map(([k,w])=>{
     const f=CAT.find(c=>c.wk===k),x=facs.find(y=>y.f===f);
     const label=`${WKEYS.find(q=>q.k===k).l} „${tagValue(v,k)}“`;
     if(!x||!x.ok)return {label,w,cls:'na',ic:'?',d:`Noch zu wenig Videos mit diesem Wert (${x?x.n:0}), um es zu prüfen.`};
@@ -643,7 +637,7 @@ function explain(v){
 const TIPS={
   flop:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>Flop</b> gilt. Aktuell: unter ${fmt(FLOP)} Views.</p><p>Die Grenze beeinflusst die Flop-Quote, die Einfärbung in allen Grafiken und die Status-Spalte. Ab ${fmt(VIRAL)} Views gilt ein Video als <b>viral</b>, alles dazwischen als <b>gut</b>.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
   viral:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>viral</b> gilt. Aktuell: ab ${fmt(VIRAL)} Views.</p><p>Die Grenze beeinflusst die Verteilung in der Karte „Ergebnisse“, die grüne Einfärbung in den Grafiken und die Status-Spalte. Sie muss über der Flop-Grenze liegen.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
-  demo:`<p>Du siehst <b>72 erfundene Videos</b>, damit du ausprobieren kannst, wie Clipradar Zusammenhänge erkennt. In die Daten sind absichtlich Muster eingebaut, z. B. dass Untertitel helfen und eine späte Pointe schadet.</p><p>Die Beispieldaten landen <b>nie in deiner Datenbank</b>. Änderungen daran sind nur eine Vorschau. Sie verschwinden, wenn du sie ausblendest, die Seite neu lädst oder dein erstes eigenes Video einträgst.</p>`,
+  demo:`<p>Du siehst <b>72 erfundene Videos</b>, damit du ausprobieren kannst, wie Clipradar Zusammenhänge erkennt. In die Daten sind absichtlich Muster eingebaut, z. B. dass Untertitel helfen und Videos über 45 Sekunden schlechter laufen.</p><p>Die Beispieldaten landen <b>nie in deiner Datenbank</b>. Änderungen daran sind nur eine Vorschau. Sie verschwinden, wenn du sie ausblendest, die Seite neu lädst oder dein erstes eigenes Video einträgst.</p>`,
   empty:`<p>Trag jedes Video <b>24 Stunden nach dem Upload</b> ein. Die Zahlen findest du in TikTok Studio unter dem jeweiligen Video.</p><p>Ab etwa 10 Videos erscheinen erste Muster, ab 20 bis 50 Videos werden die Ergebnisse verlässlich.</p><p>Mit den <b>Beispieldaten</b> siehst du vorher, wie die Auswertung aussieht. Sie werden nicht gespeichert.</p>`,
   kpiFollower:`<p>Summe der <b>neuen Follower</b> aus allen eingetragenen Videos, jeweils der Wert nach 24 Stunden aus TikTok Studio.</p><p>Der Balken zeigt den Fortschritt zu deinem Ziel von <b>10.000 Followern</b>.</p><p>Follower, die später als 24 Stunden nach dem Upload oder direkt über dein Profil dazukommen, sind nicht enthalten. Deine echte Followerzahl kann deshalb höher sein.</p>`,
   kpiMedian:`<p>Der <b>Median</b> ist der mittlere Wert: Die Hälfte deiner Videos hat mehr Views, die andere Hälfte weniger.</p><p>Anders als der Durchschnitt wird der Median nicht von einzelnen Viral-Hits verzerrt. Ein Video mit 400.000 Views würde den Durchschnitt stark nach oben ziehen, den Median kaum.</p>`,
@@ -675,7 +669,6 @@ const TIPS={
   fThema:`<p>Worum es inhaltlich geht, z. B. Fail, Clutch, Reaction, Story, Challenge oder Streit.</p>`,
   fHook:`<p>Wie die <b>ersten 1–3 Sekunden</b> die Aufmerksamkeit holen, z. B. „Schockmoment zuerst“, „Frage“, „Zitat“, „Cliffhanger“ oder „Direkt rein“ (ohne besonderen Einstieg).</p>`,
   fSound:`<p>Welcher Sound läuft: „Originalton“ oder der Name des Songs oder Trend-Sounds.</p>`,
-  fPointe:`<p>Nach wie vielen Sekunden der Höhepunkt kommt, also der Lacher, Fail oder krasse Moment. Je später, desto mehr Zuschauer springen vorher ab.</p><p>Hat der Clip keinen klaren Höhepunkt, z. B. bei einer Story oder einem durchgehend lustigen Gespräch, setz das Häkchen bei <b>Keine Pointe</b>. Solche Videos bilden in der Analyse eine eigene Gruppe „keine Pointe“ und werden bei der Rechnung „je später die Pointe“ nicht mitgezählt.</p>`,
   fEmotion:`<p>Das Hauptgefühl, das der Clip auslöst. Mit <b>+</b> legst du eine neue Emotion an, sie steht danach bei jedem Video zur Auswahl.</p>`,
   fOverlay:`<p>Ob und welche Art Text am Anfang eingeblendet ist:</p><ul><li><b>Frage:</b> z. B. „Würdest du das machen?“</li><li><b>Aussage:</b> z. B. „Er rastet komplett aus“</li><li><b>Spoiler:</b> verrät, was passiert</li></ul><p>Mit <b>+</b> legst du eine neue Art an.</p>`,
   fUT:`<p>Ob das Video eingebrannte Untertitel hat.</p>`,
@@ -688,7 +681,7 @@ const tipHtml=k=>{const t=TIPS[k];return typeof t==='function'?t():t||''};
 /* ---------- State ---------- */
 const S={tab:'uebersicht',sortKey:'date',sortDir:-1,q:'',fStatus:'alle',fStreamer:'alle',vAll:false,insAll:false,
   trendMetric:'follower',trendRange:'30',
-  useWeights:true,insMetric:'views',groupField:'streamer',groupMetric:'views',heatA:'streamer',heatB:'hook',heatMetric:'views',scatterX:'pointe'};
+  useWeights:true,insMetric:'views',groupField:'streamer',groupMetric:'views',heatA:'streamer',heatB:'hook',heatMetric:'views',scatterX:'laenge'};
 try{
   const t=localStorage.getItem('clipradar-tab');if(t)S.tab=t;
   const f=parseInt(localStorage.getItem('clipradar-flop'),10);if(f>=0)FLOP=f;
@@ -982,7 +975,7 @@ function openVideo(id){
   const v=VIDEOS.find(x=>x.id===+id);if(!v)return;
   openId=v.id;
   const m=[['Views',fmt(v.views)],['Neue Follower',fmt(v.follower)],['Likes',fmt(v.likes)],['Kommentare',fmt(v.comments)],['Gespeichert',fmt(v.saves)],['Engagement',v.views?dec(eng(v))+' %':'–'],
-    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s'],['Pointe nach',v.keinePointe?'keine':v.pointe+' s']];
+    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s']];
   const tags=[['Streamer',v.streamers.join(', ')],['Spiel',v.spiel],['Thema',v.thema],['Hook',v.hook],['Emotion',v.emotion],['Text-Overlay',v.overlay],['Untertitel',v.untertitel],['Audio',v.audio],['Sound',v.sound],['Kommentare',v.stimmung]];
   openDrawer(v.title,`<span>${DAYS[v.date.getDay()]}, ${dateStr(v.date)} ${v.date.getFullYear()} · ${timeStr(v.date)} Uhr</span>${badge(v)}`,`
     <div class="why" id="whyBox">${whyHtml(v)}</div>
@@ -1031,7 +1024,6 @@ function openForm(edit){
         ${comboF('fstr','Streamer','streamers','Papaplatte, Trymacs',(e0.streamers||[]).join(', '),'fStreamer',true)}
         ${comboF('fspiel','Spiel','spiel','Fortnite',e0.spiel,'fSpiel')}${comboF('fthema','Thema','thema','Fail',e0.thema,'fThema')}
         ${comboF('fhook','Hook','hook','Schockmoment zuerst',e0.hook,'fHook')}${comboF('fsound','Sound','sound','Originalton',e0.sound,'fSound')}
-        <div class="f">${flabel('fpointe','Zeit bis zur Pointe','fPointe','s')}<input class="inp" type="number" id="fpointe" name="fpointe" min="0" step="any" placeholder="3" inputmode="decimal" value="${e0.keinePointe?'':(e0.pointe??'')}" ${e0.keinePointe?'disabled':''}><label class="check"><input type="checkbox" id="fnopointe" name="fnopointe" ${e0.keinePointe?'checked':''}>Keine Pointe</label></div>
       </div>
       ${chipsF('femo','Emotion',withDefaults(DEF_EMO,'emotion',e0.emotion),e0.emotion||'lustig','fEmotion','Neue Emotion hinzufügen')}
       ${chipsF('fov','Text-Overlay',withDefaults(DEF_OV,'overlay',e0.overlay),e0.overlay||'keins','fOverlay','Neues Text-Overlay hinzufügen')}
@@ -1062,7 +1054,7 @@ function openForm(edit){
       spiel:raw('fspiel')||'Unbekannt',thema:raw('fthema')||'Unbekannt',hook:raw('fhook')||'Unbekannt',sound:raw('fsound')||'Originalton',
       emotion:fd.get('femo')||'unbekannt',overlay:fd.get('fov')||'keins',untertitel:fd.get('fut'),audio:fd.get('fau'),stimmung:fd.get('fmood')||'gemischt',
       weights:Object.fromEntries(WKEYS.map(w=>{const x=fd.get('w_'+w.k);return [w.k,x==null?1:+x]}).filter(([,x])=>x!==1)),
-      keinePointe:!!fd.get('fnopointe'),pointe:fd.get('fnopointe')?null:(n('fpointe')??3),laenge,views:n('fviews'),follower:n('ffollower')??0,likes:n('flikes')??0,comments:n('fcomments')??0,saves:n('fsaves')??0,
+      laenge,views:n('fviews'),follower:n('ffollower')??0,likes:n('flikes')??0,comments:n('fcomments')??0,saves:n('fsaves')??0,
       avgWatch:n('favg')??laenge*.5,totalWatch:n('ftotal')??0};
     delete v.link;
     const btn=$('#fsubmit');btn.disabled=true;btn.textContent='Speichert …';
@@ -1213,7 +1205,6 @@ document.addEventListener('change',e=>{
   const id=e.target.id,v=e.target.value;
   if(id==='vstatus'){S.fStatus=v;renderVideoTable()}
   else if(id==='vstreamer'){S.fStreamer=v;renderVideoTable()}
-  else if(id==='fnopointe'){const p=$('#fpointe');p.disabled=e.target.checked;if(e.target.checked)p.value='';else p.focus()}
   else if(id==='trendRange'){S.trendRange=v;remember('clipradar-trend',JSON.stringify({m:S.trendMetric,r:S.trendRange}));renderTrend()}
   else if(id==='gField'){S.groupField=v;renderBars()}
   else if(id==='gMetric'){S.groupMetric=v;renderBars()}
