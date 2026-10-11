@@ -60,6 +60,8 @@ nav a svg{width:17px;height:17px;flex:none}
 .side-foot input{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--surface-2);font-family:var(--mono)}
 .side-actions a.btn{text-decoration:none;color:var(--ink)}
 .loading{color:var(--muted);padding:40px 0}
+.demo-banner{max-width:1180px;margin-bottom:20px;background:var(--warn-soft);border:1px solid var(--warn);border-radius:var(--r);padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.demo-banner p{color:var(--ink)}
 
 main{padding:28px 32px 60px;min-width:0}
 .view{display:flex;flex-direction:column;gap:20px;max-width:1180px}
@@ -300,6 +302,7 @@ svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
     </div>
   </aside>
   <main>
+    <div class="demo-banner" id="demoBanner" hidden><p><b>Du siehst Beispieldaten.</b> 72 erfundene Videos zum Ausprobieren. Änderungen daran werden nicht gespeichert.</p><div class="ctl-row"><button class="btn" data-demo-off>Beispieldaten ausblenden</button><button class="btn primary" data-new>Eigenes Video eintragen</button></div></div>
     <section class="view" id="view-uebersicht"></section>
     <section class="view" id="view-videos" hidden></section>
     <section class="view" id="view-analyse" hidden></section>
@@ -331,8 +334,64 @@ const status=v=>v.views<FLOP?'flop':v.views>=VIRAL?'viral':'gut';
 const STATUS_LABEL={flop:'Flop',gut:'Gut',viral:'Viral'};
 const pill=v=>`<span class="pill ${status(v)}">${STATUS_LABEL[status(v)]}</span>`;
 
+/* ---------- Beispieldaten (mit eingebauten Mustern) ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let rnd=mulberry32(20261011);
+const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+const pick=arr=>{const tot=arr.reduce((s,o)=>s+(o.w||1),0);let r=rnd()*tot;for(const o of arr){r-=(o.w||1);if(r<=0)return o}return arr[arr.length-1]};
+
+const STREAMERS=[{n:'Papaplatte',e:.55,w:5},{n:'Trymacs',e:.25,w:5},{n:'Letshugo',e:.05,w:4},{n:'Eliasn97',e:-.15,w:4},{n:'Reved',e:.15,w:2},{n:'NoWay',e:-.3,w:2}];
+const GAMES=[{n:'Fortnite',e:.1,w:3},{n:'Minecraft',e:0,w:3},{n:'GTA RP',e:.2,w:2},{n:'EA FC',e:-.25,w:3},{n:'Just Chatting',e:.05,w:3},{n:'Valorant',e:-.1,w:2}];
+const THEMEN=[{n:'Clutch/Skill',e:0},{n:'Fail',e:.25},{n:'Reaction',e:-.1},{n:'Story',e:-.3},{n:'Challenge',e:.15},{n:'Streit/Drama',e:.35}];
+const HOOKS=[{n:'Schockmoment zuerst',e:.45,w:3},{n:'Frage',e:.15,w:2},{n:'Zitat',e:.05,w:2},{n:'Cliffhanger',e:.2,w:2},{n:'Direkt rein',e:-.3,w:3}];
+const EMOS=[{n:'lustig',e:.3,w:3},{n:'Rage',e:.35,w:2},{n:'Schock',e:.1,w:2},{n:'wholesome',e:-.25,w:2},{n:'Drama',e:.15,w:1},{n:'Skill',e:-.1,w:2}];
+const OVERLAYS=[{n:'keins',e:-.25,w:2},{n:'Frage',e:.25,w:2},{n:'Aussage',e:.05,w:2},{n:'Spoiler',e:-.15,w:1}];
+const UT=[{n:'ja',e:.4,w:3},{n:'nein',e:-.1,w:2}];
+const AUDIO=[{n:'nur Original',e:0,w:3},{n:'mit Musik',e:-.1,w:2},{n:'Trend-Sound',e:.25,w:2}];
+const MUSIK=['Lo-Fi Beat','Sad Violin','Epic Orchestra'], TREND=['Phonk Drift','Bass Drop 2026','Sped-up Hymne'];
+const HOURS=[{h:9,w:1},{h:11,w:1},{h:13,w:2},{h:15,w:2},{h:17,w:3},{h:18,w:3},{h:19,w:3},{h:20,w:3},{h:21,w:2},{h:22,w:2},{h:23,w:1}];
+const TITLE={lustig:'Lachflash',Rage:'Rage-Ausraster',Schock:'Schockmoment',wholesome:'Wholesome-Moment',Drama:'Streit eskaliert',Skill:'Krasser Clutch'};
+
+const SAMPLE_WKEYS=['hook','emotion','streamer','overlay','untertitel','pointe','upload','thema'];
+function makeSample(){
+  rnd=mulberry32(20261011);
+  const out=[];
+  const start=new Date(2026,8,6);
+  for(let i=0;i<72;i++){
+    const s1=pick(STREAMERS),streamers=[s1.n];let eff=s1.e;
+    if(rnd()<.16){const s2=pick(STREAMERS.filter(s=>s.n!==s1.n));streamers.push(s2.n);eff+=s2.e*.5+.1}
+    const game=pick(GAMES),thema=pick(THEMEN),hook=pick(HOOKS),emo=pick(EMOS),ov=pick(OVERLAYS),ut=pick(UT),au=pick(AUDIO);
+    const sound=au.n==='nur Original'?'Originalton':(au.n==='mit Musik'?MUSIK:TREND)[Math.floor(rnd()*3)];
+    const date=new Date(start.getTime()+Math.floor(i*35/72)*864e5);
+    const hour=pick(HOURS).h;date.setHours(hour,Math.floor(rnd()*4)*15);
+    const pointe=1+Math.floor(rnd()*11),laenge=12+Math.floor(rnd()*58);
+    const content=eff+game.e+thema.e+hook.e+emo.e+ov.e+ut.e+au.e-(pointe-3)*.07+(laenge>45?-.2:0);
+    const timeEff=hour<12?-.35:hour<17?-.05:hour<21?.25:.05;
+    const views=Math.max(350,Math.round(Math.exp(Math.log(7000)+content+timeEff+gauss()*.7)));
+    const ret3=Math.max(18,Math.min(88,Math.round(50+9*(hook.e+ov.e+ut.e)+gauss()*5-pointe*.7+content*3)));
+    const completion=Math.max(5,Math.min(85,Math.round(68-laenge*.6+8*content+gauss()*6)));
+    const c=completion/100;
+    const avgWatch=Math.min(laenge,Math.round(laenge*(c+.3*(1-c))*10)/10);
+    const follower=Math.max(0,Math.round(views*.0045*Math.exp(gauss()*.4+(emo.n==='lustig'?.2:0))));
+    const moodScore=content+gauss()*.45-(emo.n==='Drama'?.5:0);
+    const weights={};
+    if(rnd()<.35){const k=SAMPLE_WKEYS[Math.floor(rnd()*SAMPLE_WKEYS.length)];weights[k]=rnd()<.5?3:2}
+    out.push({weights,
+      id:i+1,title:`${streamers.join(' & ')}: ${TITLE[emo.n]} in ${game.n}`,date,streamers,
+      spiel:game.n,thema:thema.n,hook:hook.n,emotion:emo.n,overlay:ov.n,untertitel:ut.n,audio:au.n,sound,
+      pointe,laenge,views,follower,ret3,completion,avgWatch,
+      likes:Math.round(views*(.06+rnd()*.05)),comments:Math.round(views*(.003+rnd()*.004)),
+      shares:Math.round(views*(.003+rnd()*.01)),saves:Math.round(views*(.002+rnd()*.006)),
+      totalWatch:Math.round(views*avgWatch/3600),
+      stimmung:moodScore>.45?'positiv':moodScore<-.2?'negativ':'gemischt'
+    });
+  }
+  return out;
+}
+
 /* ---------- Daten (Cloudflare D1 über /api) ---------- */
 const VIDEOS=[];
+let DEMO=false; // Beispieldaten nur im Browser, nie in der Datenbank
 async function api(method,path,body){
   const r=await fetch('/api'+path,{method,headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined,credentials:'same-origin'});
   if(r.status===401){location.href='/login';throw new Error('Nicht angemeldet')}
@@ -349,9 +408,11 @@ const fromRow=r=>{
 };
 async function loadVideos(){const rows=await api('GET','/videos');VIDEOS.length=0;VIDEOS.push(...rows.map(fromRow))}
 async function createVideo(v){const r=await api('POST','/videos',toData(v));v.id=r.id;VIDEOS.push(v);return v}
-async function updateVideo(v){await api('PUT','/videos/'+v.id,toData(v))}
-async function deleteVideo(id){await api('DELETE','/videos/'+id);const i=VIDEOS.findIndex(v=>v.id===id);if(i>=0)VIDEOS.splice(i,1)}
-async function deleteAll(){await api('DELETE','/videos');VIDEOS.length=0}
+async function updateVideo(v){if(!DEMO)await api('PUT','/videos/'+v.id,toData(v))}
+async function deleteVideo(id){if(!DEMO)await api('DELETE','/videos/'+id);const i=VIDEOS.findIndex(v=>v.id===id);if(i>=0)VIDEOS.splice(i,1)}
+async function deleteAll(){if(DEMO)return exitDemo();await api('DELETE','/videos');VIDEOS.length=0}
+function startDemo(){DEMO=true;VIDEOS.length=0;VIDEOS.push(...makeSample());renderAll();toast('Beispieldaten geladen')}
+async function exitDemo(){DEMO=false;VIDEOS.length=0;renderAll();await loadVideos();renderAll()}
 function fail(e){console.error(e);toast('Speichern fehlgeschlagen: '+e.message)}
 
 /* ---------- Gewichtung ---------- */
@@ -508,7 +569,8 @@ try{const t=localStorage.getItem('clipradar-tab');if(t)S.tab=t;const f=parseInt(
 function emptyState(title){
   return `<div class="view-head"><div><h1>${title}</h1></div></div>
     <div class="card empty-state"><h2>Noch keine Videos</h2><p>Trag dein erstes Video 24 Stunden nach dem Upload ein. Ab etwa 10 Videos zeigt dir das Tool erste Zusammenhänge.</p>
-    <button class="btn primary" data-new>+ Video eintragen</button></div>`;
+    <div class="ctl-row"><button class="btn primary" data-new>+ Video eintragen</button><button class="btn" data-sample>Beispieldaten ansehen</button></div>
+    <p class="hint">Die Beispieldaten sind 72 erfundene Videos. Sie werden nicht gespeichert und verschwinden, sobald du sie ausblendest oder dein erstes eigenes Video einträgst.</p></div>`;
 }
 function renderOverview(){
   if(!VIDEOS.length){$('#view-uebersicht').innerHTML=emptyState('Übersicht');return}
@@ -808,7 +870,7 @@ function openForm(edit){
     const btn=$('#fsubmit');btn.disabled=true;btn.textContent='Speichert …';
     try{
       if(edit){Object.assign(edit,v);await updateVideo(edit)}else await createVideo(v);
-      renderAll();openVideo(edit?edit.id:v.id);toast(edit?'Änderungen gespeichert':'Video gespeichert');
+      renderAll();openVideo(edit?edit.id:v.id);toast(DEMO?'Nur in der Vorschau geändert':edit?'Änderungen gespeichert':'Video gespeichert');
     }catch(ex){btn.disabled=false;btn.textContent='Nochmal versuchen';err.hidden=false;err.textContent='Speichern hat nicht geklappt: '+ex.message}
   };
 }
@@ -825,7 +887,8 @@ function show(tab){
 }
 function renderAll(){
   renderOverview();renderVideos();renderAnalyse();renderStreamer();
-  $('#dataNote').textContent=`${VIDEOS.length} Video${VIDEOS.length===1?'':'s'} gespeichert`;
+  $('#dataNote').textContent=DEMO?'Beispieldaten, nichts davon ist gespeichert':`${VIDEOS.length} Video${VIDEOS.length===1?'':'s'} gespeichert`;
+  $('#demoBanner').hidden=!DEMO;
   document.querySelectorAll('[data-clear]').forEach(b=>b.disabled=!VIDEOS.length);
 }
 function openClear(){
@@ -837,10 +900,12 @@ window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
 
 document.addEventListener('click',e=>{
   const t=e.target;
-  if(t.closest('[data-new]'))return openForm();
+  if(t.closest('[data-new]')){if(DEMO)exitDemo().then(()=>openForm()).catch(fail);else openForm();return}
+  if(t.closest('[data-sample]'))return startDemo();
+  if(t.closest('[data-demo-off]')){exitDemo().then(()=>toast('Beispieldaten ausgeblendet')).catch(fail);return}
   if(t.closest('[data-clear]'))return openClear();
   if(t.id==='clearNo')return closeDrawer();
-  if(t.id==='clearYes'){t.disabled=true;deleteAll().then(()=>{renderAll();closeDrawer();location.hash='uebersicht';toast('Alle Daten gelöscht')}).catch(fail);return}
+  if(t.id==='clearYes'){t.disabled=true;const wasDemo=DEMO;deleteAll().then(()=>{renderAll();closeDrawer();location.hash='uebersicht';toast(wasDemo?'Beispieldaten ausgeblendet':'Alle Daten gelöscht')}).catch(fail);return}
   const ed=t.closest('[data-edit]');if(ed)return openForm(VIDEOS.find(v=>v.id===+ed.dataset.edit));
   const del=t.closest('[data-del]');if(del){
     $('#vActions').innerHTML=`<span>Dieses Video wirklich löschen?</span><button class="btn" data-keep="${del.dataset.del}">Nein</button><button class="btn danger solid" data-delyes="${del.dataset.del}">Ja, löschen</button>`;return}
@@ -881,7 +946,7 @@ document.addEventListener('change',e=>{
     const v=VIDEOS.find(x=>x.id===openId);if(!v)return;
     const k=e.target.name.slice(3);
     v.weights=v.weights||{};if(+e.target.value>1)v.weights[k]=+e.target.value;else delete v.weights[k];
-    renderAll();$('#whyBox').innerHTML=whyHtml(v);updateVideo(v).then(()=>toast('Einschätzung gespeichert')).catch(fail);
+    renderAll();$('#whyBox').innerHTML=whyHtml(v);updateVideo(v).then(()=>toast(DEMO?'Nur in der Vorschau geändert':'Einschätzung gespeichert')).catch(fail);
   }
   else if(id==='flopInput'){const n=parseInt(v,10);if(n>=0){FLOP=n;try{localStorage.setItem('clipradar-flop',n)}catch(e){}renderAll()}}
 });
