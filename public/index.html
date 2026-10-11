@@ -7,294 +7,335 @@
 <title>Clipradar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 :root{
-  --bg:#EDEFF4; --surface:#FFFFFF; --surface-2:#F5F6FA; --ink:#141722; --muted:#5D6375; --line:#DCE0E9;
-  --accent:#3346E0; --accent-ink:#FFFFFF; --accent-soft:rgba(51,70,224,.11);
-  --good:#0F8456; --good-soft:rgba(15,132,86,.12); --bad:#D33A44; --bad-soft:rgba(211,58,68,.11); --warn:#A86A12; --warn-soft:rgba(168,106,18,.13);
-  --display:"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
-  --body:"IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
-  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
-  --r:10px;
+  color-scheme:light;
+  --bg:#F6F7F9; --surface:#FFFFFF; --surface-2:#F1F2F5; --hover:#F4F5F8;
+  --ink:#101217; --ink-2:#3A3F4B; --muted:#646B79; --faint:#9399A5; --line:#E3E5EA; --line-2:#D3D6DD;
+  --accent:#2952CC; --accent-ink:#FFFFFF; --accent-soft:rgba(41,82,204,.08); --accent-mid:rgba(41,82,204,.22);
+  --good:#177A4D; --good-soft:rgba(23,122,77,.09); --bad:#BE3239; --bad-soft:rgba(190,50,57,.08); --warn:#9A6312; --warn-soft:rgba(154,99,18,.09);
+  --tip-bg:#14161B; --tip-ink:#E9EBEF;
+  --sans:"Geist", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r:8px; --r-sm:6px;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
+  :root{
     color-scheme:dark;
-    --bg:#0E1016; --surface:#171A23; --surface-2:#1E2230; --ink:#E8EAF1; --muted:#949AAC; --line:#2A2F3D;
-    --accent:#8190FF; --accent-ink:#0E1016; --accent-soft:rgba(129,144,255,.16);
-    --good:#3FCB8E; --good-soft:rgba(63,203,142,.14); --bad:#FF6B74; --bad-soft:rgba(255,107,116,.14); --warn:#E6AE45; --warn-soft:rgba(230,174,69,.15);
+    --bg:#0B0C0F; --surface:#121418; --surface-2:#181B20; --hover:#1A1D23;
+    --ink:#E8EAEE; --ink-2:#C2C6CE; --muted:#979DA9; --faint:#6D7380; --line:#23262D; --line-2:#30343C;
+    --accent:#7393F2; --accent-ink:#0B0C0F; --accent-soft:rgba(115,147,242,.10); --accent-mid:rgba(115,147,242,.28);
+    --good:#45C08A; --good-soft:rgba(69,192,138,.11); --bad:#F0676E; --bad-soft:rgba(240,103,110,.11); --warn:#DDA548; --warn-soft:rgba(221,165,72,.12);
+    --tip-bg:#E9EBEF; --tip-ink:#14161B;
   }
 }
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#0E1016; --surface:#171A23; --surface-2:#1E2230; --ink:#E8EAF1; --muted:#949AAC; --line:#2A2F3D;
-  --accent:#8190FF; --accent-ink:#0E1016; --accent-soft:rgba(129,144,255,.16);
-  --good:#3FCB8E; --good-soft:rgba(63,203,142,.14); --bad:#FF6B74; --bad-soft:rgba(255,107,116,.14); --warn:#E6AE45; --warn-soft:rgba(230,174,69,.15);
-}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5}
-h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.01em}
-h1{font-size:28px}
-h2{font-size:18px}
-h3{font-size:15px}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.011em;text-wrap:balance}
+h1{font-size:20px}
+h2{font-size:14px}
+h3{font-size:13px}
 p{margin:0}
 button,input,select{font:inherit;color:inherit}
-.num,td.n,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 a{color:var(--accent)}
+.num,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg text{font-family:var(--mono);font-size:10.5px;fill:var(--faint)}
 
-.app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
-.side{background:var(--surface);border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:26px;position:sticky;top:0;height:100vh}
-.brand{font-family:var(--display);font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px}
-.brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.brand small{font-family:var(--mono);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
-nav{display:flex;flex-direction:column;gap:2px}
-nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:500}
-nav a:hover{background:var(--surface-2);color:var(--ink)}
-nav a.on{background:var(--accent-soft);color:var(--accent)}
-nav a svg{width:17px;height:17px;flex:none}
-.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--muted)}
-.side-foot label{font-weight:500;color:var(--ink)}
-.side-foot input{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--surface-2);font-family:var(--mono)}
-.side-actions a.btn{text-decoration:none;color:var(--ink)}
-.loading{color:var(--muted);padding:40px 0}
-.demo-banner{max-width:1180px;margin-bottom:20px;background:var(--warn-soft);border:1px solid var(--warn);border-radius:var(--r);padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
-.demo-banner p{color:var(--ink)}
-
-main{padding:28px 32px 60px;min-width:0}
-.view{display:flex;flex-direction:column;gap:20px;max-width:1180px}
-.view-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
-.view-head p{color:var(--muted);margin-top:4px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
-.card-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-.card-head p{color:var(--muted);font-size:13px;margin-top:2px}
+/* Layout */
+.app{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+.side{background:var(--surface);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;padding:0 8px;letter-spacing:-.01em}
+.brand svg{width:22px;height:22px;flex:none}
+nav{display:flex;flex-direction:column;gap:1px}
+nav a{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:var(--r-sm);color:var(--muted);text-decoration:none;font-weight:500;font-size:13.5px}
+nav a:hover{background:var(--hover);color:var(--ink)}
+nav a.on{background:var(--surface-2);color:var(--ink)}
+nav a svg{width:16px;height:16px;flex:none;opacity:.85}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:0 4px}
+.field-mini{display:flex;flex-direction:column;gap:5px}
+.field-mini input{width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);font-family:var(--mono);font-size:13px}
+.side-note{font-size:12px;color:var(--faint)}
+.side-actions{display:flex;flex-direction:column;gap:6px}
+.side-actions .btn{justify-content:center}
+main{padding:28px 32px 64px;min-width:0}
+.view{display:flex;flex-direction:column;gap:16px;max-width:1200px}
+.view-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
+.view-head .meta{color:var(--muted);font-size:13px;margin-top:2px}
 .grid{display:grid;gap:16px}
 .g-kpi{grid-template-columns:repeat(4,minmax(0,1fr))}
-.g-2{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.g-2{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
 .g-2e{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.title-row{display:flex;align-items:center;gap:6px;min-width:0}
+.label{font-size:12px;font-weight:500;color:var(--muted)}
 
-.kpi{display:flex;flex-direction:column;gap:6px}
-.kpi .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
-.kpi .val{font-family:var(--display);font-size:30px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
-.kpi .sub{font-size:12px;color:var(--muted)}
-.progress{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
-.progress span{display:block;height:100%;background:var(--accent);border-radius:3px}
+/* Info-Tooltips */
+.info{display:inline-grid;place-items:center;width:16px;height:16px;padding:0;border:none;background:none;color:var(--faint);cursor:help;border-radius:50%;flex:none;vertical-align:middle}
+.info:hover,.info[aria-expanded="true"]{color:var(--ink)}
+.info svg{width:14px;height:14px}
+#tip{position:fixed;z-index:50;max-width:340px;background:var(--tip-bg);color:var(--tip-ink);font-size:12.5px;line-height:1.55;padding:10px 12px;border-radius:var(--r-sm);box-shadow:0 8px 28px rgba(0,0,0,.22);pointer-events:none}
+#tip p+p,#tip p+ul,#tip ul+p{margin-top:6px}
+#tip ul{margin:6px 0 0;padding-left:16px}
+#tip b{font-weight:600}
 
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
-.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.pill.flop{background:var(--bad-soft);color:var(--bad)}
-.pill.gut{background:var(--accent-soft);color:var(--accent)}
-.pill.viral{background:var(--good-soft);color:var(--good)}
-.chip{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);white-space:nowrap}
-
-.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:500}
-.btn:hover{border-color:var(--muted)}
+/* Buttons & Controls */
+.btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:var(--r-sm);border:1px solid var(--line-2);background:var(--surface);cursor:pointer;font-weight:500;font-size:13px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn:hover{background:var(--hover)}
+.btn svg{width:14px;height:14px}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.primary:hover{filter:brightness(1.08)}
-.btn.link{border:none;background:none;color:var(--accent);padding:4px 0}
-select.ctl,input.ctl{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);max-width:100%}
-.ctl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.ctl-row label{font-size:12px;color:var(--muted)}
-
-/* insights */
-.ins-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.ins{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 4px;border-top:1px solid var(--line);cursor:pointer;border-radius:6px}
-.ins:first-child{border-top:none}
-.ins:hover{background:var(--surface-2)}
-.ins .dir{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:700}
-.ins .dir.up{background:var(--good-soft);color:var(--good)}
-.ins .dir.down{background:var(--bad-soft);color:var(--bad)}
-.ins p{font-size:14px}
-.ins small{display:block;color:var(--muted);font-size:12px;margin-top:2px;font-family:var(--mono)}
-.conf{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 7px;border-radius:5px;white-space:nowrap}
-.conf.stark{background:var(--accent);color:var(--accent-ink)}
-.conf.mittel{background:var(--accent-soft);color:var(--accent)}
-.conf.schwach{border:1px dashed var(--line);color:var(--muted)}
-.caveat{font-size:12px;color:var(--muted);margin-top:10px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.seg button{border:none;background:var(--surface);padding:6px 12px;cursor:pointer;font-size:13px}
-.seg button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
-
-/* bars */
-.bars{display:flex;flex-direction:column;gap:9px}
-.bar-row{display:grid;grid-template-columns:minmax(90px,170px) minmax(0,1fr) 62px;gap:12px;align-items:center}
-.bar-row .name{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar-row .name small{display:block;font-weight:400;color:var(--muted);font-size:11px;font-family:var(--mono)}
-.track{position:relative;height:22px;background:var(--surface-2);border-radius:5px}
-.track .fill{position:absolute;inset:0 auto 0 0;border-radius:5px;background:var(--accent)}
-.track .fill.low{background:var(--muted);opacity:.45}
-.track .avg{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.55}
-.bar-row .v{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
-.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:12px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-
-/* heatmap */
-.scroll-x{overflow-x:auto}
-table.heat{border-collapse:separate;border-spacing:3px;font-size:12px}
-table.heat th{font-weight:500;color:var(--muted);padding:4px 6px;text-align:left;white-space:nowrap}
-table.heat thead th{text-align:center;max-width:110px;white-space:normal;line-height:1.2;vertical-align:bottom}
-table.heat td{min-width:78px;height:46px;border-radius:6px;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--ink)}
-table.heat td small{display:block;font-weight:400;font-size:10px;opacity:.75}
-table.heat td.empty{background:var(--surface-2);color:var(--muted);font-weight:400}
-
-/* video table */
-table.vt{width:100%;border-collapse:collapse;font-size:13px}
-table.vt th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
-table.vt th.n,table.vt td.n{text-align:right}
-table.vt th .arr{opacity:.8}
-table.vt td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
-table.vt tbody tr{cursor:pointer}
-table.vt tbody tr:hover{background:var(--surface-2)}
-.vt .t{font-weight:500;max-width:360px}
-.vt .t small{display:block;color:var(--muted);font-weight:400;font-size:12px}
-
-.recent{display:flex;flex-direction:column}
-.recent-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:9px 4px;border-top:1px solid var(--line);cursor:pointer;border-radius:6px}
-.recent-row:first-child{border-top:none}
-.recent-row:hover{background:var(--surface-2)}
-.recent-row .t{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.recent-row .t small{display:block;color:var(--muted);font-weight:400;font-size:12px}
-
-.dist{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin:6px 0 10px}
-.dist span{display:block;height:100%}
-
-/* streamer */
-.g-str{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
-.str{cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:border-color .15s}
-.str:hover{border-color:var(--accent)}
-.str-top{display:flex;align-items:center;gap:10px}
-.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;background:var(--accent-soft);color:var(--accent);flex:none}
-.str-top small{display:block;color:var(--muted);font-size:12px}
-.str-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.str-stats div{display:flex;flex-direction:column}
-.str-stats b{font-family:var(--mono);font-size:16px;font-variant-numeric:tabular-nums}
-.str-stats span{font-size:11px;color:var(--muted)}
-.spark{display:flex;align-items:flex-end;gap:2px;height:38px}
-.spark i{flex:1;border-radius:2px 2px 0 0;min-height:3px}
-.str dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:0;font-size:13px}
-.str dt{color:var(--muted)}
-.str dd{margin:0;font-weight:500}
-
-/* drawer */
-.scrim{position:fixed;inset:0;background:rgba(10,12,20,.42);z-index:20}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--surface);z-index:21;border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-20px 0 50px rgba(0,0,0,.15)}
-.drawer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:20px 22px 14px;padding-top:calc(20px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line)}
-.drawer-head p{color:var(--muted);font-size:13px;margin-top:4px}
-.drawer-body{overflow-y:auto;padding:18px 22px 40px;display:flex;flex-direction:column;gap:20px}
-.x{border:none;background:var(--surface-2);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;line-height:1;flex:none}
-.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.mgrid div{background:var(--surface);padding:10px 12px;display:flex;flex-direction:column}
-.mgrid span{font-size:11px;color:var(--muted)}
-.mgrid b{font-family:var(--mono);font-size:16px;font-variant-numeric:tabular-nums;font-weight:500}
-.tags{display:flex;flex-wrap:wrap;gap:6px}
-.tags .chip b{font-weight:500;color:var(--muted);margin-right:4px}
-.why{border-radius:10px;padding:16px;background:var(--surface-2);display:flex;flex-direction:column;gap:12px}
-.verdict{font-family:var(--display);font-size:17px;font-weight:700}
-.fac{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.fac li{display:grid;grid-template-columns:18px 1fr;gap:8px;font-size:13px}
-.fac li::before{font-weight:700}
-.fac.pos li::before{content:"+";color:var(--good)}
-.fac.neg li::before{content:"–";color:var(--bad)}
-.fac small{color:var(--muted);font-family:var(--mono);font-size:11px}
-.why h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-family:var(--body);font-weight:600}
-
-/* form */
-form{display:flex;flex-direction:column;gap:22px}
-fieldset{border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
-legend{font-family:var(--display);font-weight:700;font-size:15px;padding:0;margin-bottom:10px}
-.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.f{display:flex;flex-direction:column;gap:5px;min-width:0}
-.f > label,.f > .flabel{font-size:12px;font-weight:500;color:var(--muted)}
-.f input[type=text],.f input[type=number],.f input[type=datetime-local],.f input[type=url]{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);width:100%}
-.f input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
-.f.full{grid-column:1/-1}
-.opts{display:flex;flex-wrap:wrap;gap:6px}
-.opts label{cursor:pointer}
-.opts input{position:absolute;opacity:0;pointer-events:none}
-.opts span{display:inline-block;padding:5px 11px;border-radius:7px;border:1px solid var(--line);font-size:13px;background:var(--surface)}
-.opts input:checked + span{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
-.opts input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
-.form-actions{display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:-40px;background:var(--surface);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
-.err{color:var(--bad);font-size:13px}
-
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:30;font-weight:500}
-
-svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
-
-.btn.danger{color:var(--bad);border-color:var(--bad-soft)}
-.btn.danger:hover{border-color:var(--bad)}
+.btn.primary:hover{filter:brightness(1.07);background:var(--accent)}
+.btn.ghost{border-color:transparent;background:none;color:var(--muted);padding:0 6px}
+.btn.ghost:hover{color:var(--ink);background:var(--hover)}
+.btn.danger{color:var(--bad)}
 .btn.danger.solid{background:var(--bad);border-color:var(--bad);color:#fff}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.side-actions{display:flex;flex-direction:column;gap:6px}
-.side-actions .btn{justify-content:center;font-size:13px;padding:7px 10px}
-.empty-state{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:30px 24px}
-.empty-state p{color:var(--muted);max-width:52ch}
-.empty-msg{color:var(--muted);padding:12px 4px}
+.ctl{height:32px;padding:0 10px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);font-size:13px;max-width:100%}
+select.ctl{padding-right:28px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23878d99' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:14px}
+.ctl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;padding:2px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line)}
+.seg button{border:none;background:none;height:26px;padding:0 10px;border-radius:4px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;height:32px;padding:0 10px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);cursor:pointer}
+.toggle input{accent-color:var(--accent);margin:0}
 
-/* Gewichtung */
-.wrows{display:flex;flex-direction:column}
-.wrow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;padding:7px 0;border-top:1px solid var(--line)}
+/* KPIs */
+.kpi{display:flex;flex-direction:column;gap:4px}
+.kpi .val{font-size:26px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:4px}
+.kpi .sub{font-size:12px;color:var(--muted)}
+.progress{height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden;margin-top:6px}
+.progress span{display:block;height:100%;background:var(--accent)}
+
+/* Status */
+.badge{display:inline-block;font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:4px;white-space:nowrap;border:1px solid transparent}
+.badge.flop{background:var(--bad-soft);color:var(--bad)}
+.badge.gut{background:var(--surface-2);color:var(--ink-2);border-color:var(--line)}
+.badge.viral{background:var(--good-soft);color:var(--good)}
+.tagchip{display:inline-flex;gap:5px;font-size:12px;padding:3px 8px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);white-space:nowrap}
+.tagchip b{font-weight:500;color:var(--muted)}
+.wbadge{font-size:11px;font-weight:500;padding:0 6px;border-radius:4px;background:var(--accent-soft);color:var(--accent);margin-left:6px;white-space:nowrap}
+
+/* Trend-Chart */
+.trend-total{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:10px}
+.trend-total .big{font-size:24px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.delta{font-size:12.5px;font-weight:500}
+.delta.up{color:var(--good)} .delta.down{color:var(--bad)} .delta.flat{color:var(--muted)}
+.chart-wrap{position:relative}
+.chart-empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px}
+
+/* Erkenntnisse */
+.ins-list{list-style:none;margin:0;padding:0}
+.ins{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:12px;align-items:start;padding:11px 6px;border-top:1px solid var(--line);cursor:pointer}
+.ins:first-child{border-top:none}
+.ins:hover{background:var(--hover)}
+.ins .dir{width:20px;height:20px;display:grid;place-items:center;margin-top:1px}
+.ins .dir svg{width:16px;height:16px}
+.ins .dir.up{color:var(--good)} .ins .dir.down{color:var(--bad)}
+.ins p{font-size:13.5px;color:var(--ink-2)}
+.ins p b{color:var(--ink);font-weight:600}
+.ins small{display:block;color:var(--faint);font-size:12px;margin-top:2px;font-family:var(--mono)}
+.conf{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap;margin-top:2px}
+.meter{display:inline-flex;align-items:flex-end;gap:2px;height:11px}
+.meter i{display:block;width:3px;border-radius:1px;background:var(--line-2)}
+.meter i:nth-child(1){height:5px}.meter i:nth-child(2){height:8px}.meter i:nth-child(3){height:11px}
+.meter[data-l="1"] i:nth-child(-n+1),.meter[data-l="2"] i:nth-child(-n+2),.meter[data-l="3"] i:nth-child(-n+3){background:var(--accent)}
+.more{display:flex;justify-content:center;padding-top:10px;border-top:1px solid var(--line);margin-top:2px}
+.empty-msg{color:var(--muted);padding:10px 4px;font-size:13px}
+
+/* Balken */
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:grid;grid-template-columns:minmax(100px,190px) minmax(0,1fr) 64px;gap:12px;align-items:center}
+.bar-row .name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row .name small{display:block;font-weight:400;color:var(--faint);font-size:11.5px;font-family:var(--mono)}
+.track{position:relative;height:18px;background:var(--surface-2);border-radius:3px}
+.track .fill{position:absolute;inset:0 auto 0 0;border-radius:3px;background:var(--accent)}
+.track .fill.low{background:var(--faint);opacity:.4}
+.track .avg{position:absolute;top:-3px;bottom:-3px;width:1.5px;background:var(--ink);opacity:.6}
+.bar-row .v{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* Heatmap */
+.scroll-x{overflow-x:auto}
+table.heat{border-collapse:separate;border-spacing:2px;font-size:12px}
+table.heat th{font-weight:500;color:var(--muted);padding:4px 6px;text-align:left;white-space:nowrap}
+table.heat thead th{text-align:center;max-width:110px;white-space:normal;line-height:1.25;vertical-align:bottom}
+table.heat td{min-width:74px;height:42px;border-radius:4px;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+table.heat td small{display:block;font-size:10px;opacity:.7}
+table.heat td.empty{background:var(--surface-2);color:var(--faint)}
+
+/* Tabelle */
+table.vt{width:100%;border-collapse:collapse;font-size:13px}
+table.vt th{text-align:left;font-size:12px;color:var(--muted);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+table.vt th:hover{color:var(--ink)}
+table.vt th.n,table.vt td.n{text-align:right}
+table.vt td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.vt td.n{font-family:var(--mono);font-variant-numeric:tabular-nums}
+table.vt tbody tr{cursor:pointer}
+table.vt tbody tr:hover{background:var(--hover)}
+.vt .t{font-weight:500;max-width:380px}
+.vt .t small{display:block;color:var(--faint);font-weight:400;font-size:12px}
+.vt .d{white-space:nowrap;font-family:var(--mono);font-size:12.5px}
+.vt .d span{color:var(--faint)}
+.table-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;font-size:12px;color:var(--muted)}
+
+/* Listen */
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:9px 6px;border-top:1px solid var(--line);cursor:pointer}
+.row:first-child{border-top:none}
+.row:hover{background:var(--hover)}
+.row .t{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.row .t small{display:block;color:var(--faint);font-weight:400;font-size:12px}
+.dist{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;margin:4px 0 10px}
+.dist span{display:block;height:100%}
+.sub-head{font-size:12px;font-weight:500;color:var(--muted);margin:20px 0 4px}
+
+/* Streamer */
+.g-str{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.str{cursor:pointer;display:flex;flex-direction:column;gap:14px}
+.str:hover{border-color:var(--line-2);background:var(--hover)}
+.str-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.str-top small{display:block;color:var(--faint);font-size:12px;font-weight:400}
+.str-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.str-stats div{display:flex;flex-direction:column}
+.str-stats b{font-family:var(--mono);font-size:15px;font-weight:500;font-variant-numeric:tabular-nums}
+.str-stats span{font-size:11.5px;color:var(--muted)}
+.spark{display:flex;align-items:flex-end;gap:2px;height:32px}
+.spark i{flex:1;border-radius:1px;min-height:2px}
+.str dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:12.5px}
+.str dt{color:var(--muted)}
+.str dd{margin:0;font-weight:500;text-align:right}
+.str dd span{color:var(--faint);font-family:var(--mono);font-weight:400;margin-left:4px}
+
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(8,10,14,.38);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);background:var(--surface);z-index:21;border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-16px 0 48px rgba(0,0,0,.14)}
+.drawer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 22px 14px;padding-top:calc(18px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line)}
+.drawer-head h2{font-size:16px}
+.drawer-head .meta{color:var(--muted);font-size:12.5px;margin-top:4px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.drawer-body{overflow-y:auto;padding:18px 22px 40px;display:flex;flex-direction:column;gap:22px}
+.x{border:none;background:none;width:30px;height:30px;border-radius:var(--r-sm);cursor:pointer;color:var(--muted);display:grid;place-items:center;flex:none}
+.x:hover{background:var(--hover);color:var(--ink)}
+.x svg{width:16px;height:16px}
+.section-title{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden}
+.mgrid div{background:var(--surface);padding:9px 12px;display:flex;flex-direction:column}
+.mgrid span{font-size:11.5px;color:var(--muted)}
+.mgrid b{font-family:var(--mono);font-size:14.5px;font-weight:500;font-variant-numeric:tabular-nums}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.why{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:12px;background:var(--surface-2)}
+.verdict{font-size:15px;font-weight:600}
+.fac{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.fac li{display:grid;grid-template-columns:14px 1fr;gap:8px;font-size:13px}
+.fac li::before{font-family:var(--mono);font-weight:500}
+.fac.pos li::before{content:"+";color:var(--good)}
+.fac.neg li::before{content:"−";color:var(--bad)}
+.fac small,.belief small{display:block;color:var(--muted);font-size:12px}
+.fac-head{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
+.belief{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.belief li{display:grid;grid-template-columns:18px 1fr;gap:8px;font-size:13px}
+.belief .ic{font-family:var(--mono);font-weight:600;text-align:center}
+.belief .ic.ok{color:var(--good)} .belief .ic.no{color:var(--warn)} .belief .ic.na{color:var(--faint)}
+
+/* Formular */
+form{display:flex;flex-direction:column;gap:26px}
+fieldset{border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px;min-width:0}
+legend{padding:0;margin-bottom:12px;width:100%}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.f.full{grid-column:1/-1}
+.flabel{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--ink-2)}
+.flabel small{color:var(--faint);font-weight:400}
+.inp{height:34px;padding:0 10px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);width:100%;font-size:13.5px}
+.inp:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+input[type=number].inp{font-family:var(--mono)}
+.combo{position:relative;display:flex}
+.combo .inp{border-top-right-radius:0;border-bottom-right-radius:0}
+.combo-btn{flex:none;width:34px;height:34px;border:1px solid var(--line-2);border-left:none;border-radius:0 var(--r-sm) var(--r-sm) 0;background:var(--surface-2);cursor:pointer;color:var(--muted);display:grid;place-items:center}
+.combo-btn:hover,.combo-btn[aria-expanded="true"]{color:var(--ink);background:var(--hover)}
+.combo-btn svg{width:14px;height:14px}
+.combo-menu{position:absolute;top:calc(100% + 4px);right:0;z-index:5;min-width:100%;max-height:260px;overflow-y:auto;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-sm);box-shadow:0 10px 30px rgba(0,0,0,.14);padding:4px}
+.combo-menu .mh{font-size:11px;font-weight:500;color:var(--faint);padding:6px 8px 4px;text-transform:uppercase;letter-spacing:.05em}
+.combo-menu button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;border:none;background:none;padding:6px 8px;border-radius:4px;cursor:pointer;font-size:13px}
+.combo-menu button:hover{background:var(--hover)}
+.combo-menu button .ck{color:var(--accent);font-size:12px}
+.combo-menu .none{padding:6px 8px;color:var(--muted);font-size:12.5px}
+.opts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.opts label{cursor:pointer;position:relative}
+.opts input{position:absolute;opacity:0;pointer-events:none}
+.opts span{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:var(--r-sm);border:1px solid var(--line-2);font-size:13px;background:var(--surface)}
+.opts label:hover span{background:var(--hover)}
+.opts input:checked + span{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:500}
+.opts input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+.chip-add{width:28px;height:28px;border-radius:var(--r-sm);border:1px dashed var(--line-2);background:none;cursor:pointer;color:var(--muted);display:grid;place-items:center;padding:0}
+.chip-add:hover{color:var(--ink);border-color:var(--muted)}
+.chip-add svg{width:13px;height:13px}
+.chip-input{height:28px;width:150px;padding:0 9px;border:1px solid var(--accent);border-radius:var(--r-sm);background:var(--surface);font-size:13px;outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.wrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-sm)}
+.wrow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;padding:7px 10px;border-top:1px solid var(--line)}
 .wrow:first-child{border-top:none}
 .wl{font-size:13px;font-weight:500}
-.wl small{font-weight:400;color:var(--muted);margin-left:4px}
-.wseg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.wseg label{cursor:pointer}
+.wl small{font-weight:400;color:var(--faint);margin-left:6px}
+.wseg{display:inline-flex;padding:2px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line)}
+.wseg label{cursor:pointer;position:relative}
 .wseg input{position:absolute;opacity:0;pointer-events:none}
-.wseg span{display:block;padding:4px 10px;font-size:12px;background:var(--surface);border-left:1px solid var(--line)}
-.wseg label:first-child span{border-left:none}
-.wseg input:checked + span{background:var(--surface-2);font-weight:600}
-.wseg input[value="2"]:checked + span{background:var(--accent-soft);color:var(--accent)}
+.wseg span{display:block;padding:2px 9px;font-size:12px;border-radius:4px;color:var(--muted)}
+.wseg input:checked + span{background:var(--surface);color:var(--ink);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.wseg input[value="2"]:checked + span{color:var(--accent)}
 .wseg input[value="3"]:checked + span{background:var(--accent);color:var(--accent-ink)}
-.wseg input:focus-visible + span{outline:2px solid var(--accent);outline-offset:-2px}
-.hint{font-size:12px;color:var(--muted)}
-.belief{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.belief li{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:13px}
-.belief .ic{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:700}
-.belief .ic.ok{background:var(--good-soft);color:var(--good)}
-.belief .ic.no{background:var(--warn-soft);color:var(--warn)}
-.belief .ic.na{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
-.belief small{display:block;color:var(--muted);font-size:12px}
-.wbadge{font-size:11px;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--accent-soft);color:var(--accent);margin-left:4px;white-space:nowrap}
-.toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 12px}
-.toggle input{accent-color:var(--accent);width:16px;height:16px}
+.wseg input:focus-visible + span{outline:2px solid var(--accent)}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:-40px;background:var(--surface);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+.err{color:var(--bad);font-size:13px}
 
-@media (max-width:980px){
+/* Sonstiges */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tip-bg);color:var(--tip-ink);padding:9px 14px;border-radius:var(--r-sm);z-index:40;font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.demo-banner{max-width:1200px;margin-bottom:16px;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:var(--r);padding:10px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+.demo-banner .title-row b{font-weight:600}
+.empty-state{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:28px 24px}
+.empty-state p{color:var(--muted);max-width:56ch}
+.loading{color:var(--muted);padding:40px 0}
+
+@media (max-width:1000px){
   .g-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
   .g-2,.g-2e{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:760px){
   .app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}
-  .side{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:10;flex-direction:column;gap:10px;padding:12px 16px;border-right:none;border-bottom:1px solid var(--line)}
+  .side{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:10;gap:10px;padding:12px 16px;border-right:none;border-bottom:1px solid var(--line)}
+  .brand{padding:0}
   nav{flex-direction:row;overflow-x:auto}
-  nav a{padding:7px 10px;white-space:nowrap}
+  nav a{white-space:nowrap}
   nav a svg{display:none}
   .side-foot{display:none}
-  main{padding:20px 16px 60px}
-  h1{font-size:23px}
-  .bar-row{grid-template-columns:minmax(80px,110px) minmax(0,1fr) 54px;gap:8px}
+  main{padding:20px 16px 64px}
+  .bar-row{grid-template-columns:minmax(80px,120px) minmax(0,1fr) 54px;gap:8px}
   .fgrid{grid-template-columns:minmax(0,1fr)}
   .mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .kpi .val{font-size:25px}
+  .kpi .val{font-size:22px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="side">
-    <div class="brand"><span class="dot"></span>Clipradar</div>
+    <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="var(--ink)"/><path d="M7 16v-3M12 16V8M17 16v-5.5" stroke="var(--surface)" stroke-width="2.2" stroke-linecap="round"/></svg>Clipradar</div>
     <nav id="nav">
-      <a href="#uebersicht" data-tab="uebersicht"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Übersicht</a>
-      <a href="#videos" data-tab="videos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor"/></svg>Videos</a>
-      <a href="#analyse" data-tab="analyse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analyse</a>
-      <a href="#streamer" data-tab="streamer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Streamer</a>
+      <a href="#uebersicht" data-tab="uebersicht"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="8" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="5" rx="1.5"/><rect x="13.5" y="11.5" width="7" height="9" rx="1.5"/><rect x="3.5" y="14.5" width="7" height="6" rx="1.5"/></svg>Übersicht</a>
+      <a href="#videos" data-tab="videos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor" stroke="none"/></svg>Videos</a>
+      <a href="#analyse" data-tab="analyse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V11M10 20V5M16 20v-7M21 20H3"/></svg>Analyse</a>
+      <a href="#streamer" data-tab="streamer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1.4-3.6 4-5.5 7-5.5s5.6 1.9 7 5.5"/></svg>Streamer</a>
     </nav>
     <div class="side-foot">
-      <label for="flopInput">Flop-Grenze (Views nach 24 h)</label>
-      <input id="flopInput" type="number" min="0" step="500" value="9000">
-      <p class="hint" id="dataNote"></p>
+      <div class="field-mini">
+        <div class="title-row"><label class="label" for="flopInput">Flop-Grenze</label><span data-info="flop"></span></div>
+        <input id="flopInput" type="number" min="0" step="500" value="9000">
+      </div>
+      <p class="side-note" id="dataNote"></p>
       <div class="side-actions">
         <button class="btn danger" data-clear>Alles löschen</button>
         <a class="btn" href="/api/logout">Abmelden</a>
@@ -302,7 +343,10 @@ svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
     </div>
   </aside>
   <main>
-    <div class="demo-banner" id="demoBanner" hidden><p><b>Du siehst Beispieldaten.</b> 72 erfundene Videos zum Ausprobieren. Änderungen daran werden nicht gespeichert.</p><div class="ctl-row"><button class="btn" data-demo-off>Beispieldaten ausblenden</button><button class="btn primary" data-new>Eigenes Video eintragen</button></div></div>
+    <div class="demo-banner" id="demoBanner" hidden>
+      <div class="title-row"><b>Beispieldaten</b><span style="color:var(--muted)">· nichts davon wird gespeichert</span><span data-info="demo"></span></div>
+      <div class="ctl-row"><button class="btn" data-demo-off>Ausblenden</button><button class="btn primary" data-new>Eigenes Video eintragen</button></div>
+    </div>
     <section class="view" id="view-uebersicht"></section>
     <section class="view" id="view-videos" hidden></section>
     <section class="view" id="view-analyse" hidden></section>
@@ -311,10 +355,11 @@ svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
 </div>
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" hidden>
-  <div class="drawer-head"><div><h2 id="drawerTitle"></h2><p id="drawerSub"></p></div><button class="x" id="drawerClose" aria-label="Schließen">×</button></div>
+  <div class="drawer-head"><div><h2 id="drawerTitle"></h2><div class="meta" id="drawerSub"></div></div><button class="x" id="drawerClose" aria-label="Schließen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
   <div class="drawer-body" id="drawerBody"></div>
 </aside>
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<div id="tip" role="tooltip" hidden></div>
 
 <script>
 /* ---------- Helpers ---------- */
@@ -332,7 +377,16 @@ const timeStr=d=>`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes(
 let FLOP=9000; const VIRAL=100000;
 const status=v=>v.views<FLOP?'flop':v.views>=VIRAL?'viral':'gut';
 const STATUS_LABEL={flop:'Flop',gut:'Gut',viral:'Viral'};
-const pill=v=>`<span class="pill ${status(v)}">${STATUS_LABEL[status(v)]}</span>`;
+const badge=v=>`<span class="badge ${status(v)}">${STATUS_LABEL[status(v)]}</span>`;
+const ICON={
+  info:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.2v4"/><circle cx="8" cy="4.9" r=".55" fill="currentColor" stroke="none"/></svg>',
+  up:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4.5 11.5l7-7M6 4.5h5.5V10"/></svg>',
+  down:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4.5 4.5l7 7M11.5 6v5.5H6"/></svg>',
+  plus:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M3 8h10"/></svg>',
+  chev:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>'
+};
+const info=k=>`<button type="button" class="info" data-tip="${k}" aria-label="Erklärung anzeigen" aria-expanded="false">${ICON.info}</button>`;
+const titled=(tag,text,k)=>`<div class="title-row"><${tag}>${text}</${tag}>${k?info(k):''}</div>`;
 
 /* ---------- Beispieldaten (mit eingebauten Mustern) ---------- */
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -398,7 +452,7 @@ async function api(method,path,body){
   if(!r.ok)throw new Error((await r.text())||('Fehler '+r.status));
   return r.status===204?null:r.json();
 }
-const toData=v=>{const {id,...rest}=v;return {...rest,date:v.date.toISOString()}};
+const toData=v=>{const {id,link,...rest}=v;return {...rest,date:v.date.toISOString()}};
 const NUM_FIELDS=['views','follower','likes','comments','shares','saves','avgWatch','totalWatch','completion','ret3','laenge','pointe'];
 const TEXT_DEFAULTS={title:'Ohne Titel',spiel:'Unbekannt',thema:'Unbekannt',hook:'Unbekannt',sound:'Originalton',emotion:'unbekannt',overlay:'keins',untertitel:'nein',audio:'nur Original',stimmung:'gemischt'};
 const fromRow=r=>{
@@ -418,6 +472,7 @@ function fail(e){console.error(e);toast('Speichern fehlgeschlagen: '+e.message)}
 /* ---------- Gewichtung ---------- */
 const WEIGHTS=[{v:1,l:'normal'},{v:2,l:'wichtig'},{v:3,l:'Hauptgrund'}];
 const WLABEL={2:'wichtig',3:'Hauptgrund'};
+const FACTOR={1:1,2:1.25,3:1.75};
 const WKEYS=[{k:'streamer',l:'Streamer'},{k:'spiel',l:'Spiel'},{k:'thema',l:'Thema'},{k:'hook',l:'Hook'},{k:'emotion',l:'Emotion'},{k:'overlay',l:'Text-Overlay'},
   {k:'untertitel',l:'Untertitel'},{k:'audio',l:'Audio'},{k:'sound',l:'Sound'},{k:'upload',l:'Uploadzeitpunkt'},{k:'laenge',l:'Videolänge'},{k:'pointe',l:'Zeit bis zur Pointe'}];
 function tagValue(v,k){
@@ -458,15 +513,15 @@ const NUM=[
   {k:'hour',l:'Upload-Uhrzeit',g:v=>v.date.getHours()+v.date.getMinutes()/60,phrase:'Je später am Tag du hochlädst'},
   {k:'avgWatch',l:'Ø Wiedergabedauer (s)',g:v=>v.avgWatch,phrase:'Je länger die durchschnittliche Wiedergabedauer'}
 ];
-/* Gewichteter Median: ein Video mit Gewicht 3 zählt wie drei Videos */
+/* Gewichteter Median: ein Video mit Gewicht 1,75 zählt wie 1,75 Videos */
 function wmedian(vals,ws){
   if(!vals.length)return 0;
   const p=vals.map((v,i)=>[v,ws[i]]).sort((a,b)=>a[0]-b[0]),tot=p.reduce((s,x)=>s+x[1],0);let c=0;
-  for(let i=0;i<p.length;i++){c+=p[i][1];if(c>tot/2)return p[i][0];if(c===tot/2&&p[i+1])return(p[i][0]+p[i+1][0])/2}
+  for(let i=0;i<p.length;i++){c+=p[i][1];if(c>tot/2+1e-9)return p[i][0];if(Math.abs(c-tot/2)<1e-9&&p[i+1])return(p[i][0]+p[i+1][0])/2}
   return p[p.length-1][0];
 }
 const ONE=()=>1;
-const W=(v,f)=>S.useWeights&&f&&f.wk?(v.weights&&v.weights[f.wk])||1:1;
+const W=(v,f)=>S.useWeights&&f&&f.wk?FACTOR[(v.weights&&v.weights[f.wk])||1]||1:1;
 const wm=(vs,get,wf)=>wmedian(vs.map(get),vs.map(wf));
 const METRICS={
   views:{l:'Median-Views (24 h)',f:(vs,wf=ONE)=>wm(vs,v=>v.views,wf),fmt:short},
@@ -482,6 +537,7 @@ function ranks(a){const idx=a.map((v,i)=>[v,i]).sort((x,y)=>x[0]-y[0]);const r=n
 function pearson(x,y){const n=x.length;if(n<3)return 0;const mx=x.reduce((a,b)=>a+b)/n,my=y.reduce((a,b)=>a+b)/n;let sxy=0,sx=0,sy=0;for(let i=0;i<n;i++){sxy+=(x[i]-mx)*(y[i]-my);sx+=(x[i]-mx)**2;sy+=(y[i]-my)**2}return sx&&sy?sxy/Math.sqrt(sx*sy):0}
 const spearman=(x,y)=>pearson(ranks(x),ranks(y));
 const confOf=s=>s>=2.5?'stark':s>=1.3?'mittel':'schwach';
+const CONF_LEVEL={stark:3,mittel:2,schwach:1};
 const MIN_N=4;
 
 function computeInsights(mk){
@@ -504,7 +560,7 @@ function computeInsights(mk){
     const up=best.ratio>=1;
     const eff=up?`<b class="num">${dec(best.ratio)}×</b> so viele ${unit}`:`<b class="num">${Math.round((1-best.ratio)*100)} %</b> weniger ${unit}`;
     out.push({field:f.k,up,score:best.score,conf:confOf(best.score),
-      html:`${esc(f.l)} <b>„${esc(best.name)}“</b> bringt ${eff} als der Rest${best.mk&&S.useWeights?`<span class="wbadge">${best.mk}× von dir markiert</span>`:''}`,
+      html:`${esc(f.l)} <b>„${esc(best.name)}“</b> bringt ${eff} als der Rest${best.mk&&S.useWeights?`<span class="wbadge">${best.mk}× markiert</span>`:''}`,
       detail:`Median ${fmt(best.a)} vs. ${fmt(best.b)} · ${best.n} vs. ${best.rn} Videos`});
   }
   for(const nf of NUM){
@@ -519,9 +575,9 @@ function computeInsights(mk){
 }
 function insightList(items){
   return `<ul class="ins-list">${items.map(it=>`<li class="ins" tabindex="0" ${it.field?`data-field="${it.field}"`:`data-num="${it.num}"`}>
-    <span class="dir ${it.up?'up':'down'}">${it.up?'▲':'▼'}</span>
+    <span class="dir ${it.up?'up':'down'}">${it.up?ICON.up:ICON.down}</span>
     <div><p>${it.html}</p><small>${it.detail}</small></div>
-    <span class="conf ${it.conf}">${it.conf}</span></li>`).join('')}</ul>`;
+    <span class="conf"><span class="meter" data-l="${CONF_LEVEL[it.conf]}"><i></i><i></i><i></i></span>${it.conf}</span></li>`).join('')}</ul>`;
 }
 
 function explain(v){
@@ -537,7 +593,7 @@ function explain(v){
       facs.push({f,txt:`${f.l} „${val}“`,r,n:vs.length,ok});
     }
   }
-  const tag=x=>{const w=v.weights&&v.weights[x.f.wk];return w>1?` <span class="wbadge">${WLABEL[w]}</span>`:''};
+  const tag=x=>{const w=v.weights&&v.weights[x.f.wk];return w>1?`<span class="wbadge">${WLABEL[w]}</span>`:''};
   const good=facs.filter(x=>x.ok);
   const pos=good.filter(x=>x.r>1.2).sort((a,b)=>b.r-a.r).slice(0,4).map(x=>({t:esc(x.txt)+tag(x),d:`läuft bei dir ${dec(x.r)}× so gut wie der Rest · ${x.n} Videos`}));
   const neg=good.filter(x=>x.r<.83).sort((a,b)=>a.r-b.r).slice(0,4).map(x=>({t:esc(x.txt)+tag(x),d:`läuft bei dir ${Math.round((1-x.r)*100)} % schlechter · ${x.n} Videos`}));
@@ -560,17 +616,113 @@ function explain(v){
   return {pos,neg,verdict,allMed,beliefs};
 }
 
+/* ---------- Erklärungen (ⓘ) ---------- */
+const TIPS={
+  flop:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>Flop</b> gilt. Aktuell: unter ${fmt(FLOP)} Views.</p><p>Die Grenze beeinflusst die Flop-Quote, die Einfärbung in allen Grafiken und die Status-Spalte. Ab 100.000 Views gilt ein Video als <b>viral</b>, alles dazwischen als <b>gut</b>.</p><p>Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
+  demo:`<p>Du siehst <b>72 erfundene Videos</b>, damit du ausprobieren kannst, wie Clipradar Zusammenhänge erkennt. In die Daten sind absichtlich Muster eingebaut, z. B. dass Untertitel helfen und eine späte Pointe schadet.</p><p>Die Beispieldaten landen <b>nie in deiner Datenbank</b>. Änderungen daran sind nur eine Vorschau. Sie verschwinden, wenn du sie ausblendest, die Seite neu lädst oder dein erstes eigenes Video einträgst.</p>`,
+  empty:`<p>Trag jedes Video <b>24 Stunden nach dem Upload</b> ein. Die Zahlen findest du in TikTok Studio unter dem jeweiligen Video.</p><p>Ab etwa 10 Videos erscheinen erste Muster, ab 20 bis 50 Videos werden die Ergebnisse verlässlich.</p><p>Mit den <b>Beispieldaten</b> siehst du vorher, wie die Auswertung aussieht. Sie werden nicht gespeichert.</p>`,
+  kpiFollower:`<p>Summe der <b>neuen Follower</b> aus allen eingetragenen Videos, jeweils der Wert nach 24 Stunden aus TikTok Studio.</p><p>Der Balken zeigt den Fortschritt zu deinem Ziel von <b>10.000 Followern</b>.</p><p>Follower, die später als 24 Stunden nach dem Upload oder direkt über dein Profil dazukommen, sind nicht enthalten. Deine echte Followerzahl kann deshalb höher sein.</p>`,
+  kpiMedian:`<p>Der <b>Median</b> ist der mittlere Wert: Die Hälfte deiner Videos hat mehr Views, die andere Hälfte weniger.</p><p>Anders als der Durchschnitt wird der Median nicht von einzelnen Viral-Hits verzerrt. Ein Video mit 400.000 Views würde den Durchschnitt stark nach oben ziehen, den Median kaum.</p>`,
+  kpiFlop:()=>`<p>Anteil deiner Videos, die nach 24 Stunden unter der Flop-Grenze von <b>${fmt(FLOP)} Views</b> lagen.</p><p>Die Grenze kannst du links unten in der Seitenleiste ändern.</p>`,
+  kpiVideos:`<p>Anzahl aller eingetragenen Videos.</p><p>Die Zahl pro Woche ist der Durchschnitt zwischen deinem ersten und deinem letzten eingetragenen Video.</p>`,
+  trend:`<p>Zeigt, wie sich <b>neue Follower</b>, <b>Views</b> oder <b>Likes</b> im gewählten Zeitraum aufsummieren. Die Linie steigt an den Tagen, an denen du Videos hochgeladen hast.</p><p>Gezählt wird jedes Video mit seinen Werten nach 24 Stunden, einsortiert nach dem <b>Upload-Datum</b>. Spätere Views nach den ersten 24 Stunden sind nicht enthalten, weil du nur den 24-Stunden-Stand einträgst.</p><p>Die Prozentzahl vergleicht mit dem gleich langen Zeitraum direkt davor, z. B. die letzten 30 Tage mit den 30 Tagen davor.</p>`,
+  dist:()=>`<p>Verteilung deiner Videos nach ihrem Ergebnis nach 24 Stunden:</p><ul><li><b>Flop:</b> unter ${fmt(FLOP)} Views</li><li><b>Gut:</b> ${fmt(FLOP)} bis 99.999 Views</li><li><b>Viral:</b> ab 100.000 Views</li></ul><p>Darunter siehst du das Video mit den meisten Views aus den letzten 7 Tagen deiner Einträge.</p>`,
+  insightsShort:`<p>Die drei stärksten Muster, die Clipradar in deinen Daten gefunden hat. Ein grüner Pfeil bedeutet: Videos mit dieser Eigenschaft laufen besser als der Rest, ein roter: schlechter.</p><p>Wie die Erkennung genau funktioniert, steht im Tab <b>Analyse</b>.</p>`,
+  recent:`<p>Deine zuletzt hochgeladenen Videos. Ein Klick öffnet die Details mit allen Zahlen, deinen Tags und der Auswertung „Warum lief es so?“.</p>`,
+  videos:`<p>Alle eingetragenen Videos mit ihren Werten nach 24 Stunden.</p><ul><li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, ein zweiter Klick dreht die Reihenfolge um.</li><li><b>Suchen</b> durchsucht Titel, Spiel, Sound, Hook, Thema und Emotion.</li><li><b>Nach 3 s:</b> wie viel Prozent der Zuschauer nach 3 Sekunden noch dabei waren.</li><li><b>Komplett:</b> wie viel Prozent das Video bis zum Ende angesehen haben.</li></ul><p>Ein Klick auf eine Zeile öffnet die Details. Dort kannst du das Video auch bearbeiten oder löschen.</p>`,
+  insights:`<p>Clipradar vergleicht für jede Eigenschaft, z. B. Hook „Frage“, den <b>Median</b> aller Videos mit dieser Eigenschaft mit dem Median aller anderen Videos.</p><p>Angezeigt wird ein Muster nur, wenn</p><ul><li>beide Gruppen mindestens ${MIN_N} Videos haben und</li><li>der Unterschied mindestens 25 % beträgt.</li></ul><p>Pro Eigenschaft siehst du nur den stärksten Wert. Bei Zahlen wie der Videolänge wird geprüft, ob höhere Werte mit mehr oder weniger Views einhergehen (Rangkorrelation ρ ab 0,2).</p><p><b>Sicherheit:</b> berücksichtigt Größe des Unterschieds und Anzahl der Videos. „Stark“ ist ziemlich sicher kein Zufall, „schwach“ kann noch Zufall sein.</p><p>Ein Zusammenhang ist nicht automatisch die Ursache. Laufen z. B. Papaplatte-Clips besser, kann das auch daran liegen, dass du sie öfter abends postest. Mit den <b>Kombinationen</b> weiter unten kannst du das prüfen.</p><p>Ein Klick auf eine Zeile springt zur passenden Grafik.</p>`,
+  weights:`<p>Bei jedem Video kannst du markieren, woran es deiner Meinung nach lag:</p><ul><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Die Gewichtung gilt nur für die jeweilige Eigenschaft. Markierst du bei einem Video den Hook als Hauptgrund, zählt dieses Video beim Vergleich der Hooks 1,75-fach, bei allen anderen Eigenschaften normal.</p><p>Schalte die Gewichtung aus, um die reinen Daten zu sehen. Taucht ein Muster nur mit Gewichtung auf, beruht es vor allem auf deiner Einschätzung.</p>`,
+  compare:`<p>Wählt eine Eigenschaft und eine Kennzahl. Jeder Balken ist eine Gruppe, z. B. jeder Streamer.</p><ul><li>Die <b>senkrechte Linie</b> zeigt den Wert über alle Videos.</li><li><b>Graue Balken</b> beruhen auf weniger als ${MIN_N} Videos und sind noch nicht aussagekräftig.</li><li>Unter dem Namen stehen Anzahl der Videos und Flop-Quote.</li></ul><p><b>Kennzahlen:</b></p><ul><li><b>Median-Views / Median neue Follower:</b> mittlerer Wert der Gruppe</li><li><b>Flop-Quote:</b> Anteil unter der Flop-Grenze, niedriger ist besser</li><li><b>Zuschauer nach 3 s:</b> wie gut der Einstieg hält</li><li><b>Komplett angesehen:</b> wie viele bis zum Ende schauen</li><li><b>Engagement-Rate:</b> (Likes + Kommentare + Shares + Gespeichert) geteilt durch Views</li></ul>`,
+  heat:`<p>Kombiniert zwei Eigenschaften, z. B. Streamer und Hook. Jedes Feld zeigt den Wert für alle Videos, die beides haben, und darunter die Anzahl der Videos.</p><p>Je kräftiger die Farbe, desto besser der Wert. Blasse Felder beruhen auf nur einem Video, ein Strich bedeutet: diese Kombination gibt es noch nicht.</p><p>So findest du z. B. heraus, ob ein Hook bei allen Streamern funktioniert oder nur bei einem.</p>`,
+  scatter:`<p>Jeder Punkt ist ein Video. Waagerecht steht die gewählte Zahl, senkrecht die Views nach 24 Stunden.</p><p>Die Views-Achse ist <b>logarithmisch</b>: Jede Linie bedeutet zehnmal so viele Views. So passen kleine und virale Videos in dieselbe Grafik. Die gestrichelte Linie ist deine Flop-Grenze.</p><p><b>ρ (Rangkorrelation)</b> misst den Zusammenhang von −1 bis +1. Positiv heißt: mehr davon, mehr Views. Negativ: mehr davon, weniger Views. Ab 0,25 ist der Zusammenhang mittel, ab 0,45 deutlich.</p><p>Ein Klick auf einen Punkt öffnet das Video.</p>`,
+  streamer:`<p>Eine Karte pro Streamer, sortiert nach Median-Views. Collab-Videos mit mehreren Streamern zählen bei jedem Beteiligten.</p><ul><li><b>Median-Views:</b> mittlerer Wert seiner Videos</li><li><b>Flops:</b> Anteil unter der Flop-Grenze</li><li><b>Follower:</b> Summe der neuen Follower aus seinen Videos</li><li><b>Balken:</b> Views jedes Videos in zeitlicher Reihenfolge, rot = Flop, grün = viral</li><li><b>Bester Hook, Emotion, Spiel:</b> der Wert mit den höchsten Median-Views, mindestens 2 Videos nötig</li></ul><p>Ein Klick auf eine Karte zeigt alle Videos dieses Streamers.</p>`,
+  why:`<p>Clipradar vergleicht jede Eigenschaft dieses Videos mit deinen anderen Videos.</p><ul><li><b>Hat geholfen:</b> Videos mit dieser Eigenschaft laufen bei dir mindestens 20 % besser als der Rest.</li><li><b>Hat gebremst:</b> mindestens 17 % schlechter.</li><li><b>Einstieg:</b> wenn „Zuschauer nach 3 s“ mindestens 6 Prozentpunkte über oder unter deinem Median liegt.</li></ul><p>Berücksichtigt werden nur Eigenschaften mit mindestens ${MIN_N} Videos.</p><p><b>Deine Einschätzung:</b> Was du als wichtig oder Hauptgrund markiert hast, wird gegen die Daten geprüft. ✓ heißt, die Daten zeigen in dieselbe Richtung wie das Ergebnis dieses Videos. ! heißt, die Daten sehen das bisher nicht.</p>`,
+  weightsVideo:`<p>Markier die Eigenschaften, die deiner Meinung nach für das Ergebnis verantwortlich waren, egal ob gut oder schlecht.</p><ul><li><b>wichtig:</b> zählt in der Analyse 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Änderungen werden sofort gespeichert. Oben unter „Warum lief es so?“ siehst du, ob die Daten deine Einschätzung bestätigen.</p>`,
+  fStudio:`<p>Alle Werte findest du in <b>TikTok Studio</b> bei deinem Video unter <b>Analysen</b>. Trag sie möglichst genau 24 Stunden nach dem Upload ein, damit alle Videos fair verglichen werden.</p><p>Pflicht sind nur die Views, alle anderen Felder sind optional. Je vollständiger, desto mehr kann Clipradar auswerten.</p>`,
+  fViews:`<p>Die Aufrufe nach 24 Stunden, in TikTok Studio unter „Videoaufrufe“.</p>`,
+  fFollower:`<p>Wie viele Leute dir über dieses Video gefolgt sind, in TikTok Studio unter „Neue Follower“.</p>`,
+  fAvg:`<p>„Durchschnittliche Wiedergabedauer“ in Sekunden. Wie lange ein Zuschauer im Schnitt zugeschaut hat.</p><p>Komma oder Punkt als Dezimalzeichen geht beides.</p>`,
+  fTotal:`<p>„Gesamte Wiedergabezeit“ in <b>Stunden</b>. TikTok zeigt sie oft als Stunden:Minuten:Sekunden an. Trag einfach die Stunden ein, gerundet reicht.</p>`,
+  fCompl:`<p>„Video vollständig angesehen“ in Prozent. Wie viele Zuschauer bis zum Ende geschaut haben.</p>`,
+  fRet3:`<p>Lies im <b>Retention-Diagramm</b> (Zuschauerbindung) den Wert bei Sekunde 3 ab: Wie viel Prozent der Zuschauer sind nach 3 Sekunden noch da?</p><p>Das ist die wichtigste Zahl, um zu sehen, ob dein <b>Hook</b> funktioniert.</p>`,
+  fTitle:`<p>Ein kurzer Name, an dem du das Video wiedererkennst. Lässt du ihn leer, wird er aus Streamer und Spiel gebildet.</p>`,
+  fLaenge:`<p>Die Länge des Videos in Sekunden.</p>`,
+  fTags:`<p>Mit diesen Tags findet Clipradar heraus, <b>was</b> deine Videos erfolgreich macht. Ohne Tags gibt es nur Zahlen, aber keine Zusammenhänge.</p><p>Neben den Textfeldern öffnet der Pfeil deine <b>zuletzt verwendeten Antworten</b>. Bei Emotion, Text-Overlay und Kommentarstimmung legst du mit <b>+</b> eine neue Option an.</p><p>Bleib bei den Bezeichnungen einheitlich, z. B. immer „Fortnite“ statt mal „fortnite“, sonst zählt das Tool sie als verschiedene Werte.</p>`,
+  fStreamer:`<p>Wer im Clip zu sehen ist. Bei Collabs mehrere Namen mit Komma trennen. Über den Pfeil fügst du zuletzt verwendete Streamer hinzu.</p><p>Jeder genannte Streamer bekommt das Video in seine Statistik.</p>`,
+  fSpiel:`<p>Welches Spiel oder welche Kategorie im Clip läuft, z. B. Fortnite, GTA RP oder Just Chatting.</p>`,
+  fThema:`<p>Worum es inhaltlich geht, z. B. Fail, Clutch, Reaction, Story, Challenge oder Streit.</p>`,
+  fHook:`<p>Wie die <b>ersten 1–3 Sekunden</b> die Aufmerksamkeit holen, z. B. „Schockmoment zuerst“, „Frage“, „Zitat“, „Cliffhanger“ oder „Direkt rein“ (ohne besonderen Einstieg).</p>`,
+  fSound:`<p>Welcher Sound läuft: „Originalton“ oder der Name des Songs oder Trend-Sounds.</p>`,
+  fPointe:`<p>Nach wie vielen Sekunden der Höhepunkt kommt, also der Lacher, Fail oder krasse Moment. Je später, desto mehr Zuschauer springen vorher ab.</p>`,
+  fEmotion:`<p>Das Hauptgefühl, das der Clip auslöst. Mit <b>+</b> legst du eine neue Emotion an, sie steht danach bei jedem Video zur Auswahl.</p>`,
+  fOverlay:`<p>Ob und welche Art Text am Anfang eingeblendet ist:</p><ul><li><b>Frage:</b> z. B. „Würdest du das machen?“</li><li><b>Aussage:</b> z. B. „Er rastet komplett aus“</li><li><b>Spoiler:</b> verrät, was passiert</li></ul><p>Mit <b>+</b> legst du eine neue Art an.</p>`,
+  fUT:`<p>Ob das Video eingebrannte Untertitel hat.</p>`,
+  fAudio:`<p><b>Nur Original:</b> nur der Ton aus dem Stream. <b>Mit Musik:</b> Musik zusätzlich unterlegt. <b>Trend-Sound:</b> ein gerade angesagter TikTok-Sound.</p>`,
+  fMood:`<p>Überflieg nach 24 Stunden die Kommentare: Sind sie überwiegend positiv, gemischt oder negativ? Mit <b>+</b> legst du eine neue Stimmung an, z. B. „hitzig“.</p><p>Die Stimmung ist eine Folge des Videos, nicht die Ursache. Deshalb taucht sie nicht in den automatischen Erkenntnissen auf, du kannst sie aber im Tab Analyse vergleichen.</p>`,
+  fWeights:`<p>Optional: Was war deiner Meinung nach entscheidend für das Ergebnis, egal ob gut oder schlecht?</p><ul><li><b>wichtig</b> zählt in der Analyse 1,25-fach</li><li><b>Hauptgrund</b> zählt 1,75-fach</li></ul><p>Das kannst du später in den Details des Videos jederzeit ändern.</p>`
+};
+const tipHtml=k=>{const t=TIPS[k];return typeof t==='function'?t():t||''};
+
 /* ---------- State ---------- */
-const S={tab:'uebersicht',sortKey:'date',sortDir:-1,q:'',fStatus:'alle',fStreamer:'alle',
+const S={tab:'uebersicht',sortKey:'date',sortDir:-1,q:'',fStatus:'alle',fStreamer:'alle',vAll:false,insAll:false,
+  trendMetric:'follower',trendRange:'30',
   useWeights:true,insMetric:'views',groupField:'streamer',groupMetric:'views',heatA:'streamer',heatB:'hook',heatMetric:'views',scatterX:'ret3'};
-try{const t=localStorage.getItem('clipradar-tab');if(t)S.tab=t;const f=parseInt(localStorage.getItem('clipradar-flop'),10);if(f>=0)FLOP=f}catch(e){}
+try{
+  const t=localStorage.getItem('clipradar-tab');if(t)S.tab=t;
+  const f=parseInt(localStorage.getItem('clipradar-flop'),10);if(f>=0)FLOP=f;
+  const tr=JSON.parse(localStorage.getItem('clipradar-trend')||'null');if(tr){S.trendMetric=tr.m||S.trendMetric;S.trendRange=tr.r||S.trendRange}
+}catch(e){}
+const remember=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 
 /* ---------- Übersicht ---------- */
 function emptyState(title){
-  return `<div class="view-head"><div><h1>${title}</h1></div></div>
-    <div class="card empty-state"><h2>Noch keine Videos</h2><p>Trag dein erstes Video 24 Stunden nach dem Upload ein. Ab etwa 10 Videos zeigt dir das Tool erste Zusammenhänge.</p>
-    <div class="ctl-row"><button class="btn primary" data-new>+ Video eintragen</button><button class="btn" data-sample>Beispieldaten ansehen</button></div>
-    <p class="hint">Die Beispieldaten sind 72 erfundene Videos. Sie werden nicht gespeichert und verschwinden, sobald du sie ausblendest oder dein erstes eigenes Video einträgst.</p></div>`;
+  return `<div class="view-head"><h1>${title}</h1></div>
+    <div class="card empty-state">${titled('h2','Noch keine Videos','empty')}<p>Trag dein erstes Video ein oder sieh dir an, wie Clipradar mit Beispieldaten aussieht.</p>
+    <div class="ctl-row"><button class="btn primary" data-new>${ICON.plus}Video eintragen</button><button class="btn" data-sample>Beispieldaten ansehen</button></div></div>`;
+}
+const TRENDS={follower:{l:'Neue Follower',get:v=>v.follower},views:{l:'Views',get:v=>v.views},likes:{l:'Likes',get:v=>v.likes}};
+const RANGES=[['7','Letzte 7 Tage','7 Tagen'],['30','Letzte 30 Tage','30 Tagen'],['90','Letzte 3 Monate','3 Monaten'],['180','Letzte 6 Monate','6 Monaten'],['365','Letztes Jahr','12 Monaten']];
+function trendData(){
+  const days=+S.trendRange,get=TRENDS[S.trendMetric].get;
+  const end=new Date();end.setHours(0,0,0,0);end.setDate(end.getDate()+1);
+  const start=new Date(end);start.setDate(start.getDate()-days);
+  const prevStart=new Date(start);prevStart.setDate(prevStart.getDate()-days);
+  const buckets=new Array(days).fill(0);let prev=0,n=0;
+  for(const v of VIDEOS){
+    if(v.date>=start&&v.date<end){buckets[Math.max(0,Math.min(days-1,Math.floor((v.date-start)/864e5)))]+=get(v);n++}
+    else if(v.date>=prevStart&&v.date<start)prev+=get(v);
+  }
+  let c=0;const cum=[0,...buckets.map(b=>c+=b)];
+  return {days,start,cum,total:c,prev,n};
+}
+function niceScale(max){
+  if(max<=0)return {step:1,top:4};
+  const raw=max/4,p=10**Math.floor(Math.log10(raw)),m=raw/p;
+  const step=Math.max(1,(m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p);
+  return {step,top:Math.ceil(max/step)*step};
+}
+function trendChart(d){
+  const W=680,H=210,pl=46,pr=12,pt=10,pb=24;
+  const {step,top}=niceScale(d.total);
+  const x=i=>pl+i/d.days*(W-pl-pr),y=v=>pt+(1-v/top)*(H-pt-pb);
+  const line=d.cum.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+  const area=`${line}L${x(d.days)},${y(0)}L${x(0)},${y(0)}Z`;
+  const yt=[];for(let v=0;v<=top+1e-9;v+=step)yt.push(v);
+  const nx=d.days<=7?d.days:5,xt=[];for(let i=0;i<nx;i++)xt.push(Math.round(i*(d.days-1)/(nx-1||1)));
+  const lbl=i=>{const t=new Date(d.start);t.setDate(t.getDate()+i);return dateStr(t)};
+  return `<div class="chart-wrap"><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${TRENDS[S.trendMetric].l}: ${fmt(d.total)} im Zeitraum">
+    ${yt.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="var(--line)"/><text x="${pl-8}" y="${(y(t)+3.5).toFixed(1)}" text-anchor="end">${short(t)}</text>`).join('')}
+    ${xt.map((i,k)=>`<text x="${x(i+.5).toFixed(1)}" y="${H-6}" text-anchor="${k===0&&nx>2?'start':k===xt.length-1&&nx>2?'end':'middle'}">${lbl(i)}</text>`).join('')}
+    <path d="${area}" fill="var(--accent-soft)"/>
+    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linejoin="round"/>
+    <circle cx="${x(d.days)}" cy="${y(d.total)}" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"/>
+  </svg>${d.n?'':'<div class="chart-empty">Keine Videos in diesem Zeitraum</div>'}</div>`;
+}
+function renderTrend(){
+  const d=trendData(),r=RANGES.find(x=>x[0]===S.trendRange);
+  let delta='<span class="delta flat">kein Vergleichszeitraum</span>';
+  if(d.prev>0){const ch=(d.total-d.prev)/d.prev*100;delta=`<span class="delta ${ch>0.5?'up':ch<-0.5?'down':'flat'}">${ch>0?'+':''}${dec(ch,0)} % ggü. den ${r[2]} davor</span>`}
+  $('#trendBody').innerHTML=`<div class="trend-total"><span class="big">${fmt(d.total)}</span><span class="label">${TRENDS[S.trendMetric].l} · ${d.n} Video${d.n===1?'':'s'}</span>${delta}</div>${trendChart(d)}`;
 }
 function renderOverview(){
   if(!VIDEOS.length){$('#view-uebersicht').innerHTML=emptyState('Übersicht');return}
@@ -579,71 +731,63 @@ function renderOverview(){
   const med=median(vs.map(v=>v.views));
   const flops=vs.filter(v=>status(v)==='flop').length,viral=vs.filter(v=>status(v)==='viral').length,gut=vs.length-flops-viral;
   const weeks=Math.max(1,(vs[vs.length-1].date-vs[0].date)/(7*864e5));
-  const ins=computeInsights('views').slice(0,4);
+  const ins=computeInsights('views').slice(0,3);
   const best=[...vs].filter(v=>v.date>=new Date(vs[vs.length-1].date.getTime()-7*864e5)).sort((a,b)=>b.views-a.views)[0];
   $('#view-uebersicht').innerHTML=`
-    <div class="view-head"><div><h1>Übersicht</h1><p>${dateStr(vs[0].date)} bis ${dateStr(vs[vs.length-1].date)} 2026 · alle Werte nach 24 h</p></div>
-      <button class="btn primary" data-new>+ Video eintragen</button></div>
+    <div class="view-head"><div><h1>Übersicht</h1><p class="meta">${dateStr(vs[0].date)} ${vs[0].date.getFullYear()} bis ${dateStr(vs[vs.length-1].date)} ${vs[vs.length-1].date.getFullYear()}</p></div>
+      <button class="btn primary" data-new>${ICON.plus}Video eintragen</button></div>
     <div class="grid g-kpi">
-      <div class="card kpi"><span class="lbl">Neue Follower</span><span class="val">${fmt(totalF)}</span>
+      <div class="card kpi">${kpiTitle('Neue Follower','kpiFollower')}<span class="val">${fmt(totalF)}</span>
         <div class="progress" aria-label="Fortschritt zum Ziel"><span style="width:${Math.min(100,totalF/100)}%"></span></div>
-        <span class="sub">${dec(totalF/100)} % vom Ziel 10.000</span></div>
-      <div class="card kpi"><span class="lbl">Median-Views</span><span class="val">${short(med)}</span><span class="sub">pro Video nach 24 h</span></div>
-      <div class="card kpi"><span class="lbl">Flop-Quote</span><span class="val">${pct(flops/vs.length*100)}</span><span class="sub">${flops} von ${vs.length} unter ${fmt(FLOP)} Views</span></div>
-      <div class="card kpi"><span class="lbl">Videos</span><span class="val">${vs.length}</span><span class="sub">ca. ${Math.round(vs.length/weeks)} pro Woche</span></div>
+        <span class="sub">${dec(totalF/100)} % von 10.000</span></div>
+      <div class="card kpi">${kpiTitle('Median-Views','kpiMedian')}<span class="val">${short(med)}</span><span class="sub">pro Video nach 24 h</span></div>
+      <div class="card kpi">${kpiTitle('Flop-Quote','kpiFlop')}<span class="val">${pct(flops/vs.length*100)}</span><span class="sub">${flops} von ${vs.length} unter ${fmt(FLOP)}</span></div>
+      <div class="card kpi">${kpiTitle('Videos','kpiVideos')}<span class="val">${vs.length}</span><span class="sub">ca. ${Math.round(vs.length/weeks)} pro Woche</span></div>
     </div>
     <div class="grid g-2">
-      <div class="card"><div class="card-head"><div><h2>Follower-Wachstum</h2><p>Neue Follower aus deinen Videos, aufaddiert</p></div></div>${lineChart(vs)}</div>
-      <div class="card"><div class="card-head"><div><h2>Flop, Gut, Viral</h2><p>Verteilung deiner Videos</p></div></div>
-        <div class="dist"><span style="flex:${flops};background:var(--bad)"></span><span style="flex:${gut};background:var(--accent)"></span><span style="flex:${viral};background:var(--good)"></span></div>
-        <div class="legend" style="margin-top:0"><span><i style="background:var(--bad)"></i>Flop ${flops}</span><span><i style="background:var(--accent)"></i>Gut ${gut}</span><span><i style="background:var(--good)"></i>Viral (ab 100k) ${viral}</span></div>
-        ${best?`<div style="margin-top:22px"><p class="kpi"><span class="lbl">Bestes Video der letzten 7 Tage</span></p>
-        <div class="recent-row" data-vid="${best.id}" style="padding-left:0"><div class="t">${esc(best.title)}<small>${dateStr(best.date)} · ${timeStr(best.date)} Uhr</small></div><span class="num">${short(best.views)}</span>${pill(best)}</div></div>`:''}
+      <div class="card">
+        <div class="card-head">${titled('h2','Entwicklung','trend')}
+          <div class="ctl-row"><div class="seg" role="group" aria-label="Kennzahl">${Object.entries(TRENDS).map(([k,t])=>`<button data-trend="${k}" class="${S.trendMetric===k?'on':''}">${k==='follower'?'Follower':t.l}</button>`).join('')}</div>
+          <select class="ctl" id="trendRange" aria-label="Zeitraum">${RANGES.map(([k,l])=>`<option value="${k}" ${S.trendRange===k?'selected':''}>${l}</option>`).join('')}</select></div>
+        </div>
+        <div id="trendBody"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">${titled('h2','Ergebnisse','dist')}</div>
+        <div class="dist"><span style="flex:${flops};background:var(--bad)"></span><span style="flex:${gut};background:var(--faint);opacity:.55"></span><span style="flex:${viral};background:var(--good)"></span></div>
+        <div class="legend" style="margin-top:0"><span><i style="background:var(--bad)"></i>Flop ${flops}</span><span><i style="background:var(--faint);opacity:.55"></i>Gut ${gut}</span><span><i style="background:var(--good)"></i>Viral ${viral}</span></div>
+        ${best?`<p class="sub-head">Bestes Video der letzten 7 Tage</p>
+        <div class="row" data-vid="${best.id}"><div class="t">${esc(best.title)}<small>${dateStr(best.date)} · ${timeStr(best.date)} Uhr</small></div><span class="num">${short(best.views)}</span>${badge(best)}</div>`:''}
       </div>
     </div>
     <div class="grid g-2e">
-      <div class="card"><div class="card-head"><div><h2>Was gerade auffällt</h2><p>Automatisch aus deinen Daten erkannt</p></div><a class="btn link" href="#analyse">Alle Erkenntnisse →</a></div>${ins.length?insightList(ins):'<p class="empty-msg">Noch keine deutlichen Muster. Je mehr Videos du einträgst, desto mehr erkennt das Tool.</p>'}</div>
-      <div class="card"><div class="card-head"><div><h2>Letzte Videos</h2><p>Klick für Details und „Warum lief es so?“</p></div><a class="btn link" href="#videos">Alle Videos →</a></div>
-        <div class="recent">${[...vs].reverse().slice(0,6).map(v=>`<div class="recent-row" data-vid="${v.id}"><div class="t">${esc(v.title)}<small>${dateStr(v.date)} · ${timeStr(v.date)} Uhr · ${v.follower} Follower</small></div><span class="num">${short(v.views)}</span>${pill(v)}</div>`).join('')}</div></div>
+      <div class="card"><div class="card-head">${titled('h2','Was gerade auffällt','insightsShort')}<a class="btn ghost" href="#analyse">Alle Erkenntnisse</a></div>${ins.length?insightList(ins):'<p class="empty-msg">Noch keine deutlichen Muster.</p>'}</div>
+      <div class="card"><div class="card-head">${titled('h2','Letzte Videos','recent')}<a class="btn ghost" href="#videos">Alle Videos</a></div>
+        <div class="rows">${[...vs].reverse().slice(0,6).map(v=>`<div class="row" data-vid="${v.id}"><div class="t">${esc(v.title)}<small>${dateStr(v.date)} · ${timeStr(v.date)} Uhr · ${fmt(v.follower)} Follower</small></div><span class="num">${short(v.views)}</span>${badge(v)}</div>`).join('')}</div></div>
     </div>`;
+  renderTrend();
 }
-function lineChart(vs){
-  const W=640,H=220,pl=44,pr=14,pt=12,pb=26;
-  let cum=0;const pts=vs.map(v=>(cum+=v.follower,{t:v.date.getTime(),y:cum}));
-  const t0=pts[0].t,t1=pts[pts.length-1].t;
-  const step=cum>0?Math.pow(10,Math.floor(Math.log10(cum)))/2:5;const ymax=Math.max(step,Math.ceil(cum/step)*step);
-  const x=t=>pl+(t-t0)/(t1-t0||1)*(W-pl-pr),y=v=>pt+(1-v/ymax)*(H-pt-pb);
-  const line=pts.map((p,i)=>`${i?'L':'M'}${x(p.t).toFixed(1)},${y(p.y).toFixed(1)}`).join('');
-  const area=`${line}L${x(t1)},${y(0)}L${x(t0)},${y(0)}Z`;
-  const ticks=[0,.25,.5,.75,1].map(f=>ymax*f);
-  const xt=t1>t0?[0,1/3,2/3,1].map(f=>new Date(t0+(t1-t0)*f)):[new Date(t0)];
-  const last=pts[pts.length-1];
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Follower-Wachstum, insgesamt ${fmt(cum)}">
-    ${ticks.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-8}" y="${y(t)+4}" text-anchor="end">${short(t)}</text>`).join('')}
-    ${xt.map((d,i)=>`<text x="${x(d.getTime())}" y="${H-6}" text-anchor="${i===0?'start':i===xt.length-1?'end':'middle'}">${dateStr(d)}</text>`).join('')}
-    <path d="${area}" fill="var(--accent-soft)"/>
-    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/>
-    <circle cx="${x(last.t)}" cy="${y(last.y)}" r="4.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>
-  </svg>`;
-}
+function kpiTitle(text,k){return `<div class="title-row"><span class="label">${text}</span>${info(k)}</div>`}
 
 /* ---------- Videos ---------- */
 const COLS=[
   {k:'date',l:'Upload',v:v=>v.date.getTime()},
-  {k:'title',l:'Video',v:v=>v.title},
+  {k:'title',l:'Video',v:v=>v.title.toLowerCase()},
   {k:'views',l:'Views',n:1,v:v=>v.views},
   {k:'follower',l:'Follower',n:1,v:v=>v.follower},
   {k:'ret3',l:'Nach 3 s',n:1,v:v=>v.ret3},
   {k:'completion',l:'Komplett',n:1,v:v=>v.completion},
   {k:'status',l:'Status',v:v=>v.views}
 ];
+const VLIMIT=10;
 function renderVideos(){
+  if(!VIDEOS.length){$('#view-videos').innerHTML=emptyState('Videos');return}
   const strs=[...groups(catByKey('streamer')).keys()].sort();
   $('#view-videos').innerHTML=`
-    <div class="view-head"><div><h1>Videos</h1><p>Alle Videos mit den Werten nach 24 h</p></div><div class="ctl-row"><button class="btn danger" data-clear ${VIDEOS.length?'':'disabled'}>Alles löschen</button><button class="btn primary" data-new>+ Video eintragen</button></div></div>
+    <div class="view-head">${titled('h1','Videos','videos')}<div class="ctl-row"><button class="btn danger" data-clear>Alles löschen</button><button class="btn primary" data-new>${ICON.plus}Video eintragen</button></div></div>
     <div class="card">
-      <div class="ctl-row" style="margin-bottom:14px">
-        <input class="ctl" id="vq" type="search" placeholder="Suchen (Titel, Spiel, Sound …)" value="${esc(S.q)}" style="flex:1;min-width:180px">
+      <div class="ctl-row" style="margin-bottom:12px">
+        <input class="ctl" id="vq" type="search" placeholder="Suchen …" value="${esc(S.q)}" style="flex:1;min-width:180px">
         <select class="ctl" id="vstatus" aria-label="Status filtern">${['alle','flop','gut','viral'].map(s=>`<option value="${s}" ${S.fStatus===s?'selected':''}>${s==='alle'?'Alle Status':STATUS_LABEL[s]}</option>`).join('')}</select>
         <select class="ctl" id="vstreamer" aria-label="Streamer filtern"><option value="alle">Alle Streamer</option>${strs.map(s=>`<option ${S.fStreamer===s?'selected':''}>${esc(s)}</option>`).join('')}</select>
       </div>
@@ -653,47 +797,50 @@ function renderVideos(){
 }
 function renderVideoTable(){
   const q=S.q.toLowerCase();
-  let list=VIDEOS.filter(v=>(S.fStatus==='alle'||status(v)===S.fStatus)&&(S.fStreamer==='alle'||v.streamers.includes(S.fStreamer))&&
+  const list=VIDEOS.filter(v=>(S.fStatus==='alle'||status(v)===S.fStatus)&&(S.fStreamer==='alle'||v.streamers.includes(S.fStreamer))&&
     (!q||[v.title,v.spiel,v.sound,v.hook,v.thema,v.emotion].join(' ').toLowerCase().includes(q)));
   const col=COLS.find(c=>c.k===S.sortKey);
   list.sort((a,b)=>{const x=col.v(a),y=col.v(b);return (x>y?1:x<y?-1:0)*S.sortDir});
-  $('#vtable').innerHTML=`<table class="vt"><thead><tr>${COLS.map(c=>`<th class="${c.n?'n':''}" data-sort="${c.k}">${c.l} <span class="arr">${S.sortKey===c.k?(S.sortDir>0?'↑':'↓'):''}</span></th>`).join('')}</tr></thead>
-    <tbody>${list.map(v=>`<tr data-vid="${v.id}"><td class="mono" style="white-space:nowrap">${dateStr(v.date)}<br><span style="color:var(--muted)">${timeStr(v.date)}</span></td>
-      <td class="t">${esc(v.title)}<small>${esc(v.hook)} · ${esc(v.emotion)} · ${v.laenge} s</small></td>
-      <td class="n">${fmt(v.views)}</td><td class="n">${fmt(v.follower)}</td><td class="n">${v.ret3} %</td><td class="n">${v.completion} %</td><td>${pill(v)}</td></tr>`).join('')}
-    ${list.length?'':`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">Keine Videos passen zu diesem Filter.</td></tr>`}</tbody></table>
-    <p class="caveat">${list.length} von ${VIDEOS.length} Videos</p>`;
+  const shown=S.vAll?list:list.slice(0,VLIMIT);
+  $('#vtable').innerHTML=`<table class="vt"><thead><tr>${COLS.map(c=>`<th class="${c.n?'n':''}" data-sort="${c.k}">${c.l}${S.sortKey===c.k?(S.sortDir>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead>
+    <tbody>${shown.map(v=>`<tr data-vid="${v.id}"><td class="d">${dateStr(v.date)}<br><span>${timeStr(v.date)}</span></td>
+      <td class="t">${esc(v.title)}<small>${esc(v.streamers.join(', '))} · ${esc(v.hook)} · ${v.laenge} s</small></td>
+      <td class="n">${fmt(v.views)}</td><td class="n">${fmt(v.follower)}</td><td class="n">${v.ret3} %</td><td class="n">${v.completion} %</td><td>${badge(v)}</td></tr>`).join('')}
+    ${list.length?'':`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px">Keine Videos passen zu diesem Filter.</td></tr>`}</tbody></table>
+    <div class="table-foot"><span>${shown.length} von ${list.length} Video${list.length===1?'':'s'}${list.length<VIDEOS.length?` (gefiltert, insgesamt ${VIDEOS.length})`:''}</span>
+      ${list.length>VLIMIT?`<button class="btn" data-vall>${S.vAll?'Weniger anzeigen':`Alle ${list.length} Videos anzeigen`}</button>`:''}</div>`;
 }
 
 /* ---------- Analyse ---------- */
-const catOptions=(sel,excl)=>CAT.filter(f=>f.k!==excl).map(f=>`<option value="${f.k}" ${f.k===sel?'selected':''}>${f.l}</option>`).join('');
+const catOptions=sel=>CAT.map(f=>`<option value="${f.k}" ${f.k===sel?'selected':''}>${f.l}</option>`).join('');
 const metricOptions=sel=>Object.entries(METRICS).map(([k,m])=>`<option value="${k}" ${k===sel?'selected':''}>${m.l}</option>`).join('');
+const ILIMIT=5;
 function renderAnalyse(){
-  if(VIDEOS.length<3){$('#view-analyse').innerHTML=VIDEOS.length?`<div class="view-head"><div><h1>Analyse</h1></div></div><div class="card empty-state"><h2>Noch zu wenig Videos</h2><p>Du hast ${VIDEOS.length} Video${VIDEOS.length>1?'s':''} eingetragen. Ab 3 Videos startet die Analyse, wirklich aussagekräftig wird sie ab etwa 20.</p><button class="btn primary" data-new>+ Video eintragen</button></div>`:emptyState('Analyse');return}
-  const ins=computeInsights(S.insMetric);
+  if(VIDEOS.length<3){$('#view-analyse').innerHTML=VIDEOS.length?`<div class="view-head"><h1>Analyse</h1></div><div class="card empty-state"><h2>Noch zu wenig Videos</h2><p>Die Analyse startet ab 3 Videos und wird ab etwa 20 aussagekräftig. Du hast ${VIDEOS.length} eingetragen.</p><button class="btn primary" data-new>${ICON.plus}Video eintragen</button></div>`:emptyState('Analyse');return}
+  const ins=computeInsights(S.insMetric),shown=S.insAll?ins:ins.slice(0,ILIMIT);
   const nMarked=VIDEOS.filter(v=>Object.values(v.weights||{}).some(w=>w>1)).length;
   $('#view-analyse').innerHTML=`
-    <div class="view-head"><div><h1>Analyse</h1><p>Finde heraus, was deine Videos erfolgreich macht</p></div>
-      <label class="toggle" title="Videos, bei denen du eine Eigenschaft als wichtig (zählt doppelt) oder Hauptgrund (zählt dreifach) markiert hast, fließen bei dieser Eigenschaft stärker ein."><input type="checkbox" id="useW" ${S.useWeights?'checked':''}> Meine Gewichtung einbeziehen <span class="mono" style="color:var(--muted)">${nMarked} Videos markiert</span></label></div>
+    <div class="view-head"><h1>Analyse</h1>
+      <div class="ctl-row"><label class="toggle"><input type="checkbox" id="useW" ${S.useWeights?'checked':''}>Meine Gewichtung <span class="mono" style="color:var(--faint)">${nMarked}</span></label>${info('weights')}</div></div>
     <div class="card">
-      <div class="card-head"><div><h2>Automatische Erkenntnisse</h2><p>Das Tool vergleicht jede Eigenschaft mit dem Rest deiner Videos. Klick auf eine Zeile für die Details.</p></div>
+      <div class="card-head">${titled('h2','Automatische Erkenntnisse','insights')}
         <div class="seg" role="group" aria-label="Bezogen auf"><button data-insm="views" class="${S.insMetric==='views'?'on':''}">Views</button><button data-insm="follower" class="${S.insMetric==='follower'?'on':''}">Neue Follower</button></div></div>
-      ${ins.length?insightList(ins):'<p class="empty-msg">Noch keine deutlichen Muster gefunden.</p>'}
-      <p class="caveat">${S.useWeights?'Deine Gewichtung ist eingerechnet: „wichtig“ zählt doppelt, „Hauptgrund“ dreifach. ':''}Sicherheit: <b>stark</b> = großer Unterschied bei vielen Videos, <b>schwach</b> = könnte Zufall sein. Ein Zusammenhang ist nicht automatisch die Ursache. Je mehr Videos du einträgst, desto verlässlicher werden die Ergebnisse.</p>
+      ${ins.length?insightList(shown):'<p class="empty-msg">Noch keine deutlichen Muster gefunden.</p>'}
+      ${ins.length>ILIMIT?`<div class="more"><button class="btn" data-insall>${S.insAll?'Weniger anzeigen':`Weitere ${ins.length-ILIMIT} Erkenntnisse anzeigen`}</button></div>`:''}
     </div>
     <div class="card" id="cmpCard">
-      <div class="card-head"><div><h2>Vergleichen</h2><p>Wie schneiden die Gruppen einer Eigenschaft ab?</p></div>
+      <div class="card-head">${titled('h2','Vergleichen','compare')}
         <div class="ctl-row"><select class="ctl" id="gField" aria-label="Eigenschaft">${catOptions(S.groupField)}</select><select class="ctl" id="gMetric" aria-label="Kennzahl">${metricOptions(S.groupMetric)}</select></div></div>
       <div id="bars"></div>
     </div>
     <div class="grid g-2e">
       <div class="card">
-        <div class="card-head"><div><h2>Kombinationen</h2><p>Zwei Eigenschaften zusammen, z. B. welcher Hook bei welchem Streamer zieht</p></div></div>
-        <div class="ctl-row" style="margin-bottom:12px"><select class="ctl" id="hA" aria-label="Zeilen">${catOptions(S.heatA)}</select><span style="color:var(--muted)">×</span><select class="ctl" id="hB" aria-label="Spalten">${catOptions(S.heatB)}</select><select class="ctl" id="hM" aria-label="Kennzahl">${metricOptions(S.heatMetric)}</select></div>
+        <div class="card-head">${titled('h2','Kombinationen','heat')}</div>
+        <div class="ctl-row" style="margin-bottom:12px"><select class="ctl" id="hA" aria-label="Zeilen">${catOptions(S.heatA)}</select><span style="color:var(--faint)">×</span><select class="ctl" id="hB" aria-label="Spalten">${catOptions(S.heatB)}</select><select class="ctl" id="hM" aria-label="Kennzahl">${metricOptions(S.heatMetric)}</select></div>
         <div class="scroll-x" id="heat"></div>
       </div>
       <div class="card" id="scCard">
-        <div class="card-head"><div><h2>Zahlen-Zusammenhänge</h2><p>Hängt eine Zahl mit deinen Views zusammen?</p></div></div>
+        <div class="card-head">${titled('h2','Zahlen-Zusammenhänge','scatter')}</div>
         <div class="ctl-row" style="margin-bottom:12px"><select class="ctl" id="sX" aria-label="Zahl">${NUM.map(n=>`<option value="${n.k}" ${n.k===S.scatterX?'selected':''}>${n.l}</option>`).join('')}</select></div>
         <div id="scatter"></div>
       </div>
@@ -707,10 +854,10 @@ function renderBars(){
   rows.sort((a,b)=>(m.lowerBetter?a.val-b.val:b.val-a.val));
   const overall=m.f(VIDEOS,wf),max=Math.max(overall,...rows.map(r=>r.val))*1.05||1;
   $('#bars').innerHTML=`<div class="bars">${rows.map(r=>`<div class="bar-row">
-      <div class="name" title="${esc(r.name)}">${esc(r.name)}<small>${r.n} Videos${r.n<MIN_N?' · zu wenig Daten':''}${r.mk&&S.useWeights?` · ${r.mk}× markiert`:''}${S.groupMetric!=='flop'?` · ${pct(r.flop)} Flops`:''}</small></div>
+      <div class="name" title="${esc(r.name)}">${esc(r.name)}<small>${r.n} Videos${r.mk&&S.useWeights?` · ${r.mk}× markiert`:''}${S.groupMetric!=='flop'?` · ${pct(r.flop)} Flops`:''}</small></div>
       <div class="track"><div class="fill ${r.n<MIN_N?'low':''}" style="width:${r.val/max*100}%"></div><div class="avg" style="left:${overall/max*100}%"></div></div>
       <div class="v">${m.fmt(r.val)}</div></div>`).join('')}</div>
-    <div class="legend"><span><i style="background:var(--accent)"></i>${m.l}</span><span><i style="background:var(--ink);opacity:.55;width:2px"></i>Alle Videos: ${m.fmt(overall)}</span><span><i style="background:var(--muted);opacity:.45"></i>Unter ${MIN_N} Videos, noch nicht aussagekräftig</span></div>`;
+    <div class="legend"><span><i style="background:var(--accent)"></i>${m.l}</span><span><i style="background:var(--ink);opacity:.6;width:2px"></i>Alle Videos: ${m.fmt(overall)}</span><span><i style="background:var(--faint);opacity:.4"></i>unter ${MIN_N} Videos</span></div>`;
 }
 function renderHeat(){
   const A=catByKey(S.heatA),B=catByKey(S.heatB),m=METRICS[S.heatMetric];
@@ -720,11 +867,11 @@ function renderHeat(){
   for(const [an,avs] of ga)for(const bn of gbKeys){const vs=avs.filter(v=>B.g(v).includes(bn));if(vs.length)cells.push(m.f(vs,wf))}
   if(!cells.length){$('#heat').innerHTML='<p class="empty-msg">Noch keine Daten.</p>';return}
   const lo=Math.min(...cells),hi=Math.max(...cells);
-  const tone=val=>{let t=hi>lo?(S.heatMetric==='views'||S.heatMetric==='follower'?(Math.log(val+1)-Math.log(lo+1))/(Math.log(hi+1)-Math.log(lo+1)):(val-lo)/(hi-lo)):.5;if(m.lowerBetter)t=1-t;return Math.round(8+t*72)};
+  const tone=val=>{let t=hi>lo?(S.heatMetric==='views'||S.heatMetric==='follower'?(Math.log(val+1)-Math.log(lo+1))/(Math.log(hi+1)-Math.log(lo+1)):(val-lo)/(hi-lo)):.5;if(m.lowerBetter)t=1-t;return Math.round(6+t*66)};
   $('#heat').innerHTML=`<table class="heat"><thead><tr><th></th>${gbKeys.map(b=>`<th>${esc(b)}</th>`).join('')}</tr></thead><tbody>
     ${ga.map(([an,avs])=>`<tr><th>${esc(an)}</th>${gbKeys.map(bn=>{const vs=avs.filter(v=>B.g(v).includes(bn));if(!vs.length)return '<td class="empty">–</td>';const val=m.f(vs,wf),p=tone(val);
-      return `<td style="background:color-mix(in srgb, var(--accent) ${p}%, var(--surface));${p>55?'color:var(--accent-ink)':''};${vs.length<2?'opacity:.55':''}" title="${esc(an)} × ${esc(bn)}: ${m.fmt(val)} (${vs.length} Videos)">${m.fmt(val)}<small>${vs.length} Vid.</small></td>`}).join('')}</tr>`).join('')}
-  </tbody></table><p class="caveat">Je kräftiger die Farbe, desto besser. Blasse Felder beruhen auf nur einem Video.</p>`;
+      return `<td style="background:color-mix(in srgb, var(--accent) ${p}%, var(--surface));${p>50?'color:var(--accent-ink)':''};${vs.length<2?'opacity:.5':''}" title="${esc(an)} × ${esc(bn)}: ${m.fmt(val)} (${vs.length} Videos)">${m.fmt(val)}<small>${vs.length} Vid.</small></td>`}).join('')}</tr>`).join('')}
+  </tbody></table>`;
 }
 function renderScatter(){
   const nf=NUM.find(n=>n.k===S.scatterX);
@@ -737,16 +884,15 @@ function renderScatter(){
   const yt=[];for(let e=lmin;e<=lmax;e++)yt.push(10**e);
   const xt=[0,.25,.5,.75,1].map(f=>xmin+(xmax-xmin)*f);
   const col={flop:'var(--bad)',gut:'var(--accent)',viral:'var(--good)'};
-  const strength=Math.abs(rho)>=.45?'deutlicher':Math.abs(rho)>=.25?'mittlerer':Math.abs(rho)>=.12?'schwacher':'kaum ein';
+  const strength=Math.abs(rho)>=.45?'Deutlicher':Math.abs(rho)>=.25?'Mittlerer':Math.abs(rho)>=.12?'Schwacher':'Kaum ein';
   $('#scatter').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(nf.l)} gegen Views">
-    ${yt.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-8}" y="${y(t)+4}" text-anchor="end">${short(t)}</text>`).join('')}
+    ${yt.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-8}" y="${y(t)+3.5}" text-anchor="end">${short(t)}</text>`).join('')}
     ${xt.map((t,i)=>`<text x="${x(t)}" y="${H-8}" text-anchor="${i===0?'start':i===4?'end':'middle'}">${dec(t,S.scatterX==='hour'?0:1)}</text>`).join('')}
-    <line x1="${pl}" x2="${W-pr}" y1="${y(FLOP)}" y2="${y(FLOP)}" stroke="var(--bad)" stroke-dasharray="4 4" opacity=".7"/>
-    <text x="${W-pr}" y="${y(FLOP)-5}" text-anchor="end" style="fill:var(--bad)">Flop-Grenze</text>
-    ${VIDEOS.map(v=>`<circle cx="${x(nf.g(v)).toFixed(1)}" cy="${y(Math.max(1,v.views)).toFixed(1)}" r="4.5" fill="${col[status(v)]}" fill-opacity=".75" data-vid="${v.id}" style="cursor:pointer"><title>${esc(v.title)}: ${fmt(v.views)} Views</title></circle>`).join('')}
+    <line x1="${pl}" x2="${W-pr}" y1="${y(FLOP)}" y2="${y(FLOP)}" stroke="var(--bad)" stroke-dasharray="3 4" opacity=".7"/>
+    ${VIDEOS.map(v=>`<circle cx="${x(nf.g(v)).toFixed(1)}" cy="${y(Math.max(1,v.views)).toFixed(1)}" r="4" fill="${col[status(v)]}" fill-opacity=".7" data-vid="${v.id}" style="cursor:pointer"><title>${esc(v.title)}: ${fmt(v.views)} Views</title></circle>`).join('')}
   </svg>
-  <p style="margin-top:8px"><b>${strength[0].toUpperCase()+strength.slice(1)} Zusammenhang</b>${Math.abs(rho)>=.12?`: ${nf.phrase.toLowerCase().replace(/^je/,'je')}, desto ${rho>0?'mehr':'weniger'} Views.`:' mit deinen Views.'} <span class="mono" style="color:var(--muted)">ρ = ${dec(rho,2)}</span></p>
-  <div class="legend"><span><i style="background:var(--bad)"></i>Flop</span><span><i style="background:var(--accent)"></i>Gut</span><span><i style="background:var(--good)"></i>Viral</span><span>Views-Achse logarithmisch</span></div>`;
+  <p style="margin-top:8px;font-size:13px"><b>${strength} Zusammenhang</b>${Math.abs(rho)>=.12?`: ${nf.phrase.toLowerCase()}, desto ${rho>0?'mehr':'weniger'} Views.`:' mit deinen Views.'} <span class="mono" style="color:var(--faint)">ρ = ${dec(rho,2)}</span></p>
+  <div class="legend"><span><i style="background:var(--bad)"></i>Flop</span><span><i style="background:var(--accent)"></i>Gut</span><span><i style="background:var(--good)"></i>Viral</span></div>`;
 }
 
 /* ---------- Streamer ---------- */
@@ -755,98 +901,105 @@ function renderStreamer(){
   if(!VIDEOS.length){$('#view-streamer').innerHTML=emptyState('Streamer');return}
   const g=[...groups(catByKey('streamer'))].sort((a,b)=>median(b[1].map(v=>v.views))-median(a[1].map(v=>v.views)));
   const overall=median(VIDEOS.map(v=>v.views));
+  const lmax=Math.log10(Math.max(1000,...VIDEOS.map(v=>v.views)));
+  const best=(b)=>b?`${esc(b.k)}<span>${short(b.m)}</span>`:'<span style="margin:0">zu wenig Daten</span>';
   $('#view-streamer').innerHTML=`
-    <div class="view-head"><div><h1>Streamer</h1><p>Sortiert nach Median-Views. Collab-Videos zählen bei jedem beteiligten Streamer.</p></div></div>
+    <div class="view-head">${titled('h1','Streamer','streamer')}</div>
     <div class="grid g-str">${g.map(([name,vs])=>{
       const med=median(vs.map(v=>v.views)),fl=vs.filter(v=>v.views<FLOP).length/vs.length*100,f=vs.reduce((s,v)=>s+v.follower,0);
-      const bh=bestOf(vs,'hook'),be=bestOf(vs,'emotion'),bg=bestOf(vs,'spiel');
-      const sorted=[...vs].sort((a,b)=>a.date-b.date),lmax=Math.log10(Math.max(...VIDEOS.map(v=>v.views)));
+      const sorted=[...vs].sort((a,b)=>a.date-b.date);
       return `<div class="card str" data-streamer="${esc(name)}" tabindex="0">
-        <div class="str-top"><span class="avatar">${esc(name[0])}</span><div><h3>${esc(name)}</h3><small>${vs.length} Videos · ${med>=overall?'über':'unter'} deinem Schnitt</small></div></div>
+        <div class="str-top"><div><h3>${esc(name)}</h3><small>${vs.length} Video${vs.length===1?'':'s'}</small></div><span class="badge ${med>=overall?'viral':'flop'}">${med>=overall?'über':'unter'} Schnitt</span></div>
         <div class="str-stats"><div><b>${short(med)}</b><span>Median-Views</span></div><div><b>${pct(fl)}</b><span>Flops</span></div><div><b>${fmt(f)}</b><span>Follower</span></div></div>
-        <div class="spark" aria-label="Views pro Video">${sorted.map(v=>`<i style="height:${Math.max(6,(Math.log10(v.views)-2.5)/(lmax-2.5)*100)}%;background:${status(v)==='flop'?'var(--bad)':status(v)==='viral'?'var(--good)':'var(--accent)'}" title="${dateStr(v.date)}: ${fmt(v.views)}"></i>`).join('')}</div>
-        <dl><dt>Bester Hook</dt><dd>${bh?`${esc(bh.k)} <span class="mono" style="color:var(--muted)">${short(bh.m)}</span>`:'noch zu wenig Daten'}</dd>
-        <dt>Beste Emotion</dt><dd>${be?`${esc(be.k)} <span class="mono" style="color:var(--muted)">${short(be.m)}</span>`:'noch zu wenig Daten'}</dd>
-        <dt>Bestes Spiel</dt><dd>${bg?`${esc(bg.k)} <span class="mono" style="color:var(--muted)">${short(bg.m)}</span>`:'noch zu wenig Daten'}</dd></dl>
+        <div class="spark" aria-label="Views pro Video">${sorted.map(v=>`<i style="height:${Math.max(6,(Math.log10(Math.max(1,v.views))-2.5)/(lmax-2.5)*100)}%;background:${status(v)==='flop'?'var(--bad)':status(v)==='viral'?'var(--good)':'var(--faint)'};opacity:${status(v)==='gut'?.55:.85}" title="${dateStr(v.date)}: ${fmt(v.views)}"></i>`).join('')}</div>
+        <dl><dt>Bester Hook</dt><dd>${best(bestOf(vs,'hook'))}</dd><dt>Beste Emotion</dt><dd>${best(bestOf(vs,'emotion'))}</dd><dt>Bestes Spiel</dt><dd>${best(bestOf(vs,'spiel'))}</dd></dl>
       </div>`}).join('')}</div>`;
 }
 
-/* ---------- Drawer: Detail ---------- */
+/* ---------- Drawer ---------- */
 let lastFocus=null;
 function openDrawer(title,sub,html){
-  lastFocus=document.activeElement;
+  lastFocus=document.activeElement;hideTip();
   $('#drawerTitle').textContent=title;$('#drawerSub').innerHTML=sub;$('#drawerBody').innerHTML=html;
   $('#drawer').hidden=false;$('#scrim').hidden=false;$('#drawerBody').scrollTop=0;$('#drawerClose').focus();
 }
-function closeDrawer(){$('#drawer').hidden=true;$('#scrim').hidden=true;if(lastFocus)lastFocus.focus()}
+function closeDrawer(){hideTip();$('#drawer').hidden=true;$('#scrim').hidden=true;if(lastFocus&&document.contains(lastFocus))lastFocus.focus()}
 function whyHtml(v){
   const ex=explain(v);
-  const li=a=>a.map(x=>`<li><div>${x.t}<br><small>${x.d}</small></div></li>`).join('');
-  return `<h3>Warum lief es so?</h3>
-      <p class="verdict">${fmt(v.views)} Views: ${ex.verdict}</p>
-      ${ex.beliefs.length?`<div><p style="font-weight:600;margin-bottom:8px">Deine Einschätzung</p><ul class="belief">${ex.beliefs.map(b=>`<li><span class="ic ${b.cls}">${b.ic}</span><div>${esc(b.label)} <span class="wbadge">${WLABEL[b.w]}</span><small>${b.d}</small></div></li>`).join('')}</ul></div>`:''}
-      ${ex.pos.length?`<div><p style="font-weight:600;margin-bottom:6px">Hat laut Daten geholfen</p><ul class="fac pos">${li(ex.pos)}</ul></div>`:''}
-      ${ex.neg.length?`<div><p style="font-weight:600;margin-bottom:6px">Hat laut Daten eher gebremst</p><ul class="fac neg">${li(ex.neg)}</ul></div>`:''}
-      ${!ex.pos.length&&!ex.neg.length?`<p>${VIDEOS.length<10?'Noch zu wenig Videos, um Muster zu erkennen.':'Keine Eigenschaft dieses Videos weicht deutlich von deinem Schnitt ab.'}</p>`:''}
-      <p class="caveat" style="margin:0">Basierend auf dem Vergleich mit deinen anderen ${VIDEOS.length-1} Videos.</p>`;
+  const li=a=>a.map(x=>`<li><div>${x.t}<small>${x.d}</small></div></li>`).join('');
+  return `${titled('h3','Warum lief es so?','why')}
+      <p class="verdict">${fmt(v.views)} Views · ${ex.verdict}</p>
+      ${ex.beliefs.length?`<div><p class="fac-head">Deine Einschätzung</p><ul class="belief">${ex.beliefs.map(b=>`<li><span class="ic ${b.cls}">${b.ic}</span><div>${esc(b.label)}<span class="wbadge">${WLABEL[b.w]}</span><small>${b.d}</small></div></li>`).join('')}</ul></div>`:''}
+      ${ex.pos.length?`<div><p class="fac-head">Hat laut Daten geholfen</p><ul class="fac pos">${li(ex.pos)}</ul></div>`:''}
+      ${ex.neg.length?`<div><p class="fac-head">Hat laut Daten eher gebremst</p><ul class="fac neg">${li(ex.neg)}</ul></div>`:''}
+      ${!ex.pos.length&&!ex.neg.length?`<p style="color:var(--muted);font-size:13px">${VIDEOS.length<10?'Noch zu wenig Videos, um Muster zu erkennen.':'Keine Eigenschaft weicht deutlich von deinem Schnitt ab.'}</p>`:''}`;
 }
 let openId=null;
 function openVideo(id){
   const v=VIDEOS.find(x=>x.id===+id);if(!v)return;
   openId=v.id;
   const m=[['Views',fmt(v.views)],['Neue Follower',fmt(v.follower)],['Likes',fmt(v.likes)],['Kommentare',fmt(v.comments)],['Shares',fmt(v.shares)],['Gespeichert',fmt(v.saves)],
-    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Komplett angesehen',v.completion+' %'],['Nach 3 s noch da',v.ret3+' %'],['Länge',v.laenge+' s'],['Pointe nach',v.pointe+' s']];
+    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Komplett angesehen',v.completion+' %'],['Nach 3 s',v.ret3+' %'],['Länge',v.laenge+' s'],['Pointe nach',v.pointe+' s']];
   const tags=[['Streamer',v.streamers.join(', ')],['Spiel',v.spiel],['Thema',v.thema],['Hook',v.hook],['Emotion',v.emotion],['Text-Overlay',v.overlay],['Untertitel',v.untertitel],['Audio',v.audio],['Sound',v.sound],['Kommentare',v.stimmung]];
-  openDrawer(v.title,`${DAYS[v.date.getDay()]}, ${dateStr(v.date)} ${v.date.getFullYear()} · ${timeStr(v.date)} Uhr · ${pill(v)}${v.link&&/^https:\/\//.test(v.link)?` · <a href="${esc(v.link)}" target="_blank" rel="noopener">Auf TikTok ansehen</a>`:''}`,`
+  openDrawer(v.title,`<span>${DAYS[v.date.getDay()]}, ${dateStr(v.date)} ${v.date.getFullYear()} · ${timeStr(v.date)} Uhr</span>${badge(v)}`,`
     <div class="why" id="whyBox">${whyHtml(v)}</div>
-    <div><h3 style="margin-bottom:4px">Woran lag's deiner Meinung nach?</h3><p class="hint" style="margin-bottom:8px">Markier, was du für wichtig hältst. Die Analyse rechnet das mit ein, und oben siehst du, ob die Daten dir recht geben.</p>
-      <div id="dwBox" data-wvid="${v.id}">${weightRows('dw_',v.weights||{},v)}</div></div>
-    <div><h3 style="margin-bottom:10px">Zahlen nach 24 h</h3><div class="mgrid">${m.map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')}</div></div>
-    <div><h3 style="margin-bottom:10px">Tags</h3><div class="tags">${tags.map(([a,b])=>`<span class="chip"><b>${a}</b>${esc(b)}</span>`).join('')}</div></div>
+    <div><div class="section-title"><h3>Zahlen nach 24 h</h3></div><div class="mgrid">${m.map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')}</div></div>
+    <div><div class="section-title"><h3>Tags</h3></div><div class="tags">${tags.map(([a,b])=>`<span class="tagchip"><b>${a}</b>${esc(b)}</span>`).join('')}</div></div>
+    <div><div class="section-title"><h3>Woran lag's deiner Meinung nach?</h3>${info('weightsVideo')}</div>${weightRows('dw_',v.weights||{},v)}</div>
     <div class="ctl-row" id="vActions"><button class="btn" data-edit="${v.id}">Bearbeiten</button><button class="btn danger" data-del="${v.id}">Video löschen</button></div>`);
 }
 
-/* ---------- Drawer: Formular ---------- */
-const uniq=k=>[...new Set(VIDEOS.flatMap(v=>Array.isArray(v[k])?v[k]:[v[k]]))].sort();
-const DEF_EMO=['lustig','Rage','Schock','wholesome','Drama','Skill'],DEF_MOOD=['positiv','gemischt','negativ'];
-const withDefaults=(defs,key)=>[...new Set([...defs,...uniq(key)])];
-const radiosNew=(name,opts,sel,ph)=>`${radios(name,opts,sel)}<input type="text" id="${name}new" name="${name}new" placeholder="${ph}" style="margin-top:4px">`;
-const radios=(name,opts,sel)=>`<div class="opts" role="radiogroup">${opts.map(o=>`<label><input type="radio" name="${name}" value="${esc(o)}" ${o===sel?'checked':''}><span>${esc(o)}</span></label>`).join('')}</div>`;
-const numF=(id,l,ph,suf='',val)=>`<div class="f"><label for="${id}">${l}${suf?` (${suf})`:''}</label><input type="number" id="${id}" name="${id}" min="0" step="any" placeholder="${ph}" inputmode="decimal" value="${val??''}"></div>`;
-const listF=(id,l,key,ph,val)=>`<div class="f"><label for="${id}">${l}</label><input type="text" id="${id}" name="${id}" list="dl-${id}" placeholder="${ph}" value="${esc(val??'')}"><datalist id="dl-${id}">${uniq(key).map(o=>`<option value="${esc(o)}">`).join('')}</datalist></div>`;
+/* ---------- Formular ---------- */
+const uniq=k=>[...new Set(VIDEOS.flatMap(v=>Array.isArray(v[k])?v[k]:[v[k]]))].filter(Boolean).sort((a,b)=>a.localeCompare(b,'de'));
+/* Zuletzt verwendete Antworten, neueste zuerst */
+function recent(key,limit=10){
+  const seen=new Set(),out=[];
+  for(const v of [...VIDEOS].sort((a,b)=>b.date-a.date||b.id-a.id))
+    for(const x of (Array.isArray(v[key])?v[key]:[v[key]]))
+      if(x&&x!=='Unbekannt'&&!seen.has(x)){seen.add(x);out.push(x);if(out.length>=limit)return out}
+  return out;
+}
+const DEF_EMO=['lustig','Rage','Schock','wholesome','Drama','Skill'],DEF_OV=['keins','Frage','Aussage','Spoiler'],DEF_MOOD=['positiv','gemischt','negativ'];
+const withDefaults=(defs,key,extra)=>[...new Set([...defs,...uniq(key),...(extra?[extra]:[])])];
+const flabel=(id,l,tipKey,suf)=>`<div class="flabel"><label for="${id}">${l}${suf?` <small>(${suf})</small>`:''}</label>${tipKey?info(tipKey):''}</div>`;
+const numF=(id,l,ph,suf,val,tipKey)=>`<div class="f">${flabel(id,l,tipKey,suf)}<input class="inp" type="number" id="${id}" name="${id}" min="0" step="any" placeholder="${ph}" inputmode="decimal" value="${val??''}"></div>`;
+const comboF=(id,l,key,ph,val,tipKey,multi)=>`<div class="f${multi?' full':''}">${flabel(id,l,tipKey)}<div class="combo"><input class="inp" type="text" id="${id}" name="${id}" placeholder="${ph}" value="${esc(val??'')}" autocomplete="off"><button type="button" class="combo-btn" data-combo="${id}" data-key="${key}" ${multi?'data-multi="1"':''} aria-label="Zuletzt verwendet" aria-expanded="false">${ICON.chev}</button><div class="combo-menu" hidden></div></div></div>`;
+const chipsF=(name,l,opts,sel,tipKey,addLabel)=>`<div class="f"><div class="flabel"><span>${l}</span>${tipKey?info(tipKey):''}</div><div class="opts" role="radiogroup" aria-label="${l}">${opts.map(o=>chip(name,o,o===sel)).join('')}${addLabel?`<button type="button" class="chip-add" data-add="${name}" aria-label="${addLabel}" title="${addLabel}">${ICON.plus}</button>`:''}</div></div>`;
+const chip=(name,o,checked)=>`<label><input type="radio" name="${name}" value="${esc(o)}" ${checked?'checked':''}><span>${esc(o)}</span></label>`;
 const localInput=d=>{const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`};
 function openForm(edit){
   const e0=edit||{};
   const now=new Date();now.setDate(now.getDate()-1);now.setMinutes(0);
-  const strs=[...new Set([...uniq('streamers'),...(e0.streamers||[])])];
-  openDrawer(edit?'Video bearbeiten':'Video eintragen',edit?esc(edit.title):'24 h nach dem Upload die Werte aus TikTok Studio übernehmen',`
+  openDrawer(edit?'Video bearbeiten':'Video eintragen',edit?esc(edit.title):'Werte 24 Stunden nach dem Upload',`
   <form id="vform" novalidate>
-    <fieldset><legend>Video</legend><div class="fgrid">
-      <div class="f full"><label for="ftitle">Titel / Notiz</label><input type="text" id="ftitle" name="ftitle" placeholder="z. B. Papaplatte verliert gegen Kind in Fortnite" value="${esc(e0.title||'')}"></div>
-      <div class="f full"><label for="flink">Link zum Video (optional)</label><input type="url" id="flink" name="flink" placeholder="https://www.tiktok.com/@…/video/…" value="${esc(e0.link||'')}"></div>
-      <div class="f"><label for="fdate">Uploadzeitpunkt</label><input type="datetime-local" id="fdate" name="fdate" value="${localInput(e0.date||now)}"></div>
-      ${numF('flaenge','Videolänge','28','s',e0.laenge)}
+    <fieldset><legend>${titled('h3','Video')}</legend><div class="fgrid">
+      <div class="f full">${flabel('ftitle','Titel','fTitle')}<input class="inp" type="text" id="ftitle" name="ftitle" placeholder="z. B. Papaplatte verliert gegen Kind in Fortnite" value="${esc(e0.title||'')}"></div>
+      <div class="f">${flabel('fdate','Uploadzeitpunkt')}<input class="inp" type="datetime-local" id="fdate" name="fdate" value="${localInput(e0.date||now)}"></div>
+      ${numF('flaenge','Videolänge','28','s',e0.laenge,'fLaenge')}
     </div></fieldset>
-    <fieldset><legend>Aus TikTok Studio (nach 24 h)</legend><div class="fgrid">
-      ${numF('fviews','Views','12000','',e0.views)}${numF('ffollower','Neue Follower','45','',e0.follower)}
+    <fieldset><legend>${titled('h3','Zahlen aus TikTok Studio','fStudio')}</legend><div class="fgrid">
+      ${numF('fviews','Views','12000','',e0.views,'fViews')}${numF('ffollower','Neue Follower','45','',e0.follower,'fFollower')}
       ${numF('flikes','Likes','900','',e0.likes)}${numF('fcomments','Kommentare','40','',e0.comments)}
       ${numF('fshares','Shares','60','',e0.shares)}${numF('fsaves','Gespeichert','35','',e0.saves)}
-      ${numF('favg','Ø Wiedergabedauer','14,5','s',e0.avgWatch)}${numF('ftotal','Gesamte Wiedergabezeit','48','h',e0.totalWatch)}
-      ${numF('fcompl','Komplett angesehen','32','%',e0.completion)}${numF('fret3','Zuschauer nach 3 s','58','%',e0.ret3)}
+      ${numF('favg','Ø Wiedergabedauer','14,5','s',e0.avgWatch,'fAvg')}${numF('ftotal','Gesamte Wiedergabezeit','48','h',e0.totalWatch,'fTotal')}
+      ${numF('fcompl','Komplett angesehen','32','%',e0.completion,'fCompl')}${numF('fret3','Zuschauer nach 3 s','58','%',e0.ret3,'fRet3')}
     </div></fieldset>
-    <fieldset><legend>Deine Tags</legend>
-      <div class="f"><span class="flabel">Streamer (mehrere möglich)</span>${strs.length?`<div class="opts">${strs.map(s=>`<label><input type="checkbox" name="fstr" value="${esc(s)}" ${(e0.streamers||[]).includes(s)?'checked':''}><span>${esc(s)}</span></label>`).join('')}</div>`:''}
-        <input type="text" id="fstrnew" name="fstrnew" placeholder="${strs.length?'Neuer Streamer? Mit Komma trennen':'Streamer eintippen, mehrere mit Komma trennen'}" style="margin-top:4px"></div>
-      <div class="fgrid">${listF('fspiel','Spiel','spiel','Fortnite',e0.spiel)}${listF('fthema','Thema','thema','Fail',e0.thema)}${listF('fhook','Hook','hook','Schockmoment zuerst',e0.hook)}${listF('fsound','Sound','sound','Originalton',e0.sound)}
-      ${numF('fpointe','Zeit bis zur Pointe','3','s',e0.pointe)}</div>
-      <div class="f"><span class="flabel">Emotion</span>${radiosNew('femo',withDefaults(DEF_EMO,'emotion'),e0.emotion||'lustig','Neue Emotion? Hier eintippen')}</div>
-      <div class="f"><span class="flabel">Text-Overlay</span>${radios('fov',[...new Set(['keins','Frage','Aussage','Spoiler',...uniq('overlay')])],e0.overlay||'keins')}</div>
-      <div class="fgrid"><div class="f"><span class="flabel">Untertitel</span>${radios('fut',['ja','nein'],e0.untertitel||'ja')}</div>
-      <div class="f"><span class="flabel">Audio</span>${radios('fau',['nur Original','mit Musik','Trend-Sound'],e0.audio||'nur Original')}</div></div>
-      <div class="f"><span class="flabel">Kommentarstimmung</span>${radiosNew('fmood',withDefaults(DEF_MOOD,'stimmung'),e0.stimmung||'gemischt','Neue Stimmung? Hier eintippen')}</div>
+    <fieldset><legend>${titled('h3','Tags','fTags')}</legend>
+      <div class="fgrid">
+        ${comboF('fstr','Streamer','streamers','Papaplatte, Trymacs',(e0.streamers||[]).join(', '),'fStreamer',true)}
+        ${comboF('fspiel','Spiel','spiel','Fortnite',e0.spiel,'fSpiel')}${comboF('fthema','Thema','thema','Fail',e0.thema,'fThema')}
+        ${comboF('fhook','Hook','hook','Schockmoment zuerst',e0.hook,'fHook')}${comboF('fsound','Sound','sound','Originalton',e0.sound,'fSound')}
+        ${numF('fpointe','Zeit bis zur Pointe','3','s',e0.pointe,'fPointe')}
+      </div>
+      ${chipsF('femo','Emotion',withDefaults(DEF_EMO,'emotion',e0.emotion),e0.emotion||'lustig','fEmotion','Neue Emotion hinzufügen')}
+      ${chipsF('fov','Text-Overlay',withDefaults(DEF_OV,'overlay',e0.overlay),e0.overlay||'keins','fOverlay','Neue Art von Text-Overlay hinzufügen')}
+      <div class="fgrid">
+        ${chipsF('fut','Untertitel',['ja','nein'],e0.untertitel||'ja','fUT')}
+        ${chipsF('fau','Audio',['nur Original','mit Musik','Trend-Sound'],e0.audio||'nur Original','fAudio')}
+      </div>
+      ${chipsF('fmood','Kommentarstimmung',withDefaults(DEF_MOOD,'stimmung',e0.stimmung),e0.stimmung||'gemischt','fMood','Neue Stimmung hinzufügen')}
     </fieldset>
-    <fieldset><legend>Woran lag's? (optional)</legend>
-      <p class="hint">Wenn du glaubst, dass eine Eigenschaft besonders wichtig für das Ergebnis war, markier sie. „Wichtig“ zählt in der Analyse doppelt, „Hauptgrund“ dreifach. Du kannst das später beim Video noch ändern.</p>
+    <fieldset><legend>${titled('h3','Woran lag’s? <small style="color:var(--faint);font-weight:400">optional</small>','fWeights')}</legend>
       ${weightRows('w_',e0.weights||{})}
     </fieldset>
     <p class="err" id="ferr" hidden></p>
@@ -856,50 +1009,111 @@ function openForm(edit){
   $('#vform').onsubmit=async e=>{
     e.preventDefault();
     const fd=new FormData(e.target),raw=k=>String(fd.get(k)||'').trim(),n=k=>{const x=parseFloat(raw(k).replace(',','.'));return isFinite(x)?x:null};
-    const streamers=[...new Set([...fd.getAll('fstr'),...raw('fstrnew').split(',').map(s=>s.trim()).filter(Boolean)])];
+    const streamers=[...new Set(raw('fstr').split(',').map(s=>s.trim()).filter(Boolean))];
     const err=$('#ferr'),date=new Date(raw('fdate'));
-    const problem=n('fviews')==null?'Bitte die Views eintragen.':!streamers.length?'Bitte mindestens einen Streamer auswählen oder eintippen.':isNaN(date)?'Bitte den Uploadzeitpunkt angeben.':'';
+    const problem=n('fviews')==null?'Bitte die Views eintragen.':!streamers.length?'Bitte mindestens einen Streamer eintragen.':isNaN(date)?'Bitte den Uploadzeitpunkt angeben.':'';
     if(problem){err.hidden=false;err.textContent=problem;return}
     const laenge=n('flaenge')??30;
-    const v={...(edit||{}),title:raw('ftitle')||`${streamers.join(' & ')}: ${raw('fspiel')||'Clip'}`,link:raw('flink'),date,streamers,
+    const v={...(edit||{}),title:raw('ftitle')||`${streamers.join(' & ')}: ${raw('fspiel')||'Clip'}`,date,streamers,
       spiel:raw('fspiel')||'Unbekannt',thema:raw('fthema')||'Unbekannt',hook:raw('fhook')||'Unbekannt',sound:raw('fsound')||'Originalton',
-      emotion:raw('femonew')||fd.get('femo'),overlay:fd.get('fov'),untertitel:fd.get('fut'),audio:fd.get('fau'),stimmung:raw('fmoodnew')||fd.get('fmood'),
+      emotion:fd.get('femo')||'unbekannt',overlay:fd.get('fov')||'keins',untertitel:fd.get('fut'),audio:fd.get('fau'),stimmung:fd.get('fmood')||'gemischt',
       weights:Object.fromEntries(WKEYS.map(w=>[w.k,+fd.get('w_'+w.k)||1]).filter(([,x])=>x>1)),
       pointe:n('fpointe')??3,laenge,views:n('fviews'),follower:n('ffollower')??0,likes:n('flikes')??0,comments:n('fcomments')??0,shares:n('fshares')??0,saves:n('fsaves')??0,
       avgWatch:n('favg')??laenge*.5,totalWatch:n('ftotal')??0,completion:n('fcompl')??0,ret3:n('fret3')??0};
+    delete v.link;
     const btn=$('#fsubmit');btn.disabled=true;btn.textContent='Speichert …';
     try{
-      if(edit){Object.assign(edit,v);await updateVideo(edit)}else await createVideo(v);
+      if(edit){Object.assign(edit,v);delete edit.link;await updateVideo(edit)}else await createVideo(v);
       renderAll();openVideo(edit?edit.id:v.id);toast(DEMO?'Nur in der Vorschau geändert':edit?'Änderungen gespeichert':'Video gespeichert');
     }catch(ex){btn.disabled=false;btn.textContent='Nochmal versuchen';err.hidden=false;err.textContent='Speichern hat nicht geklappt: '+ex.message}
   };
 }
+/* Dropdown mit zuletzt verwendeten Antworten */
+function closeCombos(except){document.querySelectorAll('.combo-menu').forEach(m=>{if(m!==except){m.hidden=true;const b=m.previousElementSibling;if(b)b.setAttribute('aria-expanded','false')}})}
+function toggleCombo(btn){
+  const menu=btn.nextElementSibling,input=document.getElementById(btn.dataset.combo);
+  if(!menu.hidden){closeCombos();return}
+  closeCombos(menu);
+  const multi=!!btn.dataset.multi,items=recent(btn.dataset.key);
+  const current=multi?input.value.split(',').map(s=>s.trim()).filter(Boolean):[input.value.trim()];
+  menu.innerHTML=`<div class="mh">Zuletzt verwendet</div>${items.length?items.map(x=>`<button type="button" data-pick="${esc(x)}">${esc(x)}${current.includes(x)?'<span class="ck">✓</span>':''}</button>`).join(''):'<div class="none">Noch keine Einträge</div>'}`;
+  menu.hidden=false;btn.setAttribute('aria-expanded','true');
+}
+function pickCombo(item){
+  const menu=item.closest('.combo-menu'),btn=menu.previousElementSibling,input=document.getElementById(btn.dataset.combo),val=item.dataset.pick;
+  if(btn.dataset.multi){
+    const list=input.value.split(',').map(s=>s.trim()).filter(Boolean);
+    const i=list.indexOf(val);if(i>=0)list.splice(i,1);else list.push(val);
+    input.value=list.join(', ');toggleCombo(btn);toggleCombo(btn);
+  }else{input.value=val;closeCombos();input.focus()}
+}
+/* Neue Option per + anlegen */
+function startAddChip(btn){
+  const inp=document.createElement('input');
+  inp.className='chip-input';inp.dataset.for=btn.dataset.add;inp.placeholder='Neu …';inp.setAttribute('aria-label',btn.getAttribute('aria-label'));
+  btn.hidden=true;btn.before(inp);inp.focus();
+}
+function finishAddChip(inp,keep){
+  if(!inp.isConnected)return;
+  const name=inp.dataset.for,val=inp.value.trim(),btn=inp.nextElementSibling;
+  if(keep&&val){
+    const group=inp.parentElement,existing=[...group.querySelectorAll(`input[name="${name}"]`)].find(r=>r.value.toLowerCase()===val.toLowerCase());
+    if(existing)existing.checked=true;
+    else{inp.insertAdjacentHTML('beforebegin',chip(name,val,true))}
+  }
+  inp.remove();btn.hidden=false;
+}
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600)}
+
+/* ---------- Tooltips ---------- */
+const tipEl=$('#tip');let tipFor=null;
+function showTip(btn){
+  const html=tipHtml(btn.dataset.tip);if(!html)return;
+  if(tipFor&&tipFor!==btn)tipFor.setAttribute('aria-expanded','false');
+  tipEl.innerHTML=html;tipEl.hidden=false;tipFor=btn;btn.setAttribute('aria-expanded','true');
+  const r=btn.getBoundingClientRect(),tw=tipEl.offsetWidth,th=tipEl.offsetHeight,vw=document.documentElement.clientWidth,vh=window.innerHeight;
+  const left=Math.min(Math.max(8,r.left+r.width/2-tw/2),vw-tw-8);
+  let top=r.bottom+8;if(top+th>vh-8)top=Math.max(8,r.top-th-8);
+  tipEl.style.left=left+'px';tipEl.style.top=top+'px';
+}
+function hideTip(){if(tipFor)tipFor.setAttribute('aria-expanded','false');tipFor=null;tipEl.hidden=true}
+document.addEventListener('mouseover',e=>{const b=e.target.closest('.info');if(b&&b!==tipFor)showTip(b)});
+document.addEventListener('mouseout',e=>{const b=e.target.closest('.info');if(b&&!b.contains(e.relatedTarget))hideTip()});
+document.addEventListener('focusin',e=>{const b=e.target.closest('.info');if(b)showTip(b)});
+document.addEventListener('focusout',e=>{if(e.target.closest('.info'))hideTip()});
+window.addEventListener('scroll',hideTip,true);
+window.addEventListener('resize',hideTip);
+function fillInfoSlots(root=document){root.querySelectorAll('[data-info]').forEach(s=>{s.outerHTML=info(s.dataset.info)})}
 
 /* ---------- Routing & Events ---------- */
 const TABS=['uebersicht','videos','analyse','streamer'];
 function show(tab){
-  if(!TABS.includes(tab))tab='uebersicht';S.tab=tab;
+  if(!TABS.includes(tab))tab='uebersicht';S.tab=tab;hideTip();
   for(const t of TABS)$('#view-'+t).hidden=t!==tab;
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.tab===tab));
-  try{localStorage.setItem('clipradar-tab',tab)}catch(e){}
+  remember('clipradar-tab',tab);
   window.scrollTo(0,0);
 }
 function renderAll(){
   renderOverview();renderVideos();renderAnalyse();renderStreamer();
-  $('#dataNote').textContent=DEMO?'Beispieldaten, nichts davon ist gespeichert':`${VIDEOS.length} Video${VIDEOS.length===1?'':'s'} gespeichert`;
+  $('#dataNote').textContent=DEMO?'Beispieldaten, nicht gespeichert':`${VIDEOS.length} Video${VIDEOS.length===1?'':'s'} gespeichert`;
   $('#demoBanner').hidden=!DEMO;
   document.querySelectorAll('[data-clear]').forEach(b=>b.disabled=!VIDEOS.length);
 }
 function openClear(){
-  openDrawer('Alle Daten löschen?','Danach startest du mit einer leeren Liste',`
-    <p>Alle <b>${VIDEOS.length} Videos</b> mit ihren Zahlen, Tags und Gewichtungen werden gelöscht. Das lässt sich nicht rückgängig machen.</p>
-    <div class="ctl-row"><button class="btn" id="clearNo">Abbrechen</button><button class="btn danger solid" id="clearYes">Ja, alles löschen</button></div>`);
+  openDrawer(DEMO?'Beispieldaten ausblenden?':'Alle Daten löschen?','',`
+    <p>${DEMO?'Die Beispieldaten werden ausgeblendet. Deine gespeicherten Videos bleiben unverändert.':`Alle <b>${VIDEOS.length} Videos</b> mit ihren Zahlen, Tags und Gewichtungen werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.`}</p>
+    <div class="ctl-row"><button class="btn" id="clearNo">Abbrechen</button><button class="btn danger solid" id="clearYes">${DEMO?'Ausblenden':'Endgültig löschen'}</button></div>`);
 }
 window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
 
 document.addEventListener('click',e=>{
   const t=e.target;
+  const ib=t.closest('.info');if(ib){e.preventDefault();e.stopPropagation();if(tipFor===ib)hideTip();else showTip(ib);return}
+  if(!t.closest('.combo'))closeCombos();
+  const cb=t.closest('.combo-btn');if(cb)return toggleCombo(cb);
+  const pk=t.closest('[data-pick]');if(pk)return pickCombo(pk);
+  const add=t.closest('.chip-add');if(add)return startAddChip(add);
   if(t.closest('[data-new]')){if(DEMO)exitDemo().then(()=>openForm()).catch(fail);else openForm();return}
   if(t.closest('[data-sample]'))return startDemo();
   if(t.closest('[data-demo-off]')){exitDemo().then(()=>toast('Beispieldaten ausgeblendet')).catch(fail);return}
@@ -908,10 +1122,13 @@ document.addEventListener('click',e=>{
   if(t.id==='clearYes'){t.disabled=true;const wasDemo=DEMO;deleteAll().then(()=>{renderAll();closeDrawer();location.hash='uebersicht';toast(wasDemo?'Beispieldaten ausgeblendet':'Alle Daten gelöscht')}).catch(fail);return}
   const ed=t.closest('[data-edit]');if(ed)return openForm(VIDEOS.find(v=>v.id===+ed.dataset.edit));
   const del=t.closest('[data-del]');if(del){
-    $('#vActions').innerHTML=`<span>Dieses Video wirklich löschen?</span><button class="btn" data-keep="${del.dataset.del}">Nein</button><button class="btn danger solid" data-delyes="${del.dataset.del}">Ja, löschen</button>`;return}
+    $('#vActions').innerHTML=`<span style="font-size:13px">Dieses Video wirklich löschen?</span><button class="btn" data-keep="${del.dataset.del}">Abbrechen</button><button class="btn danger solid" data-delyes="${del.dataset.del}">Löschen</button>`;return}
   const keep=t.closest('[data-keep]');if(keep)return openVideo(keep.dataset.keep);
   const dy=t.closest('[data-delyes]');if(dy){dy.disabled=true;deleteVideo(+dy.dataset.delyes).then(()=>{renderAll();closeDrawer();toast('Video gelöscht')}).catch(fail);return}
   const vid=t.closest('[data-vid]');if(vid)return openVideo(vid.dataset.vid);
+  const tr=t.closest('[data-trend]');if(tr){S.trendMetric=tr.dataset.trend;remember('clipradar-trend',JSON.stringify({m:S.trendMetric,r:S.trendRange}));document.querySelectorAll('[data-trend]').forEach(b=>b.classList.toggle('on',b===tr));renderTrend();return}
+  if(t.closest('[data-vall]')){S.vAll=!S.vAll;renderVideoTable();return}
+  if(t.closest('[data-insall]')){S.insAll=!S.insAll;renderAnalyse();return}
   const ins=t.closest('.ins');
   if(ins){
     if(ins.dataset.field){S.groupField=ins.dataset.field;S.groupMetric=S.insMetric;location.hash='analyse';renderAnalyse();show('analyse');setTimeout(()=>$('#cmpCard').scrollIntoView({behavior:'smooth',block:'start'}),30)}
@@ -920,21 +1137,30 @@ document.addEventListener('click',e=>{
   }
   const insm=t.closest('[data-insm]');if(insm){S.insMetric=insm.dataset.insm;renderAnalyse();return}
   const th=t.closest('th[data-sort]');if(th){const k=th.dataset.sort;if(S.sortKey===k)S.sortDir*=-1;else{S.sortKey=k;S.sortDir=k==='title'?1:-1}renderVideoTable();return}
-  const str=t.closest('[data-streamer]');if(str){S.fStreamer=str.dataset.streamer;renderVideos();location.hash='videos';return}
+  const str=t.closest('[data-streamer]');if(str){S.fStreamer=str.dataset.streamer;S.vAll=false;renderVideos();location.hash='videos';return}
   if(t.id==='scrim'||t.closest('#drawerClose'))closeDrawer();
 });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&!$('#drawer').hidden)closeDrawer();
-  if(e.key==='Enter'&&(e.target.classList.contains('ins')||e.target.dataset.streamer))e.target.click();
+  const t=e.target;
+  if(t.classList&&t.classList.contains('chip-input')){
+    if(e.key==='Enter'){e.preventDefault();finishAddChip(t,true)}
+    else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();finishAddChip(t,false)}
+    return;
+  }
+  if(e.key==='Escape'){
+    if(!tipEl.hidden){hideTip();return}
+    if(document.querySelector('.combo-menu:not([hidden])')){closeCombos();return}
+    if(!$('#drawer').hidden)closeDrawer();
+  }
+  if(e.key==='Enter'&&(t.classList.contains('ins')||t.dataset.streamer))t.click();
 });
-document.addEventListener('input',e=>{
-  const id=e.target.id;
-  if(id==='vq'){S.q=e.target.value;renderVideoTable()}
-});
+document.addEventListener('focusout',e=>{const t=e.target;if(t.classList&&t.classList.contains('chip-input'))setTimeout(()=>finishAddChip(t,true),0)});
+document.addEventListener('input',e=>{if(e.target.id==='vq'){S.q=e.target.value;renderVideoTable()}});
 document.addEventListener('change',e=>{
   const id=e.target.id,v=e.target.value;
   if(id==='vstatus'){S.fStatus=v;renderVideoTable()}
   else if(id==='vstreamer'){S.fStreamer=v;renderVideoTable()}
+  else if(id==='trendRange'){S.trendRange=v;remember('clipradar-trend',JSON.stringify({m:S.trendMetric,r:S.trendRange}));renderTrend()}
   else if(id==='gField'){S.groupField=v;renderBars()}
   else if(id==='gMetric'){S.groupMetric=v;renderBars()}
   else if(id==='hA'){S.heatA=v;renderHeat()}
@@ -943,14 +1169,15 @@ document.addEventListener('change',e=>{
   else if(id==='sX'){S.scatterX=v;renderScatter()}
   else if(id==='useW'){S.useWeights=e.target.checked;renderAll()}
   else if(e.target.name&&e.target.name.startsWith('dw_')){
-    const v=VIDEOS.find(x=>x.id===openId);if(!v)return;
+    const vv=VIDEOS.find(x=>x.id===openId);if(!vv)return;
     const k=e.target.name.slice(3);
-    v.weights=v.weights||{};if(+e.target.value>1)v.weights[k]=+e.target.value;else delete v.weights[k];
-    renderAll();$('#whyBox').innerHTML=whyHtml(v);updateVideo(v).then(()=>toast(DEMO?'Nur in der Vorschau geändert':'Einschätzung gespeichert')).catch(fail);
+    vv.weights=vv.weights||{};if(+v>1)vv.weights[k]=+v;else delete vv.weights[k];
+    renderAll();$('#whyBox').innerHTML=whyHtml(vv);updateVideo(vv).then(()=>toast(DEMO?'Nur in der Vorschau geändert':'Einschätzung gespeichert')).catch(fail);
   }
-  else if(id==='flopInput'){const n=parseInt(v,10);if(n>=0){FLOP=n;try{localStorage.setItem('clipradar-flop',n)}catch(e){}renderAll()}}
+  else if(id==='flopInput'){const n=parseInt(v,10);if(n>=0){FLOP=n;remember('clipradar-flop',n);renderAll()}}
 });
 
+fillInfoSlots();
 $('#flopInput').value=FLOP;
 show(location.hash.slice(1)||S.tab);
 $('#view-'+S.tab).innerHTML='<p class="loading">Lade deine Videos …</p>';
