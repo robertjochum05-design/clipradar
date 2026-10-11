@@ -117,6 +117,7 @@ select.ctl{padding-right:28px;appearance:none;background-image:url("data:image/s
 .badge.viral{background:var(--good-soft);color:var(--good)}
 .tagchip{display:inline-flex;gap:5px;font-size:12px;padding:3px 8px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);white-space:nowrap}
 .tagchip b{font-weight:500;color:var(--muted)}
+.wbadge.low{background:var(--surface-2);color:var(--muted)}
 .wbadge{font-size:11px;font-weight:500;padding:0 6px;border-radius:4px;background:var(--accent-soft);color:var(--accent);margin-left:6px;white-space:nowrap}
 
 /* Trend-Chart */
@@ -285,6 +286,7 @@ input[type=number].inp{font-family:var(--mono)}
 .wseg input{position:absolute;opacity:0;pointer-events:none}
 .wseg span{display:block;padding:2px 9px;font-size:12px;border-radius:4px;color:var(--muted)}
 .wseg input:checked + span{background:var(--surface);color:var(--ink);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.wseg input[value="0"]:checked + span{color:var(--faint);text-decoration:line-through;text-decoration-color:var(--line-2)}
 .wseg input[value="2"]:checked + span{color:var(--accent)}
 .wseg input[value="3"]:checked + span{background:var(--accent);color:var(--accent-ink)}
 .wseg input:focus-visible + span{outline:2px solid var(--accent)}
@@ -474,9 +476,10 @@ async function exitDemo(){DEMO=false;VIDEOS.length=0;renderAll();await loadVideo
 function fail(e){console.error(e);toast('Speichern fehlgeschlagen: '+e.message)}
 
 /* ---------- Gewichtung ---------- */
-const WEIGHTS=[{v:1,l:'normal'},{v:2,l:'wichtig'},{v:3,l:'Hauptgrund'}];
-const WLABEL={2:'wichtig',3:'Hauptgrund'};
-const FACTOR={1:1,2:1.25,3:1.75};
+const WEIGHTS=[{v:0,l:'nicht wichtig'},{v:1,l:'normal'},{v:2,l:'wichtig'},{v:3,l:'Hauptgrund'}];
+const WLABEL={0:'nicht wichtig',2:'wichtig',3:'Hauptgrund'};
+const FACTOR={0:.5,1:1,2:1.25,3:1.75};
+const lvl=(v,k)=>(v.weights&&v.weights[k]!=null)?v.weights[k]:1; // 0 = nicht wichtig, 1 = normal
 const WKEYS=[{k:'streamer',l:'Streamer'},{k:'spiel',l:'Spiel'},{k:'thema',l:'Thema'},{k:'hook',l:'Hook'},{k:'emotion',l:'Emotion'},{k:'overlay',l:'Text-Overlay'},
   {k:'untertitel',l:'Untertitel'},{k:'audio',l:'Audio'},{k:'sound',l:'Sound'},{k:'upload',l:'Uploadzeitpunkt'},{k:'laenge',l:'Videolänge'},{k:'pointe',l:'Zeit bis zur Pointe'}];
 function tagValue(v,k){
@@ -488,7 +491,7 @@ function tagValue(v,k){
 }
 function weightRows(prefix,weights,v){
   return `<div class="wrows">${WKEYS.map(w=>`<div class="wrow"><span class="wl">${w.l}${v?`<small>${esc(tagValue(v,w.k))}</small>`:''}</span>
-    <div class="wseg" role="radiogroup" aria-label="Gewichtung ${w.l}">${WEIGHTS.map(o=>`<label><input type="radio" name="${prefix}${w.k}" value="${o.v}" ${(weights[w.k]||1)===o.v?'checked':''}><span>${o.l}</span></label>`).join('')}</div></div>`).join('')}</div>`;
+    <div class="wseg" role="radiogroup" aria-label="Gewichtung ${w.l}">${WEIGHTS.map(o=>`<label><input type="radio" name="${prefix}${w.k}" value="${o.v}" ${(weights[w.k]??1)===o.v?'checked':''}><span>${o.l}</span></label>`).join('')}</div></div>`).join('')}</div>`;
 }
 
 /* ---------- Analyse-Logik ---------- */
@@ -525,7 +528,7 @@ function wmedian(vals,ws){
 }
 const ONE=()=>1;
 const eng=v=>v.views?(v.likes+v.comments+v.saves)/v.views*100:0;
-const W=(v,f)=>S.useWeights&&f&&f.wk?FACTOR[(v.weights&&v.weights[f.wk])||1]||1:1;
+const W=(v,f)=>S.useWeights&&f&&f.wk?FACTOR[lvl(v,f.wk)]??1:1;
 const wm=(vs,get,wf)=>wmedian(vs.map(get),vs.map(wf));
 const METRICS={
   views:{l:'Median-Views (24 h)',f:(vs,wf=ONE)=>wm(vs,v=>v.views,wf),fmt:short},
@@ -597,18 +600,23 @@ function explain(v){
       facs.push({f,txt:`${f.l} „${val}“`,r,n:vs.length,ok});
     }
   }
-  const tag=x=>{const w=v.weights&&v.weights[x.f.wk];return w>1?`<span class="wbadge">${WLABEL[w]}</span>`:''};
+  const tag=x=>{const w=lvl(v,x.f.wk);return w!==1?`<span class="wbadge${w===0?' low':''}">${WLABEL[w]}</span>`:''};
   const good=facs.filter(x=>x.ok);
   const pos=good.filter(x=>x.r>1.2).sort((a,b)=>b.r-a.r).slice(0,4).map(x=>({t:esc(x.txt)+tag(x),d:`läuft bei dir ${dec(x.r)}× so gut wie der Rest · ${x.n} Videos`}));
   const neg=good.filter(x=>x.r<.83).sort((a,b)=>a.r-b.r).slice(0,4).map(x=>({t:esc(x.txt)+tag(x),d:`läuft bei dir ${Math.round((1-x.r)*100)} % schlechter · ${x.n} Videos`}));
   const above=v.views>=allMed;
   /* Deine Einschätzung gegen die Daten prüfen */
-  const beliefs=Object.entries(v.weights||{}).filter(([,w])=>w>1).map(([k,w])=>{
+  const beliefs=Object.entries(v.weights||{}).filter(([,w])=>w!==1&&WLABEL[w]).map(([k,w])=>{
     const f=CAT.find(c=>c.wk===k),x=facs.find(y=>y.f===f);
     const label=`${WKEYS.find(q=>q.k===k).l} „${tagValue(v,k)}“`;
     if(!x||!x.ok)return {label,w,cls:'na',ic:'?',d:`Noch zu wenig Videos mit diesem Wert (${x?x.n:0}), um es zu prüfen.`};
-    const agrees=above?x.r>1.1:x.r<.9;
     const how=x.r>=1?`läuft bei dir ${dec(x.r)}× so gut wie der Rest`:`läuft bei dir ${Math.round((1-x.r)*100)} % schlechter`;
+    if(w===0){
+      const matters=x.r>=1.2||x.r<=1/1.2;
+      return matters?{label,w,cls:'no',ic:'!',d:`Die Daten sehen hier aber einen Unterschied: ${how}.`}
+                    :{label,w,cls:'ok',ic:'✓',d:`Die Daten sehen hier auch keinen großen Unterschied (${how.replace('läuft bei dir ','')}).`};
+    }
+    const agrees=above?x.r>1.1:x.r<.9;
     return agrees?{label,w,cls:'ok',ic:'✓',d:`Die Daten bestätigen das: ${how}.`}
                  :{label,w,cls:'no',ic:'!',d:`Die Daten sehen das bisher nicht: ${how}.`};
   });
@@ -632,13 +640,13 @@ const TIPS={
   recent:`<p>Deine zuletzt hochgeladenen Videos. Ein Klick öffnet die Details mit allen Zahlen, deinen Tags und der Auswertung „Warum lief es so?“.</p>`,
   videos:`<p>Alle eingetragenen Videos mit ihren Werten nach 24 Stunden.</p><ul><li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, ein zweiter Klick dreht die Reihenfolge um.</li><li><b>Suchen</b> durchsucht Titel, Spiel, Sound, Hook, Thema und Emotion.</li><li><b>Engagement:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views. Zeigt, wie stark Zuschauer reagieren, unabhängig davon, wie viele es waren.</li></ul><p>Ein Klick auf eine Zeile öffnet die Details. Dort kannst du das Video auch bearbeiten oder löschen.</p>`,
   insights:`<p>Clipradar vergleicht für jede Eigenschaft, z. B. Hook „Frage“, den <b>Median</b> aller Videos mit dieser Eigenschaft mit dem Median aller anderen Videos.</p><p>Angezeigt wird ein Muster nur, wenn</p><ul><li>beide Gruppen mindestens ${MIN_N} Videos haben und</li><li>der Unterschied mindestens 25 % beträgt.</li></ul><p>Pro Eigenschaft siehst du nur den stärksten Wert. Bei Zahlen wie der Videolänge wird geprüft, ob höhere Werte mit mehr oder weniger Views einhergehen (Rangkorrelation ρ ab 0,2).</p><p><b>Sicherheit:</b> berücksichtigt Größe des Unterschieds und Anzahl der Videos. „Stark“ ist ziemlich sicher kein Zufall, „schwach“ kann noch Zufall sein.</p><p>Ein Zusammenhang ist nicht automatisch die Ursache. Laufen z. B. Papaplatte-Clips besser, kann das auch daran liegen, dass du sie öfter abends postest. Mit den <b>Kombinationen</b> weiter unten kannst du das prüfen.</p><p>Ein Klick auf eine Zeile springt zur passenden Grafik.</p>`,
-  weights:`<p>Bei jedem Video kannst du markieren, woran es deiner Meinung nach lag:</p><ul><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Die Gewichtung gilt nur für die jeweilige Eigenschaft. Markierst du bei einem Video den Hook als Hauptgrund, zählt dieses Video beim Vergleich der Hooks 1,75-fach, bei allen anderen Eigenschaften normal.</p><p>Schalte die Gewichtung aus, um die reinen Daten zu sehen. Taucht ein Muster nur mit Gewichtung auf, beruht es vor allem auf deiner Einschätzung.</p>`,
+  weights:`<p>Bei jedem Video kannst du markieren, woran es deiner Meinung nach lag:</p><ul><li><b>nicht wichtig:</b> zählt nur 0,5-fach</li><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Die Gewichtung gilt nur für die jeweilige Eigenschaft. Markierst du bei einem Video den Hook als Hauptgrund, zählt dieses Video beim Vergleich der Hooks 1,75-fach, bei allen anderen Eigenschaften normal.</p><p>Schalte die Gewichtung aus, um die reinen Daten zu sehen. Taucht ein Muster nur mit Gewichtung auf, beruht es vor allem auf deiner Einschätzung.</p>`,
   compare:`<p>Wählt eine Eigenschaft und eine Kennzahl. Jeder Balken ist eine Gruppe, z. B. jeder Streamer.</p><ul><li>Die <b>senkrechte Linie</b> zeigt den Wert über alle Videos.</li><li><b>Graue Balken</b> beruhen auf weniger als ${MIN_N} Videos und sind noch nicht aussagekräftig.</li><li>Unter dem Namen stehen Anzahl der Videos und Flop-Quote.</li></ul><p><b>Kennzahlen:</b></p><ul><li><b>Median-Views / Median neue Follower:</b> mittlerer Wert der Gruppe</li><li><b>Flop-Quote:</b> Anteil unter der Flop-Grenze, niedriger ist besser</li><li><b>Engagement-Rate:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views</li></ul>`,
   heat:`<p>Kombiniert zwei Eigenschaften, z. B. Streamer und Hook. Jedes Feld zeigt den Wert für alle Videos, die beides haben, und darunter die Anzahl der Videos.</p><p>Je kräftiger die Farbe, desto besser der Wert. Blasse Felder beruhen auf nur einem Video, ein Strich bedeutet: diese Kombination gibt es noch nicht.</p><p>So findest du z. B. heraus, ob ein Hook bei allen Streamern funktioniert oder nur bei einem.</p>`,
   scatter:`<p>Jeder Punkt ist ein Video. Waagerecht steht die gewählte Zahl, senkrecht die Views nach 24 Stunden.</p><p>Die Views-Achse ist <b>logarithmisch</b>: Jede Linie bedeutet zehnmal so viele Views. So passen kleine und virale Videos in dieselbe Grafik. Die gestrichelte Linie ist deine Flop-Grenze.</p><p><b>ρ (Rangkorrelation)</b> misst den Zusammenhang von −1 bis +1. Positiv heißt: mehr davon, mehr Views. Negativ: mehr davon, weniger Views. Ab 0,25 ist der Zusammenhang mittel, ab 0,45 deutlich.</p><p>Ein Klick auf einen Punkt öffnet das Video.</p>`,
   streamer:`<p>Eine Karte pro Streamer, sortiert nach Median-Views. Collab-Videos mit mehreren Streamern zählen bei jedem Beteiligten.</p><ul><li><b>Median-Views:</b> mittlerer Wert seiner Videos</li><li><b>Flops:</b> Anteil unter der Flop-Grenze</li><li><b>Follower:</b> Summe der neuen Follower aus seinen Videos</li><li><b>Balken:</b> Views jedes Videos in zeitlicher Reihenfolge, rot = Flop, grün = viral</li><li><b>Bester Hook, Emotion, Spiel:</b> der Wert mit den höchsten Median-Views, mindestens 2 Videos nötig</li></ul><p>Ein Klick auf eine Karte zeigt alle Videos dieses Streamers.</p>`,
-  why:`<p>Clipradar vergleicht jede Eigenschaft dieses Videos mit deinen anderen Videos.</p><ul><li><b>Hat geholfen:</b> Videos mit dieser Eigenschaft laufen bei dir mindestens 20 % besser als der Rest.</li><li><b>Hat gebremst:</b> mindestens 17 % schlechter.</li></ul><p>Berücksichtigt werden nur Eigenschaften mit mindestens ${MIN_N} Videos.</p><p><b>Deine Einschätzung:</b> Was du als wichtig oder Hauptgrund markiert hast, wird gegen die Daten geprüft. ✓ heißt, die Daten zeigen in dieselbe Richtung wie das Ergebnis dieses Videos. ! heißt, die Daten sehen das bisher nicht.</p>`,
-  weightsVideo:`<p>Markier die Eigenschaften, die deiner Meinung nach für das Ergebnis verantwortlich waren, egal ob gut oder schlecht.</p><ul><li><b>wichtig:</b> zählt in der Analyse 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Änderungen werden sofort gespeichert. Oben unter „Warum lief es so?“ siehst du, ob die Daten deine Einschätzung bestätigen.</p>`,
+  why:`<p>Clipradar vergleicht jede Eigenschaft dieses Videos mit deinen anderen Videos.</p><ul><li><b>Hat geholfen:</b> Videos mit dieser Eigenschaft laufen bei dir mindestens 20 % besser als der Rest.</li><li><b>Hat gebremst:</b> mindestens 17 % schlechter.</li></ul><p>Berücksichtigt werden nur Eigenschaften mit mindestens ${MIN_N} Videos.</p><p><b>Deine Einschätzung:</b> Was du markiert hast, wird gegen die Daten geprüft. Bei „wichtig“ und „Hauptgrund“ heißt ✓: Die Daten zeigen in dieselbe Richtung wie das Ergebnis dieses Videos. Bei „nicht wichtig“ heißt ✓: Die Daten sehen bei dieser Eigenschaft auch keinen großen Unterschied (weniger als 20 %). ! heißt jeweils: Die Daten sehen das anders.</p>`,
+  weightsVideo:`<p>Markier, welche Eigenschaften deiner Meinung nach für das Ergebnis verantwortlich waren, egal ob gut oder schlecht, und welche keine Rolle gespielt haben.</p><ul><li><b>nicht wichtig:</b> zählt in der Analyse nur 0,5-fach</li><li><b>normal:</b> zählt einfach</li><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Änderungen werden sofort gespeichert. Oben unter „Warum lief es so?“ siehst du, ob die Daten deine Einschätzung bestätigen.</p>`,
   fStudio:`<p>Alle Werte findest du in <b>TikTok Studio</b> bei deinem Video unter <b>Analysen</b>. Trag sie möglichst genau 24 Stunden nach dem Upload ein, damit alle Videos fair verglichen werden.</p><p>Pflicht sind nur die Views, alle anderen Felder sind optional. Je vollständiger, desto mehr kann Clipradar auswerten.</p>`,
   fViews:`<p>Die Aufrufe nach 24 Stunden, in TikTok Studio unter „Videoaufrufe“.</p>`,
   fFollower:`<p>Wie viele Leute dir über dieses Video gefolgt sind, in TikTok Studio unter „Neue Follower“.</p>`,
@@ -658,7 +666,7 @@ const TIPS={
   fUT:`<p>Ob das Video eingebrannte Untertitel hat.</p>`,
   fAudio:`<p><b>Nur Original:</b> nur der Ton aus dem Stream. <b>Mit Musik:</b> Musik zusätzlich unterlegt. <b>Trend-Sound:</b> ein gerade angesagter TikTok-Sound.</p>`,
   fMood:`<p>Überflieg nach 24 Stunden die Kommentare: Sind sie überwiegend positiv, gemischt oder negativ? Mit <b>+</b> legst du eine neue Stimmung an, z. B. „hitzig“.</p><p>Die Stimmung ist eine Folge des Videos, nicht die Ursache. Deshalb taucht sie nicht in den automatischen Erkenntnissen auf, du kannst sie aber im Tab Analyse vergleichen.</p>`,
-  fWeights:`<p>Optional: Was war deiner Meinung nach entscheidend für das Ergebnis, egal ob gut oder schlecht?</p><ul><li><b>wichtig</b> zählt in der Analyse 1,25-fach</li><li><b>Hauptgrund</b> zählt 1,75-fach</li></ul><p>Das kannst du später in den Details des Videos jederzeit ändern.</p>`
+  fWeights:`<p>Optional: Was war deiner Meinung nach entscheidend für das Ergebnis, egal ob gut oder schlecht, und was hat keine Rolle gespielt?</p><ul><li><b>nicht wichtig</b> zählt in der Analyse nur 0,5-fach</li><li><b>normal</b> zählt einfach</li><li><b>wichtig</b> zählt 1,25-fach</li><li><b>Hauptgrund</b> zählt 1,75-fach</li></ul><p>Das kannst du später in den Details des Videos jederzeit ändern.</p>`
 };
 const tipHtml=k=>{const t=TIPS[k];return typeof t==='function'?t():t||''};
 
@@ -817,7 +825,7 @@ const ILIMIT=5;
 function renderAnalyse(){
   if(VIDEOS.length<3){$('#view-analyse').innerHTML=VIDEOS.length?`<div class="view-head"><h1>Analyse</h1></div><div class="card empty-state"><h2>Noch zu wenig Videos</h2><p>Die Analyse startet ab 3 Videos und wird ab etwa 20 aussagekräftig. Du hast ${VIDEOS.length} eingetragen.</p><button class="btn primary" data-new>${ICON.plus}Video eintragen</button></div>`:emptyState('Analyse');return}
   const ins=computeInsights(S.insMetric),shown=S.insAll?ins:ins.slice(0,ILIMIT);
-  const nMarked=VIDEOS.filter(v=>Object.values(v.weights||{}).some(w=>w>1)).length;
+  const nMarked=VIDEOS.filter(v=>Object.values(v.weights||{}).some(w=>w!==1)).length;
   $('#view-analyse').innerHTML=`
     <div class="view-head"><h1>Analyse</h1>
       <div class="ctl-row"><label class="toggle"><input type="checkbox" id="useW" ${S.useWeights?'checked':''}>Meine Gewichtung <span class="mono" style="color:var(--faint)">${nMarked}</span></label>${info('weights')}</div></div>
@@ -930,7 +938,7 @@ function whyHtml(v){
   const li=a=>a.map(x=>`<li><div>${x.t}<small>${x.d}</small></div></li>`).join('');
   return `${titled('h3','Warum lief es so?','why')}
       <p class="verdict">${fmt(v.views)} Views · ${ex.verdict}</p>
-      ${ex.beliefs.length?`<div><p class="fac-head">Deine Einschätzung</p><ul class="belief">${ex.beliefs.map(b=>`<li><span class="ic ${b.cls}">${b.ic}</span><div>${esc(b.label)}<span class="wbadge">${WLABEL[b.w]}</span><small>${b.d}</small></div></li>`).join('')}</ul></div>`:''}
+      ${ex.beliefs.length?`<div><p class="fac-head">Deine Einschätzung</p><ul class="belief">${ex.beliefs.map(b=>`<li><span class="ic ${b.cls}">${b.ic}</span><div>${esc(b.label)}<span class="wbadge${b.w===0?' low':''}">${WLABEL[b.w]}</span><small>${b.d}</small></div></li>`).join('')}</ul></div>`:''}
       ${ex.pos.length?`<div><p class="fac-head">Hat laut Daten geholfen</p><ul class="fac pos">${li(ex.pos)}</ul></div>`:''}
       ${ex.neg.length?`<div><p class="fac-head">Hat laut Daten eher gebremst</p><ul class="fac neg">${li(ex.neg)}</ul></div>`:''}
       ${!ex.pos.length&&!ex.neg.length?`<p style="color:var(--muted);font-size:13px">${VIDEOS.length<10?'Noch zu wenig Videos, um Muster zu erkennen.':'Keine Eigenschaft weicht deutlich von deinem Schnitt ab.'}</p>`:''}`;
@@ -1018,7 +1026,7 @@ function openForm(edit){
     const v={...(edit||{}),title:raw('ftitle')||`${streamers.join(' & ')}: ${raw('fspiel')||'Clip'}`,date,streamers,
       spiel:raw('fspiel')||'Unbekannt',thema:raw('fthema')||'Unbekannt',hook:raw('fhook')||'Unbekannt',sound:raw('fsound')||'Originalton',
       emotion:fd.get('femo')||'unbekannt',overlay:fd.get('fov')||'keins',untertitel:fd.get('fut'),audio:fd.get('fau'),stimmung:fd.get('fmood')||'gemischt',
-      weights:Object.fromEntries(WKEYS.map(w=>[w.k,+fd.get('w_'+w.k)||1]).filter(([,x])=>x>1)),
+      weights:Object.fromEntries(WKEYS.map(w=>{const x=fd.get('w_'+w.k);return [w.k,x==null?1:+x]}).filter(([,x])=>x!==1)),
       keinePointe:!!fd.get('fnopointe'),pointe:fd.get('fnopointe')?null:(n('fpointe')??3),laenge,views:n('fviews'),follower:n('ffollower')??0,likes:n('flikes')??0,comments:n('fcomments')??0,saves:n('fsaves')??0,
       avgWatch:n('favg')??laenge*.5,totalWatch:n('ftotal')??0};
     delete v.link;
@@ -1173,7 +1181,7 @@ document.addEventListener('change',e=>{
   else if(e.target.name&&e.target.name.startsWith('dw_')){
     const vv=VIDEOS.find(x=>x.id===openId);if(!vv)return;
     const k=e.target.name.slice(3);
-    vv.weights=vv.weights||{};if(+v>1)vv.weights[k]=+v;else delete vv.weights[k];
+    vv.weights=vv.weights||{};if(+v!==1)vv.weights[k]=+v;else delete vv.weights[k];
     renderAll();$('#whyBox').innerHTML=whyHtml(vv);updateVideo(vv).then(()=>toast(DEMO?'Nur in der Vorschau geändert':'Einschätzung gespeichert')).catch(fail);
   }
   else if(id==='flopInput'){const n=parseInt(v,10);if(n>=0){FLOP=n;remember('clipradar-flop',n);renderAll()}}

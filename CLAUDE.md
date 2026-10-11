@@ -23,5 +23,5 @@ TikTok-Analytics für einen Account mit Clips deutscher Streamer. Der Nutzer pro
 ## Wichtig
 - Die Live-Datenbank enthält echte Daten des Nutzers. Nie remote löschen oder Schema-Änderungen ohne Rückfrage.
 - Flop = unter 9.000 Views nach 24 h (in der App einstellbar).
-- Gewichtung: gespeichert als Stufe 2/3 pro Tag, zählt als Faktor 1,25 (wichtig) bzw. 1,75 (Hauptgrund), siehe `FACTOR`.
+- Gewichtung: gespeichert als Stufe 0/2/3 pro Tag (1 = normal wird nicht gespeichert), Faktor 0,5 (nicht wichtig), 1,25 (wichtig), 1,75 (Hauptgrund), siehe `FACTOR` und `lvl()`. Achtung: Stufe 0 ist falsy, nie `|| 1` verwenden.
 - Design: ruhig und professionell (Geist/Geist Mono, neutrale Farben). Erklärungen nie als sichtbarer Fließtext, sondern ausführlich im ⓘ-Tooltip (`info('key')` + Eintrag in `TIPS`).
