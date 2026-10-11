@@ -647,7 +647,7 @@ const TIPS={
   streamer:`<p>Eine Karte pro Streamer, sortiert nach Median-Views. Collab-Videos mit mehreren Streamern zählen bei jedem Beteiligten.</p><ul><li><b>Median-Views:</b> mittlerer Wert seiner Videos</li><li><b>Flops:</b> Anteil unter der Flop-Grenze</li><li><b>Follower:</b> Summe der neuen Follower aus seinen Videos</li><li><b>Balken:</b> Views jedes Videos in zeitlicher Reihenfolge, rot = Flop, grün = viral</li><li><b>Bester Hook, Emotion, Spiel:</b> der Wert mit den höchsten Median-Views, mindestens 2 Videos nötig</li></ul><p>Ein Klick auf eine Karte zeigt alle Videos dieses Streamers.</p>`,
   why:`<p>Clipradar vergleicht jede Eigenschaft dieses Videos mit deinen anderen Videos.</p><ul><li><b>Hat geholfen:</b> Videos mit dieser Eigenschaft laufen bei dir mindestens 20 % besser als der Rest.</li><li><b>Hat gebremst:</b> mindestens 17 % schlechter.</li></ul><p>Berücksichtigt werden nur Eigenschaften mit mindestens ${MIN_N} Videos.</p><p><b>Deine Einschätzung:</b> Was du markiert hast, wird gegen die Daten geprüft. Bei „wichtig“ und „Hauptgrund“ heißt ✓: Die Daten zeigen in dieselbe Richtung wie das Ergebnis dieses Videos. Bei „nicht wichtig“ heißt ✓: Die Daten sehen bei dieser Eigenschaft auch keinen großen Unterschied (weniger als 20 %). ! heißt jeweils: Die Daten sehen das anders.</p>`,
   weightsVideo:`<p>Markier, welche Eigenschaften deiner Meinung nach für das Ergebnis verantwortlich waren, egal ob gut oder schlecht, und welche keine Rolle gespielt haben.</p><ul><li><b>nicht wichtig:</b> zählt in der Analyse nur 0,5-fach</li><li><b>normal:</b> zählt einfach</li><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Änderungen werden sofort gespeichert. Oben unter „Warum lief es so?“ siehst du, ob die Daten deine Einschätzung bestätigen.</p>`,
-  fStudio:`<p>Alle Werte findest du in <b>TikTok Studio</b> bei deinem Video unter <b>Analysen</b>. Trag sie möglichst genau 24 Stunden nach dem Upload ein, damit alle Videos fair verglichen werden.</p><p>Pflicht sind nur die Views, alle anderen Felder sind optional. Je vollständiger, desto mehr kann Clipradar auswerten.</p>`,
+  fStudio:`<p>Alle Werte findest du in <b>TikTok Studio</b> bei deinem Video unter <b>Analysen</b>. Trag sie möglichst genau 24 Stunden nach dem Upload ein, damit alle Videos fair verglichen werden.</p><p>Pflicht sind nur die Views, alle anderen Felder sind optional. Je vollständiger, desto mehr kann Clipradar auswerten.</p><p><b>Tipp:</b> Mit <b>Enter</b> springst du ins nächste Feld. Nach dem letzten Feld landest du auf „Speichern“, ein weiteres Enter speichert.</p>`,
   fViews:`<p>Die Aufrufe nach 24 Stunden, in TikTok Studio unter „Videoaufrufe“.</p>`,
   fFollower:`<p>Wie viele Leute dir über dieses Video gefolgt sind, in TikTok Studio unter „Neue Follower“.</p>`,
   fAvg:`<p>„Durchschnittliche Wiedergabedauer“ in Sekunden. Wie lange ein Zuschauer im Schnitt zugeschaut hat.</p><p>Komma oder Punkt als Dezimalzeichen geht beides.</p>`,
@@ -1013,6 +1013,7 @@ function openForm(edit){
     <p class="err" id="ferr" hidden></p>
     <div class="form-actions"><button type="button" class="btn" id="fcancel">Abbrechen</button><button type="submit" class="btn primary" id="fsubmit">${edit?'Änderungen speichern':'Speichern und auswerten'}</button></div>
   </form>`);
+  document.querySelectorAll('#vform input.inp').forEach(i=>i.enterKeyHint='next');
   $('#fcancel').onclick=()=>edit?openVideo(edit.id):closeDrawer();
   $('#vform').onsubmit=async e=>{
     e.preventDefault();
@@ -1154,6 +1155,15 @@ document.addEventListener('keydown',e=>{
   if(t.classList&&t.classList.contains('chip-input')){
     if(e.key==='Enter'){e.preventDefault();finishAddChip(t,true)}
     else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();finishAddChip(t,false)}
+    return;
+  }
+  /* Enter im Formular: ins nächste Feld statt speichern */
+  if(e.key==='Enter'&&!e.isComposing&&t.matches&&t.matches('#vform input.inp')){
+    e.preventDefault();closeCombos();
+    const fields=[...document.querySelectorAll('#vform input.inp')].filter(i=>!i.disabled&&i.offsetParent!==null);
+    const next=fields[fields.indexOf(t)+1];
+    if(next){next.focus();if(next.type!=='datetime-local')try{next.select()}catch(_){}}
+    else $('#fsubmit').focus();
     return;
   }
   if(e.key==='Escape'){
