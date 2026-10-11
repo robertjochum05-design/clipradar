@@ -267,7 +267,7 @@ input[type=number].inp{font-family:var(--mono)}
 .combo-menu .none{padding:6px 8px;color:var(--muted);font-size:12.5px}
 .opts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .opts label{cursor:pointer;position:relative}
-.opts input{position:absolute;opacity:0;pointer-events:none}
+.opts input[type=radio],.opts input[type=checkbox]{position:absolute;opacity:0;pointer-events:none}
 .opts span{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:var(--r-sm);border:1px solid var(--line-2);font-size:13px;background:var(--surface)}
 .opts label:hover span{background:var(--hover)}
 .opts input:checked + span{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:500}
@@ -275,7 +275,7 @@ input[type=number].inp{font-family:var(--mono)}
 .chip-add{width:28px;height:28px;border-radius:var(--r-sm);border:1px dashed var(--line-2);background:none;cursor:pointer;color:var(--muted);display:grid;place-items:center;padding:0}
 .chip-add:hover{color:var(--ink);border-color:var(--muted)}
 .chip-add svg{width:13px;height:13px}
-.chip-input{height:28px;width:150px;padding:0 9px;border:1px solid var(--accent);border-radius:var(--r-sm);background:var(--surface);font-size:13px;outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.chip-input{height:28px;width:170px;max-width:100%;padding:0 9px;border:1px solid var(--accent);border-radius:var(--r-sm);background:var(--surface);font-size:13px;outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
 .wrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-sm)}
 .wrow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;padding:7px 10px;border-top:1px solid var(--line)}
 .wrow:first-child{border-top:none}
@@ -973,7 +973,7 @@ const withDefaults=(defs,key,extra)=>[...new Set([...defs,...uniq(key),...(extra
 const flabel=(id,l,tipKey,suf)=>`<div class="flabel"><label for="${id}">${l}${suf?` <small>(${suf})</small>`:''}</label>${tipKey?info(tipKey):''}</div>`;
 const numF=(id,l,ph,suf,val,tipKey)=>`<div class="f">${flabel(id,l,tipKey,suf)}<input class="inp" type="number" id="${id}" name="${id}" min="0" step="any" placeholder="${ph}" inputmode="decimal" value="${val??''}"></div>`;
 const comboF=(id,l,key,ph,val,tipKey,multi)=>`<div class="f${multi?' full':''}">${flabel(id,l,tipKey)}<div class="combo"><input class="inp" type="text" id="${id}" name="${id}" placeholder="${ph}" value="${esc(val??'')}" autocomplete="off"><button type="button" class="combo-btn" data-combo="${id}" data-key="${key}" ${multi?'data-multi="1"':''} aria-label="Zuletzt verwendet" aria-expanded="false">${ICON.chev}</button><div class="combo-menu" hidden></div></div></div>`;
-const chipsF=(name,l,opts,sel,tipKey,addLabel)=>`<div class="f"><div class="flabel"><span>${l}</span>${tipKey?info(tipKey):''}</div><div class="opts" role="radiogroup" aria-label="${l}">${opts.map(o=>chip(name,o,o===sel)).join('')}${addLabel?`<button type="button" class="chip-add" data-add="${name}" aria-label="${addLabel}" title="${addLabel}">${ICON.plus}</button>`:''}</div></div>`;
+const chipsF=(name,l,opts,sel,tipKey,addLabel)=>`<div class="f"><div class="flabel"><span>${l}</span>${tipKey?info(tipKey):''}</div><div class="opts" role="radiogroup" aria-label="${l}">${opts.map(o=>chip(name,o,o===sel)).join('')}${addLabel?`<button type="button" class="chip-add" data-add="${name}" data-ph="${addLabel.replace(' hinzufügen','')} …" aria-label="${addLabel}" title="${addLabel}">${ICON.plus}</button>`:''}</div></div>`;
 const chip=(name,o,checked)=>`<label><input type="radio" name="${name}" value="${esc(o)}" ${checked?'checked':''}><span>${esc(o)}</span></label>`;
 const localInput=d=>{const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`};
 function openForm(edit){
@@ -1000,7 +1000,7 @@ function openForm(edit){
         <div class="f">${flabel('fpointe','Zeit bis zur Pointe','fPointe','s')}<input class="inp" type="number" id="fpointe" name="fpointe" min="0" step="any" placeholder="3" inputmode="decimal" value="${e0.keinePointe?'':(e0.pointe??'')}" ${e0.keinePointe?'disabled':''}><label class="check"><input type="checkbox" id="fnopointe" name="fnopointe" ${e0.keinePointe?'checked':''}>Keine Pointe</label></div>
       </div>
       ${chipsF('femo','Emotion',withDefaults(DEF_EMO,'emotion',e0.emotion),e0.emotion||'lustig','fEmotion','Neue Emotion hinzufügen')}
-      ${chipsF('fov','Text-Overlay',withDefaults(DEF_OV,'overlay',e0.overlay),e0.overlay||'keins','fOverlay','Neue Art von Text-Overlay hinzufügen')}
+      ${chipsF('fov','Text-Overlay',withDefaults(DEF_OV,'overlay',e0.overlay),e0.overlay||'keins','fOverlay','Neues Text-Overlay hinzufügen')}
       <div class="fgrid">
         ${chipsF('fut','Untertitel',['ja','nein'],e0.untertitel||'ja','fUT')}
         ${chipsF('fau','Audio',['nur Original','mit Musik','Trend-Sound'],e0.audio||'nur Original','fAudio')}
@@ -1059,7 +1059,7 @@ function pickCombo(item){
 /* Neue Option per + anlegen */
 function startAddChip(btn){
   const inp=document.createElement('input');
-  inp.className='chip-input';inp.dataset.for=btn.dataset.add;inp.placeholder='Neu …';inp.setAttribute('aria-label',btn.getAttribute('aria-label'));
+  inp.className='chip-input';inp.type='text';inp.dataset.for=btn.dataset.add;inp.placeholder=btn.dataset.ph||'Neu …';inp.enterKeyHint='done';inp.setAttribute('aria-label',btn.getAttribute('aria-label'));
   btn.hidden=true;btn.before(inp);inp.focus();
 }
 function finishAddChip(inp,keep){
