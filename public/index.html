@@ -312,6 +312,83 @@ input[type=number].inp{font-family:var(--mono)}
 .empty-state p{color:var(--muted);max-width:56ch}
 .loading{color:var(--muted);padding:40px 0}
 
+/* Bewegung & Feinschliff */
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{transform:translateX(32px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes flash{0%{background:var(--accent-mid)}100%{background:transparent}}
+@keyframes shimmer{from{background-position:-400px 0}to{background-position:400px 0}}
+@keyframes ringIn{from{stroke-dashoffset:289.03}to{stroke-dashoffset:0}}
+@keyframes check{to{stroke-dashoffset:0}}
+.view.enter{animation:fadeUp .22s ease-out}
+.drawer:not([hidden]){animation:slideIn .26s cubic-bezier(.2,.8,.2,1)}
+.scrim:not([hidden]){animation:fadeIn .2s ease-out}
+.btn{transition:transform .08s ease,background-color .15s,border-color .15s,filter .15s,color .15s}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary.done,.btn.primary.done:hover{background:var(--good);border-color:var(--good);color:#fff;filter:none}
+.btn .ck path{stroke-dasharray:14;stroke-dashoffset:14;animation:check .32s .05s ease-out forwards}
+.track .fill{transform-origin:left center;animation:grow .5s cubic-bezier(.2,.8,.2,1)}
+.flash,.flash>td{animation:flash .5s ease-out}
+.leaving{opacity:0!important;transform:translateX(14px);transition:opacity .25s ease,transform .25s ease}
+.ins.reveal{animation:fadeUp .3s ease-out both}
+.progress span{transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.ring-anim{animation:ringIn .8s cubic-bezier(.2,.8,.2,1) both}
+.skel{background:linear-gradient(90deg,var(--surface-2) 0,var(--hover) 50%,var(--surface-2) 100%);background-size:800px 100%;animation:shimmer 1.3s linear infinite;border-radius:var(--r);border:1px solid var(--line)}
+.card.kpi{transition:border-color .15s}
+.card.kpi:hover{border-color:var(--line-2)}
+circle.pt{transition:transform .15s ease;transform-box:fill-box;transform-origin:center}
+circle.pt:hover{transform:scale(1.7)}
+table.heat td:not(.empty){transition:box-shadow .12s}
+table.heat td:not(.empty):hover{box-shadow:inset 0 0 0 2px var(--ink)}
+table.heat td.best{box-shadow:inset 0 0 0 2px var(--good)}
+.ctip{position:absolute;pointer-events:none;background:var(--tip-bg);color:var(--tip-ink);font-size:12px;padding:5px 8px;border-radius:5px;white-space:nowrap;transform:translate(-50%,calc(-100% - 10px));z-index:3;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.ctip span{opacity:.7}
+#trendSvg{touch-action:pan-y}
+.kdelta{font-size:11.5px;font-weight:500}
+.kdelta.up{color:var(--good)} .kdelta.down{color:var(--bad)} .kdelta.flat{color:var(--faint)}
+.badges{display:inline-flex;gap:4px;align-items:center;white-space:nowrap}
+.badge.rec{background:var(--accent-soft);color:var(--accent)}
+.vbar{height:3px;border-radius:2px;margin:4px 0 0 auto;opacity:.8;max-width:100%}
+.selcell{width:34px;padding-right:0!important}
+.selcell input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;margin:0;vertical-align:middle}
+.vt-wrap{overflow:auto;max-height:min(74vh,980px);border-top:1px solid var(--line)}
+table.vt thead th{position:sticky;top:0;z-index:2;background:var(--surface)}
+.bulk{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:7px 10px;margin-bottom:10px;border:1px solid var(--accent-mid);background:var(--accent-soft);border-radius:var(--r-sm);font-size:13px;animation:fadeUp .18s ease-out}
+.bulk b{font-weight:600;margin-right:4px}
+tr.open>td{background:var(--hover)}
+tr.exp>td{background:var(--surface-2);padding:14px 16px;border-bottom:1px solid var(--line);cursor:default}
+tr.exp .exp-in{animation:fadeUp .2s ease-out}
+.exp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px}
+.mgrid.sm b{font-size:13px}
+.mgrid.sm div{padding:7px 10px}
+.menu-wrap{position:relative}
+.pop{position:absolute;right:0;top:calc(100% + 4px);z-index:6;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-sm);box-shadow:0 10px 30px rgba(0,0,0,.14);padding:6px;min-width:210px;max-height:340px;overflow:auto;animation:fadeUp .15s ease-out}
+.pop .mh{font-size:11px;font-weight:500;color:var(--faint);padding:4px 8px;text-transform:uppercase;letter-spacing:.05em}
+.pop label{display:flex;gap:8px;align-items:center;padding:5px 8px;border-radius:4px;font-size:13px;cursor:pointer}
+.pop label:hover{background:var(--hover)}
+.pop input{accent-color:var(--accent);margin:0}
+.warn-box{border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);background:var(--warn-soft);border-radius:var(--r-sm);padding:9px 12px;font-size:12.5px;animation:fadeUp .18s ease-out}
+.warn-box b{color:var(--warn)}
+.warn-box ul{margin:4px 0 0;padding-left:18px}
+.req{color:var(--bad);font-weight:600}
+.typo{font-size:12px;color:var(--warn)}
+.typo button{border:none;background:none;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px}
+.chip-x{border:none;background:none;color:var(--faint);cursor:pointer;padding:0 0 0 7px;margin-right:-3px;font-size:15px;line-height:1;display:inline-grid;place-items:center}
+.chip-x:hover{color:var(--bad)}
+.draft-note{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:6px 6px 6px 12px}
+.newbadge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:1px 5px;border-radius:3px;background:var(--good-soft);color:var(--good);margin-left:6px;vertical-align:1px}
+.since{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);padding:10px 6px 0;border-top:1px solid var(--line);margin-top:4px}
+.ins-list.gone .ins{opacity:.55}
+.ins-list.gone .ins p{text-decoration:line-through;text-decoration-color:var(--line-2)}
+.toast{display:flex;align-items:center;gap:12px}
+.toast-btn{border:none;background:none;color:inherit;font:inherit;font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer;padding:0}
+kbd{font-family:var(--mono);font-size:10.5px;padding:0 5px;border-radius:4px;border:1px solid currentColor;opacity:.6;margin-left:2px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+.big-spark{height:84px;gap:3px}
+.cat-block+.cat-block{margin-top:14px}
+.cat-block .bar-row{grid-template-columns:minmax(90px,170px) minmax(0,1fr) 54px}
+.greet-sub b{color:var(--ink);font-weight:500}
 @media (max-width:1000px){
   .g-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
   .g-2,.g-2e{grid-template-columns:minmax(0,1fr)}
@@ -329,8 +406,10 @@ input[type=number].inp{font-family:var(--mono)}
   .fgrid{grid-template-columns:minmax(0,1fr)}
   .mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .kpi .val{font-size:22px}
+  .exp-grid{grid-template-columns:minmax(0,1fr)}
+  kbd{display:none}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
@@ -394,7 +473,8 @@ const timeStr=d=>`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes(
 let FLOP=9000, VIRAL=100000;
 const status=v=>v.views<FLOP?'flop':v.views>=VIRAL?'viral':'gut';
 const STATUS_LABEL={flop:'Flop',gut:'Gut',viral:'Viral'};
-const badge=v=>`<span class="badge ${status(v)}">${STATUS_LABEL[status(v)]}</span>`;
+let RECORD_ID=null; // Video mit den meisten Views
+const badge=v=>`<span class="badges"><span class="badge ${status(v)}">${STATUS_LABEL[status(v)]}</span>${v.id===RECORD_ID?'<span class="badge rec">Rekord</span>':''}</span>`;
 const ICON={
   info:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.2v4"/><circle cx="8" cy="4.9" r=".55" fill="currentColor" stroke="none"/></svg>',
   up:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4.5 11.5l7-7M6 4.5h5.5V10"/></svg>',
@@ -479,6 +559,10 @@ const fromRow=r=>{
 };
 async function loadVideos(){const rows=await api('GET','/videos');VIDEOS.length=0;VIDEOS.push(...rows.map(fromRow))}
 async function createVideo(v){const r=await api('POST','/videos',toData(v));v.id=r.id;VIDEOS.push(v);return v}
+async function createMany(list){const r=await api('POST','/videos',list.map(toData));r.ids.forEach((id,i)=>{list[i].id=id});VIDEOS.push(...list);return list}
+const SETTINGS={hidden:{}};
+async function loadSettings(){try{const s=await api('GET','/settings');if(s&&typeof s==='object')Object.assign(SETTINGS,s);SETTINGS.hidden=SETTINGS.hidden||{}}catch(e){console.warn('Einstellungen nicht geladen',e)}}
+async function saveSetting(k){if(!DEMO)await api('PUT','/settings',{key:k,value:SETTINGS[k]})}
 async function updateVideo(v){if(!DEMO)await api('PUT','/videos/'+v.id,toData(v))}
 async function deleteVideo(id){if(!DEMO)await api('DELETE','/videos/'+id);const i=VIDEOS.findIndex(v=>v.id===id);if(i>=0)VIDEOS.splice(i,1)}
 async function deleteAll(){if(DEMO)return exitDemo();await api('DELETE','/videos');VIDEOS.length=0}
@@ -553,7 +637,7 @@ const confOf=s=>s>=2.5?'stark':s>=1.3?'mittel':'schwach';
 const CONF_LEVEL={stark:3,mittel:2,schwach:1};
 const MIN_N=4;
 
-function computeInsights(mk){
+function computeInsights(mk,list=VIDEOS){
   const val=v=>mk==='follower'?v.follower:v.views;
   const unit=mk==='follower'?'neue Follower':'Views';
   const out=[];
@@ -561,40 +645,40 @@ function computeInsights(mk){
     if(f.after)continue;
     const wf=v=>W(v,f);
     let best=null;
-    for(const [name,vs] of groups(f)){
-      const rest=VIDEOS.filter(v=>!f.g(v).includes(name));
+    for(const [name,vs] of groups(f,list)){
+      const rest=list.filter(v=>!f.g(v).includes(name));
       if(vs.length<MIN_N||rest.length<MIN_N)continue;
       const a=wm(vs,val,wf),b=wm(rest,val,wf);
       if(!a||!b)continue;
       const ratio=a/b,score=Math.abs(Math.log(ratio))*Math.sqrt(Math.min(vs.length,rest.length));
-      if(!best||score>best.score)best={name,a,b,ratio,n:vs.length,rn:rest.length,score,mk:marks(vs,f)};
+      if(!best||score>best.score+1e-9||(Math.abs(score-best.score)<=1e-9&&(ratio>best.ratio||(ratio===best.ratio&&String(name)<String(best.name)))))best={name,a,b,ratio,n:vs.length,rn:rest.length,score,mk:marks(vs,f)};
     }
     if(!best||Math.abs(Math.log(best.ratio))<Math.log(1.25))continue;
     const up=best.ratio>=1;
     const eff=up?`<b class="num">${dec(best.ratio)}×</b> so viele ${unit}`:`<b class="num">${Math.round((1-best.ratio)*100)} %</b> weniger ${unit}`;
-    out.push({field:f.k,up,score:best.score,conf:confOf(best.score),
+    out.push({key:`${f.k}|${best.name}|${up}`,field:f.k,up,score:best.score,conf:confOf(best.score),
       html:`${esc(f.l)} <b>„${esc(best.name)}“</b> bringt ${eff} als der Rest${best.mk&&S.useWeights?`<span class="wbadge">${best.mk}× markiert</span>`:''}`,
       detail:`Median ${fmt(best.a)} vs. ${fmt(best.b)} · ${best.n} vs. ${best.rn} Videos`});
   }
   for(const nf of NUM){
-    const list=VIDEOS.filter(v=>nf.g(v)!=null);
-    if(list.length<MIN_N)continue;
-    const rho=spearman(list.map(nf.g),list.map(val));
+    const nl=list.filter(v=>nf.g(v)!=null);
+    if(nl.length<MIN_N)continue;
+    const rho=spearman(nl.map(nf.g),nl.map(val));
     if(Math.abs(rho)<.2)continue;
-    const score=Math.abs(rho)*Math.sqrt(list.length)*.8;
-    out.push({num:nf.k,up:rho>0,score,conf:confOf(score),
+    const score=Math.abs(rho)*Math.sqrt(nl.length)*.8;
+    out.push({key:`${nf.k}|${rho>0}`,num:nf.k,up:rho>0,score,conf:confOf(score),
       html:`${nf.phrase}, desto <b>${rho>0?'mehr':'weniger'}</b> ${unit}`,
-      detail:`Rangkorrelation ρ = ${dec(rho,2)} · ${list.length} Videos`});
+      detail:`Rangkorrelation ρ = ${dec(rho,2)} · ${nl.length} Videos`});
   }
   return out.sort((a,b)=>b.score-a.score);
 }
-function insightList(items){
-  return `<ul class="ins-list">${items.map(it=>`<li class="ins" tabindex="0" ${it.field?`data-field="${it.field}"`:`data-num="${it.num}"`}>
+function insightList(items,o={}){
+  const rv=i=>o.revealFrom!=null&&i>=o.revealFrom;
+  return `<ul class="ins-list${o.gone?' gone':''}">${items.map((it,i)=>`<li class="ins${rv(i)?' reveal':''}"${rv(i)?` style="animation-delay:${(i-o.revealFrom)*45}ms"`:''} tabindex="0" ${it.field?`data-field="${it.field}"`:`data-num="${it.num}"`}>
     <span class="dir ${it.up?'up':'down'}">${it.up?ICON.up:ICON.down}</span>
-    <div><p>${it.html}</p><small>${it.detail}</small></div>
+    <div><p>${it.html}${it.isNew?'<span class="newbadge">neu</span>':''}</p><small>${it.detail}</small></div>
     <span class="conf"><span class="meter" data-l="${CONF_LEVEL[it.conf]}"><i></i><i></i><i></i></span>${it.conf}</span></li>`).join('')}</ul>`;
 }
-
 function explain(v){
   const allMed=median(VIDEOS.map(x=>x.views));
   const facs=[];
@@ -639,31 +723,31 @@ const TIPS={
   viral:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>viral</b> gilt. Aktuell: ab ${fmt(VIRAL)} Views.</p><p>Die Grenze beeinflusst die Verteilung in der Karte „Ergebnisse“, die grüne Einfärbung in den Grafiken und die Status-Spalte. Sie muss über der Flop-Grenze liegen.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
   demo:`<p>Du siehst <b>72 erfundene Videos</b>, damit du ausprobieren kannst, wie Clipradar Zusammenhänge erkennt. In die Daten sind absichtlich Muster eingebaut, z. B. dass Untertitel helfen und Videos über 45 Sekunden schlechter laufen.</p><p>Die Beispieldaten landen <b>nie in deiner Datenbank</b>. Änderungen daran sind nur eine Vorschau. Sie verschwinden, wenn du sie ausblendest, die Seite neu lädst oder dein erstes eigenes Video einträgst.</p>`,
   empty:`<p>Trag jedes Video <b>24 Stunden nach dem Upload</b> ein. Die Zahlen findest du in TikTok Studio unter dem jeweiligen Video.</p><p>Ab etwa 10 Videos erscheinen erste Muster, ab 20 bis 50 Videos werden die Ergebnisse verlässlich.</p><p>Mit den <b>Beispieldaten</b> siehst du vorher, wie die Auswertung aussieht. Sie werden nicht gespeichert.</p>`,
-  kpiFollower:`<p>Summe der <b>neuen Follower</b> aus allen eingetragenen Videos, jeweils der Wert nach 24 Stunden aus TikTok Studio.</p><p>Der Balken zeigt den Fortschritt zu deinem Ziel von <b>10.000 Followern</b>.</p><p>Follower, die später als 24 Stunden nach dem Upload oder direkt über dein Profil dazukommen, sind nicht enthalten. Deine echte Followerzahl kann deshalb höher sein.</p>`,
-  kpiMedian:`<p>Der <b>Median</b> ist der mittlere Wert: Die Hälfte deiner Videos hat mehr Views, die andere Hälfte weniger.</p><p>Anders als der Durchschnitt wird der Median nicht von einzelnen Viral-Hits verzerrt. Ein Video mit 400.000 Views würde den Durchschnitt stark nach oben ziehen, den Median kaum.</p>`,
-  kpiFlop:()=>`<p>Anteil deiner Videos, die nach 24 Stunden unter der Flop-Grenze von <b>${fmt(FLOP)} Views</b> lagen.</p><p>Die Grenze kannst du in der Karte „Ergebnisse“ oder links in der Seitenleiste ändern.</p>`,
-  kpiVideos:`<p>Anzahl aller eingetragenen Videos.</p><p>Die Zahl pro Woche ist der Durchschnitt zwischen deinem ersten und deinem letzten eingetragenen Video.</p>`,
-  trend:`<p>Zeigt, wie sich <b>neue Follower</b>, <b>Views</b> oder <b>Likes</b> im gewählten Zeitraum aufsummieren. Die Linie steigt an den Tagen, an denen du Videos hochgeladen hast.</p><p>Gezählt wird jedes Video mit seinen Werten nach 24 Stunden, einsortiert nach dem <b>Upload-Datum</b>. Spätere Views nach den ersten 24 Stunden sind nicht enthalten, weil du nur den 24-Stunden-Stand einträgst.</p><p>Die Prozentzahl vergleicht mit dem gleich langen Zeitraum direkt davor, z. B. die letzten 30 Tage mit den 30 Tagen davor.</p>`,
-  dist:()=>`<p>Verteilung deiner Videos nach ihrem Ergebnis nach 24 Stunden:</p><ul><li><b>Flop:</b> unter ${fmt(FLOP)} Views</li><li><b>Gut:</b> ${fmt(FLOP)} bis ${fmt(VIRAL-1)} Views</li><li><b>Viral:</b> ab ${fmt(VIRAL)} Views</li></ul><p>Beide Grenzen kannst du direkt darunter ändern, am PC auch links in der Seitenleiste.</p><p>Ganz unten siehst du das Video mit den meisten Views aus den letzten 7 Tagen deiner Einträge.</p>`,
+  kpiFollower:`<p>Summe der <b>neuen Follower</b> aus allen eingetragenen Videos, jeweils der Wert nach 24 Stunden aus TikTok Studio.</p><p>Der Balken zeigt den Fortschritt zu deinem Ziel von <b>10.000 Followern</b>.</p><p>Follower, die später als 24 Stunden nach dem Upload oder direkt über dein Profil dazukommen, sind nicht enthalten. Deine echte Followerzahl kann deshalb höher sein.</p><p>Darunter: Vergleich der <b>letzten 7 Tage</b> mit den 7 Tagen davor, jeweils nach Upload-Datum. Grün heißt besser, rot schlechter.</p>`,
+  kpiMedian:`<p>Der <b>Median</b> ist der mittlere Wert: Die Hälfte deiner Videos hat mehr Views, die andere Hälfte weniger.</p><p>Anders als der Durchschnitt wird der Median nicht von einzelnen Viral-Hits verzerrt. Ein Video mit 400.000 Views würde den Durchschnitt stark nach oben ziehen, den Median kaum.</p><p>Darunter: Vergleich der <b>letzten 7 Tage</b> mit den 7 Tagen davor, jeweils nach Upload-Datum. Grün heißt besser, rot schlechter.</p>`,
+  kpiFlop:()=>`<p>Anteil deiner Videos, die nach 24 Stunden unter der Flop-Grenze von <b>${fmt(FLOP)} Views</b> lagen.</p><p>Die Grenze kannst du in der Karte „Ergebnisse“ oder links in der Seitenleiste ändern.</p><p>Darunter: Flop-Quote der <b>letzten 7 Tage</b> im Vergleich zu den 7 Tagen davor, in Prozentpunkten (Pp.). Weniger Flops ist grün.</p>`,
+  kpiVideos:`<p>Anzahl aller eingetragenen Videos.</p><p>Darunter: wie viele Videos du in den <b>letzten 7 Tagen</b> hochgeladen hast, im Vergleich zu den 7 Tagen davor.</p>`,
+  trend:`<p>Zeigt, wie sich <b>neue Follower</b>, <b>Views</b> oder <b>Likes</b> im gewählten Zeitraum aufsummieren. Die Linie steigt an den Tagen, an denen du Videos hochgeladen hast.</p><p>Gezählt wird jedes Video mit seinen Werten nach 24 Stunden, einsortiert nach dem <b>Upload-Datum</b>. Spätere Views nach den ersten 24 Stunden sind nicht enthalten, weil du nur den 24-Stunden-Stand einträgst.</p><p>Die Prozentzahl vergleicht mit dem gleich langen Zeitraum direkt davor, z. B. die letzten 30 Tage mit den 30 Tagen davor.</p><p>Fahr mit der Maus über das Diagramm (am Handy: mit dem Finger), um den Stand an jedem einzelnen Tag zu sehen.</p>`,
+  dist:()=>`<p>Verteilung deiner Videos nach ihrem Ergebnis nach 24 Stunden:</p><ul><li><b>Flop:</b> unter ${fmt(FLOP)} Views</li><li><b>Gut:</b> ${fmt(FLOP)} bis ${fmt(VIRAL-1)} Views</li><li><b>Viral:</b> ab ${fmt(VIRAL)} Views</li></ul><p>Beide Grenzen kannst du direkt darunter ändern, am PC auch links in der Seitenleiste.</p><p>Ganz unten siehst du dein bestes Video der letzten 7 Tage und dein <b>bestes Video aller Zeiten</b>. Dieses trägt überall das Abzeichen <b>Rekord</b>.</p>`,
   insightsShort:`<p>Die drei stärksten Muster, die Clipradar in deinen Daten gefunden hat. Ein grüner Pfeil bedeutet: Videos mit dieser Eigenschaft laufen besser als der Rest, ein roter: schlechter.</p><p>Wie die Erkennung genau funktioniert, steht im Tab <b>Analyse</b>.</p>`,
   recent:`<p>Deine zuletzt hochgeladenen Videos. Ein Klick öffnet die Details mit allen Zahlen, deinen Tags und der Auswertung „Warum lief es so?“.</p>`,
-  videos:`<p>Alle eingetragenen Videos mit ihren Werten nach 24 Stunden.</p><ul><li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, ein zweiter Klick dreht die Reihenfolge um.</li><li><b>Suchen</b> durchsucht Titel, Spiel, Sound, Hook, Thema und Emotion.</li><li><b>Engagement:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views. Zeigt, wie stark Zuschauer reagieren, unabhängig davon, wie viele es waren.</li></ul><p>Ein Klick auf eine Zeile öffnet die Details. Dort kannst du das Video auch bearbeiten oder löschen.</p>`,
+  videos:`<p>Alle eingetragenen Videos mit ihren Werten nach 24 Stunden.</p><ul><li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, ein zweiter Klick dreht die Reihenfolge um.</li><li><b>Suchen</b> durchsucht Titel, Spiel, Sound, Hook, Thema und Emotion.</li><li><b>Engagement:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views. Zeigt, wie stark Zuschauer reagieren, unabhängig davon, wie viele es waren.</li></ul><ul><li><b>Zeile anklicken</b> klappt eine Kurzansicht auf. „Alle Details“ öffnet das Seitenfenster.</li><li><b>Häkchen links</b> wählen mehrere Videos aus, um sie gemeinsam zu taggen oder zu löschen.</li><li><b>Spalten</b> blendet zusätzliche Werte ein oder aus.</li><li>Der Balken unter den Views zeigt, wie das Video im Vergleich zu deinem besten Video lief (logarithmisch).</li><li>Gelöschte Videos kannst du ein paar Sekunden lang mit <b>Rückgängig</b> zurückholen.</li><li>Mit der Taste <b>N</b> trägst du jederzeit ein neues Video ein.</li></ul>`,
   insights:`<p>Clipradar vergleicht für jede Eigenschaft, z. B. Hook „Frage“, den <b>Median</b> aller Videos mit dieser Eigenschaft mit dem Median aller anderen Videos.</p><p>Angezeigt wird ein Muster nur, wenn</p><ul><li>beide Gruppen mindestens ${MIN_N} Videos haben und</li><li>der Unterschied mindestens 25 % beträgt.</li></ul><p>Pro Eigenschaft siehst du nur den stärksten Wert. Bei Zahlen wie der Videolänge wird geprüft, ob höhere Werte mit mehr oder weniger Views einhergehen (Rangkorrelation ρ ab 0,2).</p><p><b>Sicherheit:</b> berücksichtigt Größe des Unterschieds und Anzahl der Videos. „Stark“ ist ziemlich sicher kein Zufall, „schwach“ kann noch Zufall sein.</p><p>Ein Zusammenhang ist nicht automatisch die Ursache. Laufen z. B. Papaplatte-Clips besser, kann das auch daran liegen, dass du sie öfter abends postest. Mit den <b>Kombinationen</b> weiter unten kannst du das prüfen.</p><p>Ein Klick auf eine Zeile springt zur passenden Grafik.</p>`,
   weights:`<p>Bei jedem Video kannst du markieren, woran es deiner Meinung nach lag:</p><ul><li><b>nicht wichtig:</b> zählt nur 0,5-fach</li><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Die Gewichtung gilt nur für die jeweilige Eigenschaft. Markierst du bei einem Video den Hook als Hauptgrund, zählt dieses Video beim Vergleich der Hooks 1,75-fach, bei allen anderen Eigenschaften normal.</p><p>Schalte die Gewichtung aus, um die reinen Daten zu sehen. Taucht ein Muster nur mit Gewichtung auf, beruht es vor allem auf deiner Einschätzung.</p>`,
   compare:`<p>Wählt eine Eigenschaft und eine Kennzahl. Jeder Balken ist eine Gruppe, z. B. jeder Streamer.</p><ul><li>Die <b>senkrechte Linie</b> zeigt den Wert über alle Videos.</li><li><b>Graue Balken</b> beruhen auf weniger als ${MIN_N} Videos und sind noch nicht aussagekräftig.</li><li>Unter dem Namen stehen Anzahl der Videos und Flop-Quote.</li></ul><p><b>Kennzahlen:</b></p><ul><li><b>Median-Views / Median neue Follower:</b> mittlerer Wert der Gruppe</li><li><b>Flop-Quote:</b> Anteil unter der Flop-Grenze, niedriger ist besser</li><li><b>Engagement-Rate:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views</li></ul>`,
   heat:`<p>Kombiniert zwei Eigenschaften, z. B. Streamer und Hook. Jedes Feld zeigt den Wert für alle Videos, die beides haben, und darunter die Anzahl der Videos.</p><p>Je kräftiger die Farbe, desto besser der Wert. Blasse Felder beruhen auf nur einem Video, ein Strich bedeutet: diese Kombination gibt es noch nicht.</p><p>So findest du z. B. heraus, ob ein Hook bei allen Streamern funktioniert oder nur bei einem.</p>`,
   scatter:`<p>Jeder Punkt ist ein Video. Waagerecht steht die gewählte Zahl, senkrecht die Views nach 24 Stunden.</p><p>Die Views-Achse ist <b>logarithmisch</b>: Jede Linie bedeutet zehnmal so viele Views. So passen kleine und virale Videos in dieselbe Grafik. Die gestrichelte Linie ist deine Flop-Grenze.</p><p><b>ρ (Rangkorrelation)</b> misst den Zusammenhang von −1 bis +1. Positiv heißt: mehr davon, mehr Views. Negativ: mehr davon, weniger Views. Ab 0,25 ist der Zusammenhang mittel, ab 0,45 deutlich.</p><p>Ein Klick auf einen Punkt öffnet das Video.</p>`,
-  streamer:`<p>Eine Karte pro Streamer, sortiert nach Median-Views. Collab-Videos mit mehreren Streamern zählen bei jedem Beteiligten.</p><ul><li><b>Median-Views:</b> mittlerer Wert seiner Videos</li><li><b>Flops:</b> Anteil unter der Flop-Grenze</li><li><b>Follower:</b> Summe der neuen Follower aus seinen Videos</li><li><b>Balken:</b> Views jedes Videos in zeitlicher Reihenfolge, rot = Flop, grün = viral</li><li><b>Bester Hook, Emotion, Spiel:</b> der Wert mit den höchsten Median-Views, mindestens 2 Videos nötig</li></ul><p>Ein Klick auf eine Karte zeigt alle Videos dieses Streamers.</p>`,
+  streamer:`<p>Eine Karte pro Streamer, sortiert nach Median-Views. Collab-Videos mit mehreren Streamern zählen bei jedem Beteiligten.</p><ul><li><b>Median-Views:</b> mittlerer Wert seiner Videos</li><li><b>Flops:</b> Anteil unter der Flop-Grenze</li><li><b>Follower:</b> Summe der neuen Follower aus seinen Videos</li><li><b>Balken:</b> Views jedes Videos in zeitlicher Reihenfolge, rot = Flop, grün = viral</li><li><b>Bester Hook, Emotion, Spiel:</b> der Wert mit den höchsten Median-Views, mindestens 2 Videos nötig</li></ul><p>Ein Klick auf eine Karte öffnet die <b>Detailseite</b> des Streamers mit allen Zahlen, seinem Verlauf und was bei ihm am besten funktioniert.</p>`,
   why:`<p>Clipradar vergleicht jede Eigenschaft dieses Videos mit deinen anderen Videos.</p><ul><li><b>Hat geholfen:</b> Videos mit dieser Eigenschaft laufen bei dir mindestens 20 % besser als der Rest.</li><li><b>Hat gebremst:</b> mindestens 17 % schlechter.</li></ul><p>Berücksichtigt werden nur Eigenschaften mit mindestens ${MIN_N} Videos.</p><p><b>Deine Einschätzung:</b> Was du markiert hast, wird gegen die Daten geprüft. Bei „wichtig“ und „Hauptgrund“ heißt ✓: Die Daten zeigen in dieselbe Richtung wie das Ergebnis dieses Videos. Bei „nicht wichtig“ heißt ✓: Die Daten sehen bei dieser Eigenschaft auch keinen großen Unterschied (weniger als 20 %). ! heißt jeweils: Die Daten sehen das anders.</p>`,
   weightsVideo:`<p>Markier, welche Eigenschaften deiner Meinung nach für das Ergebnis verantwortlich waren, egal ob gut oder schlecht, und welche keine Rolle gespielt haben.</p><ul><li><b>nicht wichtig:</b> zählt in der Analyse nur 0,5-fach</li><li><b>normal:</b> zählt einfach</li><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Änderungen werden sofort gespeichert. Oben unter „Warum lief es so?“ siehst du, ob die Daten deine Einschätzung bestätigen.</p>`,
-  fStudio:`<p>Alle Werte findest du in <b>TikTok Studio</b> bei deinem Video unter <b>Analysen</b>. Trag sie möglichst genau 24 Stunden nach dem Upload ein, damit alle Videos fair verglichen werden.</p><p>Pflicht sind nur die Views, alle anderen Felder sind optional. Je vollständiger, desto mehr kann Clipradar auswerten.</p><p><b>Tipp:</b> Mit <b>Enter</b> springst du ins nächste Feld. Nach dem letzten Feld landest du auf „Speichern“, ein weiteres Enter speichert.</p>`,
+  fStudio:`<p>Alle Werte findest du in <b>TikTok Studio</b> bei deinem Video unter <b>Analysen</b>. Trag sie möglichst genau 24 Stunden nach dem Upload ein, damit alle Videos fair verglichen werden.</p><p>Pflicht sind nur die Felder mit <b class="req">*</b>: Uploadzeitpunkt, Views und Streamer. Je vollständiger, desto mehr kann Clipradar auswerten.</p><p>Wirkt eine Zahl unplausibel, z. B. mehr Likes als Views, erscheint unten ein Hinweis. Speichern kannst du trotzdem.</p><p>Was du tippst, wird als <b>Entwurf</b> gemerkt. Schließt du das Fenster versehentlich, ist beim nächsten Öffnen alles wieder da.</p><p><b>Tipp:</b> Mit <b>Enter</b> springst du ins nächste Feld. Nach dem letzten Feld landest du auf „Speichern“, ein weiteres Enter speichert.</p>`,
   fViews:`<p>Die Aufrufe nach 24 Stunden, in TikTok Studio unter „Videoaufrufe“.</p>`,
   fFollower:`<p>Wie viele Leute dir über dieses Video gefolgt sind, in TikTok Studio unter „Neue Follower“.</p>`,
   fAvg:`<p>„Durchschnittliche Wiedergabedauer“ in Sekunden. Wie lange ein Zuschauer im Schnitt zugeschaut hat.</p><p>Komma oder Punkt als Dezimalzeichen geht beides.</p>`,
   fTotal:`<p>„Gesamte Wiedergabezeit“ in <b>Stunden</b>. TikTok zeigt sie oft als Stunden:Minuten:Sekunden an. Trag einfach die Stunden ein, gerundet reicht.</p>`,
   fTitle:`<p>Ein kurzer Name, an dem du das Video wiedererkennst. Lässt du ihn leer, wird er aus Streamer und Spiel gebildet.</p>`,
   fLaenge:`<p>Die Länge des Videos in Sekunden.</p>`,
-  fTags:`<p>Mit diesen Tags findet Clipradar heraus, <b>was</b> deine Videos erfolgreich macht. Ohne Tags gibt es nur Zahlen, aber keine Zusammenhänge.</p><p>Neben den Textfeldern öffnet der Pfeil deine <b>zuletzt verwendeten Antworten</b>. Bei Emotion, Text-Overlay und Kommentarstimmung legst du mit <b>+</b> eine neue Option an.</p><p>Bleib bei den Bezeichnungen einheitlich, z. B. immer „Fortnite“ statt mal „fortnite“, sonst zählt das Tool sie als verschiedene Werte.</p>`,
+  fTags:`<p>Mit diesen Tags findet Clipradar heraus, <b>was</b> deine Videos erfolgreich macht. Ohne Tags gibt es nur Zahlen, aber keine Zusammenhänge.</p><p>Neben den Textfeldern öffnet der Pfeil deine <b>zuletzt verwendeten Antworten</b>. Bei Emotion, Text-Overlay und Kommentarstimmung legst du mit <b>+</b> eine neue Option an.</p><p>Bleib bei den Bezeichnungen einheitlich, z. B. immer „Fortnite“ statt mal „fortnite“, sonst zählt das Tool sie als verschiedene Werte. Bei Tippfehlern schlägt Clipradar die bekannte Schreibweise vor, Groß- und Kleinschreibung wird beim Speichern automatisch angeglichen.</p><p>Eigene Optionen entfernst du mit dem <b>×</b> am Knopf. Videos, die sie schon haben, behalten sie.</p>`,
   fStreamer:`<p>Wer im Clip zu sehen ist. Bei Collabs mehrere Namen mit Komma trennen. Über den Pfeil fügst du zuletzt verwendete Streamer hinzu.</p><p>Jeder genannte Streamer bekommt das Video in seine Statistik.</p>`,
   fSpiel:`<p>Welches Spiel oder welche Kategorie im Clip läuft, z. B. Fortnite, GTA RP oder Just Chatting.</p>`,
   fThema:`<p>Worum es inhaltlich geht, z. B. Fail, Clutch, Reaction, Story, Challenge oder Streit.</p>`,
@@ -674,12 +758,17 @@ const TIPS={
   fUT:`<p>Ob das Video eingebrannte Untertitel hat.</p>`,
   fAudio:`<p><b>Nur Original:</b> nur der Ton aus dem Stream. <b>Mit Musik:</b> Musik zusätzlich unterlegt. <b>Trend-Sound:</b> ein gerade angesagter TikTok-Sound.</p>`,
   fMood:`<p>Überflieg nach 24 Stunden die Kommentare: Sind sie überwiegend positiv, gemischt oder negativ? Mit <b>+</b> legst du eine neue Stimmung an, z. B. „hitzig“.</p><p>Die Stimmung ist eine Folge des Videos, nicht die Ursache. Deshalb taucht sie nicht in den automatischen Erkenntnissen auf, du kannst sie aber im Tab Analyse vergleichen.</p>`,
+  uptime:`<p>Zeigt, zu welcher <b>Uhrzeit an welchem Wochentag</b> deine Videos am besten laufen. Jedes Feld ist der Median der Views aller Videos, die in diesem Zeitfenster hochgeladen wurden, darunter die Anzahl.</p><p>Je kräftiger die Farbe, desto besser. Das grün umrandete Feld ist die beste Zeit mit mindestens 2 Videos.</p><p>Mit wenigen Videos ist das noch Zufall. Aussagekräftig wird es, wenn die meisten Felder mehrere Videos haben.</p>`,
+  anRange:`<p>Welche Videos in die Analyse einfließen. Mit <b>Letzte 30 Tage</b> siehst du, was <b>aktuell</b> funktioniert, z. B. wenn sich der Algorithmus oder dein Stil geändert hat.</p><p>Weniger Videos heißt aber auch: weniger sichere Ergebnisse.</p>`,
+  whatsnew:`<p>Vergleicht die Erkenntnisse mit dem Stand von <b>vor 7 Tagen</b>, also nur mit den Videos, die bis dahin hochgeladen waren.</p><p><b>Neu</b> markiert Muster, die es damals noch nicht gab. „Nicht mehr sichtbar“ sind Muster, die durch neue Videos verschwunden sind, weil sie sich als Zufall herausgestellt haben oder sich etwas verändert hat.</p>`,
   fWeights:`<p>Optional: Was war deiner Meinung nach entscheidend für das Ergebnis, egal ob gut oder schlecht, und was hat keine Rolle gespielt?</p><ul><li><b>nicht wichtig</b> zählt in der Analyse nur 0,5-fach</li><li><b>normal</b> zählt einfach</li><li><b>wichtig</b> zählt 1,25-fach</li><li><b>Hauptgrund</b> zählt 1,75-fach</li></ul><p>Das kannst du später in den Details des Videos jederzeit ändern.</p>`
 };
 const tipHtml=k=>{const t=TIPS[k];return typeof t==='function'?t():t||''};
 
 /* ---------- State ---------- */
-const S={tab:'uebersicht',sortKey:'date',sortDir:-1,q:'',fStatus:'alle',fStreamer:'alle',vAll:false,insAll:false,
+const VCOL_DEFAULT=['views','follower','likes','eng','status'];
+const S={tab:'uebersicht',sortKey:'date',sortDir:-1,q:'',fStatus:'alle',fStreamer:'alle',fRange:'alle',vAll:false,insAll:false,revealIns:false,showGone:false,
+  sel:new Set(),expanded:null,cols:VCOL_DEFAULT.slice(),anRange:'all',
   trendMetric:'follower',trendRange:'30',
   useWeights:true,insMetric:'views',groupField:'streamer',groupMetric:'views',heatA:'streamer',heatB:'hook',heatMetric:'views',scatterX:'laenge'};
 try{
@@ -687,15 +776,71 @@ try{
   const f=parseInt(localStorage.getItem('clipradar-flop'),10);if(f>=0)FLOP=f;
   const vi=parseInt(localStorage.getItem('clipradar-viral'),10);if(vi>FLOP)VIRAL=vi;
   const tr=JSON.parse(localStorage.getItem('clipradar-trend')||'null');if(tr){S.trendMetric=tr.m||S.trendMetric;S.trendRange=tr.r||S.trendRange}
+  const cols=JSON.parse(localStorage.getItem('clipradar-cols')||'null');if(Array.isArray(cols))S.cols=cols;
+  const ar=localStorage.getItem('clipradar-anrange');if(ar)S.anRange=ar;
 }catch(e){}
 const remember=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const DAY=864e5;
+
+/* ---------- Feinschliff-Helfer ---------- */
+const PREV={};
+const FMTS={fmt,short,pct,int:n=>String(Math.round(n))};
+/* Zahl, die beim Anzeigen vom alten zum neuen Wert hochzählt */
+const counter=(key,val,f='fmt',cls='val')=>`<span class="${cls}" data-count="${key}" data-to="${val}" data-f="${f}">${FMTS[f](PREV[key]??0)}</span>`;
+function runCounts(root=document){
+  root.querySelectorAll('[data-count]').forEach(el=>{
+    const k=el.dataset.count,to=+el.dataset.to,f=FMTS[el.dataset.f]||fmt,from=PREV[k]??0;PREV[k]=to;
+    if(RM||from===to){el.textContent=f(to);return}
+    const t0=performance.now(),dur=650;
+    const step=t=>{const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=f(from+(to-from)*e);if(p<1&&el.isConnected)requestAnimationFrame(step);else el.textContent=f(to)};
+    requestAnimationFrame(step);
+  });
+  root.querySelectorAll('[data-prog]').forEach(el=>{
+    const to=+el.dataset.prog;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.width=to+'%'}));
+    PREV.prog=to;
+  });
+}
+const rowEls=ids=>ids.flatMap(id=>[...document.querySelectorAll(`tr[data-row="${id}"],tr[data-row="${id}"]+tr.exp,.row[data-vid="${id}"]`)]);
+async function animateOut(ids){
+  if(RM)return;
+  const els=rowEls(ids).filter(e=>e.offsetParent!==null);
+  if(!els.length)return;
+  els.forEach(e=>e.classList.add('leaving'));
+  await sleep(260);
+}
+let PENDING_FLASH=[];
+function flashRows(ids){
+  if(RM||!ids.length)return;
+  rowEls(ids).forEach(e=>{e.classList.remove('flash');void e.offsetWidth;e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),600)});
+}
+function confetti(){
+  if(RM)return;
+  const c=document.createElement('canvas');c.id='confetti';document.body.appendChild(c);
+  const dpr=window.devicePixelRatio||1,w=innerWidth,h=innerHeight;c.width=w*dpr;c.height=h*dpr;
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const cs=getComputedStyle(document.documentElement);
+  const colors=[cs.getPropertyValue('--accent'),cs.getPropertyValue('--good'),'#F2B33D','#E8577A','#4FB3E8'].map(x=>x.trim());
+  const P=Array.from({length:150},(_,i)=>({x:w/2+(Math.random()-.5)*w*.3,y:h*.38,vx:(Math.random()-.5)*13,vy:-Math.random()*12-4,r:Math.random()*6,vr:(Math.random()-.5)*.35,w:6+Math.random()*5,h:3+Math.random()*4,c:colors[i%colors.length]}));
+  const t0=performance.now();
+  const f=t=>{const el=t-t0;ctx.clearRect(0,0,w,h);
+    for(const p of P){p.vy+=.33;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.globalAlpha=Math.max(0,1-el/1900);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()}
+    if(el<1900)requestAnimationFrame(f);else c.remove()};
+  requestAnimationFrame(f);
+}
 
 /* ---------- Übersicht ---------- */
+const newBtn=(label='Video eintragen')=>`<button class="btn primary" data-new title="Neues Video (Taste N)">${ICON.plus}${label}<kbd>N</kbd></button>`;
 function emptyState(title){
   return `<div class="view-head"><h1>${title}</h1></div>
     <div class="card empty-state">${titled('h2','Noch keine Videos','empty')}<p>Trag dein erstes Video ein oder sieh dir an, wie Clipradar mit Beispieldaten aussieht.</p>
-    <div class="ctl-row"><button class="btn primary" data-new>${ICON.plus}Video eintragen</button><button class="btn" data-sample>Beispieldaten ansehen</button></div></div>`;
+    <div class="ctl-row">${newBtn()}<button class="btn" data-sample>Beispieldaten ansehen</button></div></div>`;
 }
+const SKELETON=`<div class="view-head"><div class="skel" style="width:220px;height:26px"></div></div>
+  <div class="grid g-kpi">${'<div class="skel" style="height:118px"></div>'.repeat(4)}</div>
+  <div class="grid g-2"><div class="skel" style="height:310px"></div><div class="skel" style="height:310px"></div></div>`;
 const TRENDS={follower:{l:'Neue Follower',get:v=>v.follower},views:{l:'Views',get:v=>v.views},likes:{l:'Likes',get:v=>v.likes}};
 const RANGES=[['7','Letzte 7 Tage','7 Tagen'],['30','Letzte 30 Tage','30 Tagen'],['90','Letzte 3 Monate','3 Monaten'],['180','Letzte 6 Monate','6 Monaten'],['365','Letztes Jahr','12 Monaten']];
 function trendData(){
@@ -705,7 +850,7 @@ function trendData(){
   const prevStart=new Date(start);prevStart.setDate(prevStart.getDate()-days);
   const buckets=new Array(days).fill(0);let prev=0,n=0;
   for(const v of VIDEOS){
-    if(v.date>=start&&v.date<end){buckets[Math.max(0,Math.min(days-1,Math.floor((v.date-start)/864e5)))]+=get(v);n++}
+    if(v.date>=start&&v.date<end){buckets[Math.max(0,Math.min(days-1,Math.floor((v.date-start)/DAY)))]+=get(v);n++}
     else if(v.date>=prevStart&&v.date<start)prev+=get(v);
   }
   let c=0;const cum=[0,...buckets.map(b=>c+=b)];
@@ -717,28 +862,100 @@ function niceScale(max){
   const step=Math.max(1,(m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p);
   return {step,top:Math.ceil(max/step)*step};
 }
-function trendChart(d){
+function trendGeo(d){
   const W=680,H=210,pl=46,pr=12,pt=10,pb=24;
-  const {step,top}=niceScale(d.total);
-  const x=i=>pl+i/d.days*(W-pl-pr),y=v=>pt+(1-v/top)*(H-pt-pb);
-  const line=d.cum.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
-  const area=`${line}L${x(d.days)},${y(0)}L${x(0)},${y(0)}Z`;
-  const yt=[];for(let v=0;v<=top+1e-9;v+=step)yt.push(v);
+  return {W,H,pl,pr,pt,pb,...niceScale(d.total),x:i=>pl+i/d.days*(W-pl-pr),yF:top=>v=>pt+(1-v/top)*(H-pt-pb)};
+}
+function trendPaths(g,cum,top,days){
+  const y=g.yF(top),line=cum.map((v,i)=>`${i?'L':'M'}${g.x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+  return {line,area:`${line}L${g.x(days).toFixed(1)},${y(0).toFixed(1)}L${g.x(0).toFixed(1)},${y(0).toFixed(1)}Z`,dy:y(cum[cum.length-1])};
+}
+function trendChart(d,g){
+  const p=trendPaths(g,d.cum,g.top,d.days),y=g.yF(g.top);
+  const yt=[];for(let v=0;v<=g.top+1e-9;v+=g.step)yt.push(v);
   const nx=d.days<=7?d.days:5,xt=[];for(let i=0;i<nx;i++)xt.push(Math.round(i*(d.days-1)/(nx-1||1)));
   const lbl=i=>{const t=new Date(d.start);t.setDate(t.getDate()+i);return dateStr(t)};
-  return `<div class="chart-wrap"><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${TRENDS[S.trendMetric].l}: ${fmt(d.total)} im Zeitraum">
-    ${yt.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="var(--line)"/><text x="${pl-8}" y="${(y(t)+3.5).toFixed(1)}" text-anchor="end">${short(t)}</text>`).join('')}
-    ${xt.map((i,k)=>`<text x="${x(i+.5).toFixed(1)}" y="${H-6}" text-anchor="${k===0&&nx>2?'start':k===xt.length-1&&nx>2?'end':'middle'}">${lbl(i)}</text>`).join('')}
-    <path d="${area}" fill="var(--accent-soft)"/>
-    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linejoin="round"/>
-    <circle cx="${x(d.days)}" cy="${y(d.total)}" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"/>
-  </svg>${d.n?'':'<div class="chart-empty">Keine Videos in diesem Zeitraum</div>'}</div>`;
+  return `<div class="chart-wrap" id="trendWrap"><svg id="trendSvg" viewBox="0 0 ${g.W} ${g.H}" width="100%" role="img" aria-label="${TRENDS[S.trendMetric].l}: ${fmt(d.total)} im Zeitraum">
+    ${yt.map(t=>`<line x1="${g.pl}" x2="${g.W-g.pr}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="var(--line)"/><text x="${g.pl-8}" y="${(y(t)+3.5).toFixed(1)}" text-anchor="end">${short(t)}</text>`).join('')}
+    ${xt.map((i,k)=>`<text x="${g.x(i+.5).toFixed(1)}" y="${g.H-6}" text-anchor="${k===0&&nx>2?'start':k===xt.length-1&&nx>2?'end':'middle'}">${lbl(i)}</text>`).join('')}
+    <path id="tArea" d="${p.area}" fill="var(--accent-soft)"/>
+    <path id="tLine" d="${p.line}" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linejoin="round"/>
+    <circle id="tDot" cx="${g.x(d.days)}" cy="${p.dy.toFixed(1)}" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"/>
+    <g id="tHover" style="display:none"><line id="tHL" y1="${g.pt}" y2="${g.H-g.pb}" stroke="var(--line-2)" stroke-dasharray="3 3"/><circle id="tHC" r="4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/></g>
+    <rect x="${g.pl}" y="${g.pt}" width="${g.W-g.pl-g.pr}" height="${g.H-g.pt-g.pb}" fill="transparent"/>
+  </svg><div class="ctip" id="tTip" hidden></div>${d.n?'':'<div class="chart-empty">Keine Videos in diesem Zeitraum</div>'}</div>`;
 }
+let TPREV=null;
 function renderTrend(){
-  const d=trendData(),r=RANGES.find(x=>x[0]===S.trendRange);
+  const body=$('#trendBody');if(!body)return;
+  const d=trendData(),r=RANGES.find(x=>x[0]===S.trendRange),g=trendGeo(d);
   let delta='<span class="delta flat">kein Vergleichszeitraum</span>';
   if(d.prev>0){const ch=(d.total-d.prev)/d.prev*100;delta=`<span class="delta ${ch>0.5?'up':ch<-0.5?'down':'flat'}">${ch>0?'+':''}${dec(ch,0)} % ggü. den ${r[2]} davor</span>`}
-  $('#trendBody').innerHTML=`<div class="trend-total"><span class="big">${fmt(d.total)}</span><span class="label">${TRENDS[S.trendMetric].l} · ${d.n} Video${d.n===1?'':'s'}</span>${delta}</div>${trendChart(d)}`;
+  body.innerHTML=`<div class="trend-total">${counter('trend',d.total,'fmt','big')}<span class="label">${TRENDS[S.trendMetric].l} · ${d.n} Video${d.n===1?'':'s'}</span>${delta}</div>${trendChart(d,g)}`;
+  runCounts(body);
+  const line=$('#tLine'),area=$('#tArea'),dot=$('#tDot');
+  if(!RM){
+    if(TPREV&&TPREV.days===d.days){
+      const same=TPREV.top===g.top&&TPREV.cum.every((v,i)=>v===d.cum[i]);
+      if(!same){
+        const from=TPREV.cum,fromTop=TPREV.top,t0=performance.now(),dur=480;
+        const frame=e=>{const cum=d.cum.map((v,i)=>from[i]+(v-from[i])*e),pp=trendPaths(g,cum,fromTop+(g.top-fromTop)*e,d.days);line.setAttribute('d',pp.line);area.setAttribute('d',pp.area);dot.setAttribute('cy',pp.dy.toFixed(1))};
+        frame(0);
+        const step=t=>{const p=Math.min(1,(t-t0)/dur);frame(1-Math.pow(1-p,3));if(p<1&&line.isConnected)requestAnimationFrame(step)};
+        requestAnimationFrame(step);
+      }
+    }else if(line.animate){
+      const L=line.getTotalLength();line.style.strokeDasharray=L;
+      const a=line.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:850,easing:'cubic-bezier(.2,.8,.2,1)'});
+      a.onfinish=()=>{line.style.strokeDasharray=''};
+      area.animate([{opacity:0},{opacity:1}],{duration:850,easing:'ease-out'});
+      dot.animate([{opacity:0},{opacity:0,offset:.8},{opacity:1}],{duration:850});
+    }
+  }
+  TPREV={days:d.days,cum:d.cum.slice(),top:g.top};
+  /* Fadenkreuz beim Drüberfahren */
+  const svg=$('#trendSvg'),hov=$('#tHover'),hl=$('#tHL'),hc=$('#tHC'),tip=$('#tTip');
+  svg.addEventListener('pointermove',ev=>{
+    const rect=svg.getBoundingClientRect(),vx=(ev.clientX-rect.left)/rect.width*g.W;
+    const i=Math.max(0,Math.min(d.days,Math.round((vx-g.pl)/(g.W-g.pl-g.pr)*d.days)));
+    const X=g.x(i),Y=g.yF(g.top)(d.cum[i]),inc=i>0?d.cum[i]-d.cum[i-1]:0;
+    const day=new Date(d.start);day.setDate(day.getDate()+Math.max(0,i-1));
+    hov.style.display='';hl.setAttribute('x1',X);hl.setAttribute('x2',X);hc.setAttribute('cx',X);hc.setAttribute('cy',Y);
+    tip.hidden=false;tip.innerHTML=`${i===0?'Start':dateStr(day)} · <b>${fmt(d.cum[i])}</b>${inc>0?` <span>+${fmt(inc)}</span>`:''}`;
+    tip.style.left=(X/g.W*rect.width)+'px';tip.style.top=(Y/g.H*rect.height)+'px';
+  });
+  svg.addEventListener('pointerleave',()=>{hov.style.display='none';tip.hidden=true});
+}
+function weekStats(){
+  const now=Date.now();
+  return {cur:VIDEOS.filter(v=>v.date>now-7*DAY&&v.date<=now),prev:VIDEOS.filter(v=>v.date>now-14*DAY&&v.date<=now-7*DAY)};
+}
+function kdelta(cur,prev,{mode='rel',lowerBetter=false,hasCur=true,hasPrev=true}={}){
+  if(!hasCur)return '<span class="kdelta flat">diese Woche noch keine Videos</span>';
+  if(!hasPrev||(mode==='rel'&&!prev))return '<span class="kdelta flat">kein Vergleich zur Vorwoche</span>';
+  const ch=mode==='rel'?(cur-prev)/prev*100:cur-prev;
+  const txt=mode==='rel'?`${dec(Math.abs(ch),0)} %`:mode==='pp'?`${dec(Math.abs(ch),0)} Pp.`:fmt(Math.abs(ch));
+  const flat=Math.abs(ch)<0.5,dir=flat?'flat':(ch>0)!==lowerBetter?'up':'down';
+  return `<span class="kdelta ${dir}">${flat?'→':ch>0?'↑':'↓'} ${txt} ggü. Vorwoche</span>`;
+}
+const SLOTS=[[0,6],[6,9],[9,12],[12,15],[15,18],[18,21],[21,24]];
+const WDAYS=[[1,'Mo'],[2,'Di'],[3,'Mi'],[4,'Do'],[5,'Fr'],[6,'Sa'],[0,'So']];
+function uploadHeat(){
+  const grid=WDAYS.map(([d,l])=>({l,cells:SLOTS.map(s=>{const vs=VIDEOS.filter(v=>v.date.getDay()===d&&v.date.getHours()>=s[0]&&v.date.getHours()<s[1]);return {l,s,n:vs.length,med:median(vs.map(v=>v.views))}})}));
+  const all=grid.flatMap(r=>r.cells).filter(c=>c.n);
+  if(!all.length)return '<p class="empty-msg">Noch keine Daten.</p>';
+  const lo=Math.min(...all.map(c=>c.med)),hi=Math.max(...all.map(c=>c.med));
+  const tone=v=>hi>lo?Math.round(6+(Math.log(v+1)-Math.log(lo+1))/(Math.log(hi+1)-Math.log(lo+1))*66):40;
+  const best=all.filter(c=>c.n>=2).sort((a,b)=>b.med-a.med)[0];
+  return `<div class="scroll-x"><table class="heat"><thead><tr><th></th>${SLOTS.map(s=>`<th>${s[0]}–${s[1]} Uhr</th>`).join('')}</tr></thead><tbody>
+    ${grid.map(r=>`<tr><th>${r.l}</th>${r.cells.map(c=>{if(!c.n)return '<td class="empty">–</td>';const p=tone(c.med);
+      return `<td class="${c===best?'best':''}" style="background:color-mix(in srgb, var(--accent) ${p}%, var(--surface));${p>50?'color:var(--accent-ink)':''};${c.n<2?'opacity:.5':''}" title="${r.l} ${c.s[0]}–${c.s[1]} Uhr: Median ${fmt(c.med)} Views (${c.n} Videos)">${short(c.med)}<small>${c.n} Vid.</small></td>`}).join('')}</tr>`).join('')}
+  </tbody></table></div>
+  <p class="label" style="margin-top:10px">${best?`Beste Zeit bisher: <b style="color:var(--ink)">${best.l}, ${best.s[0]}–${best.s[1]} Uhr</b> · Median ${short(best.med)} Views · ${best.n} Videos`:'Noch kein Zeitfenster mit mindestens 2 Videos.'}</p>`;
+}
+function greeting(){
+  const h=new Date().getHours();
+  return h<5?'Gute Nacht':h<11?'Guten Morgen':h<17?'Guten Tag':h<22?'Guten Abend':'Gute Nacht';
 }
 function renderOverview(){
   if(!VIDEOS.length){$('#view-uebersicht').innerHTML=emptyState('Übersicht');return}
@@ -746,19 +963,29 @@ function renderOverview(){
   const totalF=vs.reduce((s,v)=>s+v.follower,0);
   const med=median(vs.map(v=>v.views));
   const flops=vs.filter(v=>status(v)==='flop').length,viral=vs.filter(v=>status(v)==='viral').length,gut=vs.length-flops-viral;
-  const weeks=Math.max(1,(vs[vs.length-1].date-vs[0].date)/(7*864e5));
   const ins=computeInsights('views').slice(0,3);
-  const best=[...vs].filter(v=>v.date>=new Date(vs[vs.length-1].date.getTime()-7*864e5)).sort((a,b)=>b.views-a.views)[0];
+  const best=[...vs].filter(v=>v.date>=new Date(vs[vs.length-1].date.getTime()-7*DAY)).sort((a,b)=>b.views-a.views)[0];
+  const top=VIDEOS.find(v=>v.id===RECORD_ID);
+  const {cur,prev}=weekStats();
+  const wF=cur.reduce((s,v)=>s+v.follower,0),pF=prev.reduce((s,v)=>s+v.follower,0);
+  const wViews=cur.reduce((s,v)=>s+v.views,0);
+  const wMed=median(cur.map(v=>v.views)),pMed=median(prev.map(v=>v.views));
+  const fr=l=>l.length?l.filter(v=>v.views<FLOP).length/l.length*100:0;
+  const hc=cur.length>0,hp=prev.length>0;
+  const last=vs[vs.length-1];
+  const prog=Math.min(100,totalF/100);
+  const pieParts=[{l:'Flop',n:flops,c:'var(--bad)'},{l:'Gut',n:gut,c:'var(--faint)',o:.5},{l:'Viral',n:viral,c:'var(--good)'}];
+  const pieKey=pieParts.map(p=>p.n).join(','),pieAnim=PREV.pie!==pieKey;PREV.pie=pieKey;
   $('#view-uebersicht').innerHTML=`
-    <div class="view-head"><div><h1>Übersicht</h1><p class="meta">${dateStr(vs[0].date)} ${vs[0].date.getFullYear()} bis ${dateStr(vs[vs.length-1].date)} ${vs[vs.length-1].date.getFullYear()}</p></div>
-      <button class="btn primary" data-new>${ICON.plus}Video eintragen</button></div>
+    <div class="view-head"><div><h1>${greeting()}</h1><p class="meta greet-sub">${hc?`Letzte 7 Tage: <b>${cur.length} Video${cur.length===1?'':'s'}</b> · <b>${short(wViews)}</b> Views · <b>${fmt(wF)}</b> neue Follower`:'In den letzten 7 Tagen hast du noch kein Video eingetragen.'} · Zuletzt: ${esc(last.title)} (${short(last.views)})</p></div>
+      ${newBtn()}</div>
     <div class="grid g-kpi">
-      <div class="card kpi">${kpiTitle('Neue Follower','kpiFollower')}<span class="val">${fmt(totalF)}</span>
-        <div class="progress" aria-label="Fortschritt zum Ziel"><span style="width:${Math.min(100,totalF/100)}%"></span></div>
-        <span class="sub">${dec(totalF/100)} % von 10.000</span></div>
-      <div class="card kpi">${kpiTitle('Median-Views','kpiMedian')}<span class="val">${short(med)}</span><span class="sub">pro Video nach 24 h</span></div>
-      <div class="card kpi">${kpiTitle('Flop-Quote','kpiFlop')}<span class="val">${pct(flops/vs.length*100)}</span><span class="sub">${flops} von ${vs.length} unter ${fmt(FLOP)}</span></div>
-      <div class="card kpi">${kpiTitle('Videos','kpiVideos')}<span class="val">${vs.length}</span><span class="sub">ca. ${Math.round(vs.length/weeks)} pro Woche</span></div>
+      <div class="card kpi">${kpiTitle('Neue Follower','kpiFollower')}${counter('kF',totalF)}
+        <div class="progress" aria-label="Fortschritt zum Ziel"><span data-prog="${prog}" style="width:${PREV.prog??0}%"></span></div>
+        <span class="sub">${dec(totalF/100)} % von 10.000${hc?` · +${fmt(wF)} in 7 Tagen`:''}</span>${kdelta(wF,pF,{hasCur:hc,hasPrev:hp})}</div>
+      <div class="card kpi">${kpiTitle('Median-Views','kpiMedian')}${counter('kM',med,'short')}<span class="sub">${hc?`Letzte 7 Tage: ${short(wMed)}`:'pro Video nach 24 h'}</span>${kdelta(wMed,pMed,{hasCur:hc,hasPrev:hp})}</div>
+      <div class="card kpi">${kpiTitle('Flop-Quote','kpiFlop')}${counter('kFl',flops/vs.length*100,'pct')}<span class="sub">${hc?`Letzte 7 Tage: ${pct(fr(cur))}`:`${flops} von ${vs.length} unter ${fmt(FLOP)}`}</span>${kdelta(fr(cur),fr(prev),{mode:'pp',lowerBetter:true,hasCur:hc,hasPrev:hp})}</div>
+      <div class="card kpi">${kpiTitle('Videos','kpiVideos')}${counter('kV',vs.length,'int')}<span class="sub">Letzte 7 Tage: ${cur.length}</span>${kdelta(cur.length,prev.length,{mode:'abs',hasPrev:hp})}</div>
     </div>
     <div class="grid g-2">
       <div class="card">
@@ -770,21 +997,25 @@ function renderOverview(){
       </div>
       <div class="card">
         <div class="card-head">${titled('h2','Ergebnisse','dist')}</div>
-        ${pieChart([{l:'Flop',n:flops,c:'var(--bad)'},{l:'Gut',n:gut,c:'var(--faint)',o:.5},{l:'Viral',n:viral,c:'var(--good)'}])}
+        ${pieChart(pieParts,pieAnim)}
         <div class="thresholds"><label for="flopInput2">Flop unter</label><input class="ctl num" id="flopInput2" type="number" min="0" step="500" value="${FLOP}"><label for="viralInput2">Viral ab</label><input class="ctl num" id="viralInput2" type="number" min="0" step="5000" value="${VIRAL}"></div>
         ${best?`<p class="sub-head">Bestes Video der letzten 7 Tage</p>
         <div class="row" data-vid="${best.id}"><div class="t">${esc(best.title)}<small>${dateStr(best.date)} · ${timeStr(best.date)} Uhr</small></div><span class="num">${short(best.views)}</span>${badge(best)}</div>`:''}
+        ${top&&top!==best?`<p class="sub-head">Bestes Video aller Zeiten</p>
+        <div class="row" data-vid="${top.id}"><div class="t">${esc(top.title)}<small>${dateStr(top.date)} ${top.date.getFullYear()}</small></div><span class="num">${short(top.views)}</span>${badge(top)}</div>`:''}
       </div>
     </div>
     <div class="grid g-2e">
       <div class="card"><div class="card-head">${titled('h2','Was gerade auffällt','insightsShort')}<a class="btn ghost" href="#analyse">Alle Erkenntnisse</a></div>${ins.length?insightList(ins):'<p class="empty-msg">Noch keine deutlichen Muster.</p>'}</div>
       <div class="card"><div class="card-head">${titled('h2','Letzte Videos','recent')}<a class="btn ghost" href="#videos">Alle Videos</a></div>
         <div class="rows">${[...vs].reverse().slice(0,6).map(v=>`<div class="row" data-vid="${v.id}"><div class="t">${esc(v.title)}<small>${dateStr(v.date)} · ${timeStr(v.date)} Uhr · ${fmt(v.follower)} Follower</small></div><span class="num">${short(v.views)}</span>${badge(v)}</div>`).join('')}</div></div>
-    </div>`;
+    </div>
+    <div class="card"><div class="card-head">${titled('h2','Beste Uploadzeit','uptime')}</div>${uploadHeat()}</div>`;
+  runCounts($('#view-uebersicht'));
   renderTrend();
 }
 /* Ringdiagramm für Flop / Gut / Viral */
-function pieChart(parts){
+function pieChart(parts,animate){
   const total=parts.reduce((s,p)=>s+p.n,0),R=56,r=36,c=60;
   const pt=(rad,a)=>`${(c+rad*Math.cos(a)).toFixed(2)},${(c+rad*Math.sin(a)).toFixed(2)}`;
   let a0=-Math.PI/2,segs='';
@@ -796,7 +1027,9 @@ function pieChart(parts){
     a0=a1;
   }
   return `<div class="pie-wrap">
-    <svg viewBox="0 0 120 120" width="128" height="128" role="img" aria-label="${parts.map(p=>`${p.l} ${p.n}`).join(', ')}">${segs}
+    <svg viewBox="0 0 120 120" width="128" height="128" role="img" aria-label="${parts.map(p=>`${p.l} ${p.n}`).join(', ')}">
+      <defs><mask id="pieMask"><circle cx="60" cy="60" r="46" fill="none" stroke="#fff" stroke-width="24" stroke-dasharray="289.03" ${animate&&!RM?'class="ring-anim"':''} transform="rotate(-90 60 60)"/></mask></defs>
+      <g mask="url(#pieMask)">${segs}</g>
       <text x="60" y="60" text-anchor="middle" class="pie-total">${total}</text><text x="60" y="75" text-anchor="middle" class="pie-sub">Videos</text></svg>
     <ul class="pie-legend">${parts.map(p=>`<li><i style="background:${p.c};opacity:${p.o||1}"></i><span>${p.l}</span><b class="num">${p.n}</b><em class="num">${total?pct(p.n/total*100):'–'}</em></li>`).join('')}</ul>
   </div>`;
@@ -804,63 +1037,175 @@ function pieChart(parts){
 function kpiTitle(text,k){return `<div class="title-row"><span class="label">${text}</span>${info(k)}</div>`}
 
 /* ---------- Videos ---------- */
-const COLS=[
-  {k:'date',l:'Upload',v:v=>v.date.getTime()},
-  {k:'title',l:'Video',v:v=>v.title.toLowerCase()},
-  {k:'views',l:'Views',n:1,v:v=>v.views},
-  {k:'follower',l:'Follower',n:1,v:v=>v.follower},
-  {k:'likes',l:'Likes',n:1,v:v=>v.likes},
-  {k:'eng',l:'Engagement',n:1,v:v=>eng(v)},
-  {k:'status',l:'Status',v:v=>v.views}
-];
+const vbar=v=>{const max=Math.max(10,...VIDEOS.map(x=>x.views)),w=Math.max(3,Math.log10(Math.max(1,v.views))/Math.log10(max)*100);
+  return `<div class="vbar" style="width:${w.toFixed(0)}%;background:${status(v)==='flop'?'var(--bad)':status(v)==='viral'?'var(--good)':'var(--accent)'}"></div>`};
+const VCOLS=[
+  {k:'views',l:'Views',n:1,v:v=>v.views,c:v=>fmt(v.views)+vbar(v)},
+  {k:'follower',l:'Follower',n:1,v:v=>v.follower,c:v=>fmt(v.follower)},
+  {k:'likes',l:'Likes',n:1,v:v=>v.likes,c:v=>fmt(v.likes)},
+  {k:'comments',l:'Kommentare',n:1,v:v=>v.comments,c:v=>fmt(v.comments)},
+  {k:'saves',l:'Gespeichert',n:1,v:v=>v.saves,c:v=>fmt(v.saves)},
+  {k:'eng',l:'Engagement',n:1,v:eng,c:v=>v.views?dec(eng(v))+' %':'–'},
+  {k:'avgWatch',l:'Ø Wiedergabe',n:1,v:v=>v.avgWatch,c:v=>dec(v.avgWatch)+' s'},
+  {k:'totalWatch',l:'Wiedergabezeit',n:1,v:v=>v.totalWatch,c:v=>fmt(v.totalWatch)+' h'},
+  {k:'laenge',l:'Länge',n:1,v:v=>v.laenge,c:v=>v.laenge+' s'},
+  {k:'streamer',l:'Streamer',v:v=>v.streamers.join(', ').toLowerCase(),c:v=>esc(v.streamers.join(', '))},
+  {k:'spiel',l:'Spiel'},{k:'thema',l:'Thema'},{k:'hook',l:'Hook'},{k:'emotion',l:'Emotion'},{k:'overlay',l:'Text-Overlay'},{k:'sound',l:'Sound'},{k:'stimmung',l:'Stimmung'},
+  {k:'status',l:'Status',v:v=>v.views,c:v=>badge(v)}
+].map(c=>({v:x=>String(x[c.k]??'').toLowerCase(),c:x=>esc(x[c.k]??''),...c}));
+const FIXED_SORT={date:v=>v.date.getTime(),title:v=>v.title.toLowerCase()};
+const VRANGES=[['alle','Gesamter Zeitraum'],['7','Letzte 7 Tage'],['30','Letzte 30 Tage'],['week','Diese Woche'],['month','Dieser Monat']];
+function inRange(v,r){
+  if(r==='alle')return true;
+  const now=new Date();
+  if(r==='7'||r==='30')return v.date>=now-(+r)*DAY;
+  const s=new Date(now);s.setHours(0,0,0,0);
+  if(r==='week')s.setDate(s.getDate()-((s.getDay()+6)%7));else s.setDate(1);
+  return v.date>=s;
+}
 const VLIMIT=10;
 function renderVideos(){
   if(!VIDEOS.length){$('#view-videos').innerHTML=emptyState('Videos');return}
   const strs=[...groups(catByKey('streamer')).keys()].sort();
   $('#view-videos').innerHTML=`
-    <div class="view-head">${titled('h1','Videos','videos')}<div class="ctl-row"><button class="btn danger" data-clear>Alles löschen</button><button class="btn primary" data-new>${ICON.plus}Video eintragen</button></div></div>
+    <div class="view-head">${titled('h1','Videos','videos')}<div class="ctl-row"><button class="btn danger" data-clear>Alles löschen</button>${newBtn()}</div></div>
     <div class="card">
       <div class="ctl-row" style="margin-bottom:12px">
-        <input class="ctl" id="vq" type="search" placeholder="Suchen …" value="${esc(S.q)}" style="flex:1;min-width:180px">
+        <input class="ctl" id="vq" type="search" placeholder="Suchen …" value="${esc(S.q)}" style="flex:1;min-width:160px">
+        <select class="ctl" id="vrange" aria-label="Zeitraum">${VRANGES.map(([k,l])=>`<option value="${k}" ${S.fRange===k?'selected':''}>${l}</option>`).join('')}</select>
         <select class="ctl" id="vstatus" aria-label="Status filtern">${['alle','flop','gut','viral'].map(s=>`<option value="${s}" ${S.fStatus===s?'selected':''}>${s==='alle'?'Alle Status':STATUS_LABEL[s]}</option>`).join('')}</select>
         <select class="ctl" id="vstreamer" aria-label="Streamer filtern"><option value="alle">Alle Streamer</option>${strs.map(s=>`<option ${S.fStreamer===s?'selected':''}>${esc(s)}</option>`).join('')}</select>
+        <div class="menu-wrap"><button class="btn" data-colsbtn aria-expanded="false">Spalten ${ICON.chev}</button>
+          <div class="pop" id="colsPop" hidden><div class="mh">Spalten anzeigen</div>${VCOLS.map(c=>`<label><input type="checkbox" data-col="${c.k}" ${S.cols.includes(c.k)?'checked':''}>${c.l}</label>`).join('')}
+          <div style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px"><button class="btn ghost" data-colsreset style="width:100%;justify-content:center">Standard wiederherstellen</button></div></div></div>
       </div>
-      <div class="scroll-x" id="vtable"></div>
+      <div id="vtable"></div>
     </div>`;
   renderVideoTable();
 }
-function renderVideoTable(){
+function filteredVideos(){
   const q=S.q.toLowerCase();
-  const list=VIDEOS.filter(v=>(S.fStatus==='alle'||status(v)===S.fStatus)&&(S.fStreamer==='alle'||v.streamers.includes(S.fStreamer))&&
-    (!q||[v.title,v.spiel,v.sound,v.hook,v.thema,v.emotion].join(' ').toLowerCase().includes(q)));
-  const col=COLS.find(c=>c.k===S.sortKey);
-  list.sort((a,b)=>{const x=col.v(a),y=col.v(b);return (x>y?1:x<y?-1:0)*S.sortDir});
+  return VIDEOS.filter(v=>(S.fStatus==='alle'||status(v)===S.fStatus)&&(S.fStreamer==='alle'||v.streamers.includes(S.fStreamer))&&inRange(v,S.fRange)&&
+    (!q||[v.title,v.spiel,v.sound,v.hook,v.thema,v.emotion,...v.streamers].join(' ').toLowerCase().includes(q)));
+}
+function expandHtml(v){
+  const ex=explain(v);
+  const li=a=>a.slice(0,3).map(x=>`<li><div>${x.t}<small>${x.d}</small></div></li>`).join('');
+  const m=[['Views',fmt(v.views)],['Neue Follower',fmt(v.follower)],['Likes',fmt(v.likes)],['Kommentare',fmt(v.comments)],['Gespeichert',fmt(v.saves)],['Engagement',v.views?dec(eng(v))+' %':'–'],
+    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s']];
+  return `<div class="exp-in"><div class="exp-grid">
+    <div><p class="verdict" style="font-size:14px;margin-bottom:10px">${fmt(v.views)} Views · ${ex.verdict}</p>
+      ${ex.pos.length?`<p class="fac-head">Hat geholfen</p><ul class="fac pos" style="margin-bottom:10px">${li(ex.pos)}</ul>`:''}
+      ${ex.neg.length?`<p class="fac-head">Hat gebremst</p><ul class="fac neg">${li(ex.neg)}</ul>`:''}
+      ${!ex.pos.length&&!ex.neg.length?`<p style="color:var(--muted);font-size:13px">${VIDEOS.length<10?'Noch zu wenig Videos, um Muster zu erkennen.':'Keine Eigenschaft weicht deutlich von deinem Schnitt ab.'}</p>`:''}</div>
+    <div><div class="mgrid sm">${m.map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')}</div>
+      <div class="tags" style="margin-top:10px">${[['Spiel',v.spiel],['Hook',v.hook],['Emotion',v.emotion],['Overlay',v.overlay],['Audio',v.audio]].map(([a,b])=>`<span class="tagchip"><b>${a}</b>${esc(b)}</span>`).join('')}</div></div>
+  </div>
+  <div class="ctl-row" style="margin-top:14px"><button class="btn" data-vid="${v.id}">Alle Details</button><button class="btn" data-edit="${v.id}">Bearbeiten</button><button class="btn danger" data-quickdel="${v.id}">Löschen</button></div></div>`;
+}
+function renderVideoTable(){
+  const box=$('#vtable');if(!box)return;
+  const list=filteredVideos();
+  const sorter=FIXED_SORT[S.sortKey]||(VCOLS.find(c=>c.k===S.sortKey)||{v:FIXED_SORT.date}).v;
+  list.sort((a,b)=>{const x=sorter(a),y=sorter(b);return (x>y?1:x<y?-1:0)*S.sortDir});
   const shown=S.vAll?list:list.slice(0,VLIMIT);
-  $('#vtable').innerHTML=`<table class="vt"><thead><tr>${COLS.map(c=>`<th class="${c.n?'n':''}" data-sort="${c.k}">${c.l}${S.sortKey===c.k?(S.sortDir>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead>
-    <tbody>${shown.map(v=>`<tr data-vid="${v.id}"><td class="d">${dateStr(v.date)}<br><span>${timeStr(v.date)}</span></td>
+  const cols=VCOLS.filter(c=>S.cols.includes(c.k)),ncol=3+cols.length;
+  const allSel=shown.length>0&&shown.every(v=>S.sel.has(v.id));
+  const th=(k,l,n)=>`<th class="${n?'n':''}" data-sort="${k}">${l}${S.sortKey===k?(S.sortDir>0?' ↑':' ↓'):''}</th>`;
+  box.innerHTML=`${S.sel.size?`<div class="bulk"><b>${S.sel.size} ausgewählt</b><button class="btn" data-bulktag>Tag setzen</button><button class="btn danger" data-bulkdel>Löschen</button><button class="btn ghost" data-bulkclear>Auswahl aufheben</button></div>`:''}
+    <div class="vt-wrap"><table class="vt"><thead><tr><th class="selcell"><input type="checkbox" data-selall ${allSel?'checked':''} aria-label="Alle sichtbaren auswählen"></th>${th('date','Upload')}${th('title','Video')}${cols.map(c=>th(c.k,c.l,c.n)).join('')}</tr></thead>
+    <tbody>${shown.map(v=>`<tr data-row="${v.id}" tabindex="0" class="${S.expanded===v.id?'open':''}"><td class="selcell"><input type="checkbox" data-sel="${v.id}" ${S.sel.has(v.id)?'checked':''} aria-label="Auswählen"></td><td class="d">${dateStr(v.date)}<br><span>${timeStr(v.date)}</span></td>
       <td class="t">${esc(v.title)}<small>${esc(v.streamers.join(', '))} · ${esc(v.hook)} · ${v.laenge} s</small></td>
-      <td class="n">${fmt(v.views)}</td><td class="n">${fmt(v.follower)}</td><td class="n">${fmt(v.likes)}</td><td class="n">${v.views?dec(eng(v))+' %':'–'}</td><td>${badge(v)}</td></tr>`).join('')}
-    ${list.length?'':`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px">Keine Videos passen zu diesem Filter.</td></tr>`}</tbody></table>
+      ${cols.map(c=>`<td class="${c.n?'n':''}">${c.c(v)}</td>`).join('')}</tr>${S.expanded===v.id?`<tr class="exp"><td colspan="${ncol}">${expandHtml(v)}</td></tr>`:''}`).join('')}
+    ${list.length?'':`<tr><td colspan="${ncol}" style="text-align:center;color:var(--muted);padding:28px">Keine Videos passen zu diesem Filter.</td></tr>`}</tbody></table></div>
     <div class="table-foot"><span>${shown.length} von ${list.length} Video${list.length===1?'':'s'}${list.length<VIDEOS.length?` (gefiltert, insgesamt ${VIDEOS.length})`:''}</span>
       ${list.length>VLIMIT?`<button class="btn" data-vall>${S.vAll?'Weniger anzeigen':`Alle ${list.length} Videos anzeigen`}</button>`:''}</div>`;
+}
+const BULK_FIELDS=[['spiel','Spiel','spiel'],['thema','Thema','thema'],['hook','Hook','hook'],['sound','Sound','sound'],['emotion','Emotion','emotion'],['overlay','Text-Overlay','overlay'],
+  ['untertitel','Untertitel','untertitel'],['audio','Audio','audio'],['stimmung','Kommentarstimmung','stimmung'],['streamerAdd','Streamer hinzufügen','streamers']];
+function bulkOptions(field){
+  const f=BULK_FIELDS.find(x=>x[0]===field);
+  const base={untertitel:['ja','nein'],audio:['nur Original','mit Musik','Trend-Sound'],emotion:DEF_EMO,overlay:DEF_OV,stimmung:DEF_MOOD}[field]||[];
+  return [...new Set([...base,...uniq(f[2])])].filter(x=>x!=='Unbekannt');
+}
+function openBulkTag(){
+  openDrawer('Tag setzen',`${S.sel.size} Video${S.sel.size===1?'':'s'} ausgewählt`,`
+    <form id="bulkForm" novalidate style="gap:16px">
+      <div class="f">${flabel('bulkField','Eigenschaft')}<select class="ctl" id="bulkField" style="height:34px">${BULK_FIELDS.map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select></div>
+      <div class="f">${flabel('bulkVal','Neuer Wert')}<input class="inp" id="bulkVal" list="bulkList" autocomplete="off" placeholder="z. B. Fortnite"><datalist id="bulkList">${bulkOptions('spiel').map(o=>`<option value="${esc(o)}">`).join('')}</datalist></div>
+      <p class="err" id="bulkErr" hidden></p>
+      <div class="form-actions"><button type="button" class="btn" id="bulkCancel">Abbrechen</button><button type="submit" class="btn primary" id="bulkGo">Auf ${S.sel.size} Video${S.sel.size===1?'':'s'} anwenden</button></div>
+    </form>`);
+  $('#bulkCancel').onclick=closeDrawer;
+  $('#bulkForm').onsubmit=async e=>{
+    e.preventDefault();
+    const field=$('#bulkField').value,val=canon($('#bulkVal').value.trim(),BULK_FIELDS.find(x=>x[0]===field)[2]);
+    if(!val){const er=$('#bulkErr');er.hidden=false;er.textContent='Bitte einen Wert eintragen.';return}
+    const vids=VIDEOS.filter(v=>S.sel.has(v.id));
+    for(const v of vids){if(field==='streamerAdd'){if(!v.streamers.includes(val))v.streamers.push(val)}else v[field]=val}
+    const btn=$('#bulkGo');btn.disabled=true;btn.textContent='Speichert …';
+    try{await Promise.all(vids.map(updateVideo));renderAll();closeDrawer();flashRows(vids.map(v=>v.id));toast(`${vids.length} Video${vids.length===1?'':'s'} aktualisiert`)}
+    catch(ex){btn.disabled=false;btn.textContent='Nochmal versuchen';fail(ex)}
+  };
+}
+
+/* ---------- Löschen mit Rückgängig ---------- */
+let UNDO=null;
+async function removeVideos(ids,label){
+  const copies=VIDEOS.filter(v=>ids.includes(v.id)).map(v=>({...v,weights:{...(v.weights||{})},streamers:[...v.streamers]}));
+  if(!copies.length)return;
+  await animateOut(ids);
+  if(!DEMO){
+    if(ids.length===VIDEOS.length)await api('DELETE','/videos');
+    else await Promise.all(ids.map(id=>api('DELETE','/videos/'+id)));
+  }
+  for(const id of ids){const i=VIDEOS.findIndex(v=>v.id===id);if(i>=0)VIDEOS.splice(i,1);S.sel.delete(id)}
+  if(ids.includes(S.expanded))S.expanded=null;
+  renderAll();
+  UNDO={copies,demo:DEMO};
+  toast(label,{undo:true});
+}
+async function undoDelete(){
+  const u=UNDO;UNDO=null;$('#toast').hidden=true;
+  if(!u||u.demo!==DEMO)return;
+  try{
+    if(DEMO)VIDEOS.push(...u.copies);else await createMany(u.copies);
+    renderAll();flashRows(u.copies.map(v=>v.id));toast(`${u.copies.length===1?'Video':u.copies.length+' Videos'} wiederhergestellt`);
+  }catch(e){fail(e)}
 }
 
 /* ---------- Analyse ---------- */
 const catOptions=sel=>CAT.map(f=>`<option value="${f.k}" ${f.k===sel?'selected':''}>${f.l}</option>`).join('');
 const metricOptions=sel=>Object.entries(METRICS).map(([k,m])=>`<option value="${k}" ${k===sel?'selected':''}>${m.l}</option>`).join('');
+const AN_RANGES=[['all','Alle Videos'],['30','Letzte 30 Tage'],['90','Letzte 3 Monate'],['180','Letzte 6 Monate'],['365','Letzte 12 Monate']];
+const analysisList=()=>S.anRange==='all'?VIDEOS:VIDEOS.filter(v=>v.date>=Date.now()-(+S.anRange)*DAY);
 const ILIMIT=5;
 function renderAnalyse(){
-  if(VIDEOS.length<3){$('#view-analyse').innerHTML=VIDEOS.length?`<div class="view-head"><h1>Analyse</h1></div><div class="card empty-state"><h2>Noch zu wenig Videos</h2><p>Die Analyse startet ab 3 Videos und wird ab etwa 20 aussagekräftig. Du hast ${VIDEOS.length} eingetragen.</p><button class="btn primary" data-new>${ICON.plus}Video eintragen</button></div>`:emptyState('Analyse');return}
-  const ins=computeInsights(S.insMetric),shown=S.insAll?ins:ins.slice(0,ILIMIT);
-  const nMarked=VIDEOS.filter(v=>Object.values(v.weights||{}).some(w=>w!==1)).length;
-  $('#view-analyse').innerHTML=`
-    <div class="view-head"><h1>Analyse</h1>
-      <div class="ctl-row"><label class="toggle"><input type="checkbox" id="useW" ${S.useWeights?'checked':''}>Meine Gewichtung <span class="mono" style="color:var(--faint)">${nMarked}</span></label>${info('weights')}</div></div>
+  if(VIDEOS.length<3){$('#view-analyse').innerHTML=VIDEOS.length?`<div class="view-head"><h1>Analyse</h1></div><div class="card empty-state"><h2>Noch zu wenig Videos</h2><p>Die Analyse startet ab 3 Videos und wird ab etwa 20 aussagekräftig. Du hast ${VIDEOS.length} eingetragen.</p>${newBtn()}</div>`:emptyState('Analyse');return}
+  const L=analysisList();
+  const nMarked=L.filter(v=>Object.values(v.weights||{}).some(w=>w!==1)).length;
+  const head=`<div class="view-head"><h1>Analyse</h1>
+      <div class="ctl-row"><select class="ctl" id="anRange" aria-label="Datenbasis">${AN_RANGES.map(([k,l])=>`<option value="${k}" ${S.anRange===k?'selected':''}>${l}</option>`).join('')}</select>${info('anRange')}
+      <label class="toggle"><input type="checkbox" id="useW" ${S.useWeights?'checked':''}>Meine Gewichtung <span class="mono" style="color:var(--faint)">${nMarked}</span></label>${info('weights')}</div></div>`;
+  if(L.length<3){$('#view-analyse').innerHTML=head+`<div class="card empty-state"><h2>Zu wenig Videos in diesem Zeitraum</h2><p>Im gewählten Zeitraum gibt es nur ${L.length} Video${L.length===1?'':'s'}. Wähl oben einen längeren Zeitraum.</p></div>`;return}
+  const ins=computeInsights(S.insMetric,L),shown=S.insAll?ins:ins.slice(0,ILIMIT);
+  /* Was ist neu seit letzter Woche? */
+  const old=L.filter(v=>v.date<=Date.now()-7*DAY);
+  let since='';
+  if(old.length>=MIN_N*2&&old.length<L.length){
+    const oldIns=computeInsights(S.insMetric,old),oldK=new Set(oldIns.map(i=>i.key)),nowK=new Set(ins.map(i=>i.key));
+    ins.forEach(i=>{i.isNew=!oldK.has(i.key)});
+    const gone=oldIns.filter(i=>!nowK.has(i.key)),nNew=ins.filter(i=>i.isNew).length;
+    since=`<div class="since"><b style="color:var(--ink);font-weight:500">Seit letzter Woche:</b> ${nNew?`${nNew} neu`:'nichts Neues'}${gone.length?` · ${gone.length} nicht mehr sichtbar <button class="btn ghost" data-gone style="height:24px">${S.showGone?'ausblenden':'anzeigen'}</button>`:''}${info('whatsnew')}</div>
+      ${S.showGone&&gone.length?insightList(gone,{gone:true}):''}`;
+  }
+  $('#view-analyse').innerHTML=head+`
     <div class="card">
       <div class="card-head">${titled('h2','Automatische Erkenntnisse','insights')}
         <div class="seg" role="group" aria-label="Bezogen auf"><button data-insm="views" class="${S.insMetric==='views'?'on':''}">Views</button><button data-insm="follower" class="${S.insMetric==='follower'?'on':''}">Neue Follower</button></div></div>
-      ${ins.length?insightList(shown):'<p class="empty-msg">Noch keine deutlichen Muster gefunden.</p>'}
+      ${ins.length?insightList(shown,{revealFrom:S.revealIns?ILIMIT:null}):'<p class="empty-msg">Noch keine deutlichen Muster gefunden.</p>'}
       ${ins.length>ILIMIT?`<div class="more"><button class="btn" data-insall>${S.insAll?'Weniger anzeigen':`Weitere ${ins.length-ILIMIT} Erkenntnisse anzeigen`}</button></div>`:''}
+      ${since}
     </div>
     <div class="card" id="cmpCard">
       <div class="card-head">${titled('h2','Vergleichen','compare')}
@@ -879,23 +1224,24 @@ function renderAnalyse(){
         <div id="scatter"></div>
       </div>
     </div>`;
+  S.revealIns=false;
   renderBars();renderHeat();renderScatter();
 }
 function renderBars(){
-  const f=catByKey(S.groupField),m=METRICS[S.groupMetric];
+  const L=analysisList(),f=catByKey(S.groupField),m=METRICS[S.groupMetric];
   const wf=v=>W(v,f);
-  const rows=[...groups(f)].map(([name,vs])=>({name,n:vs.length,val:m.f(vs,wf),flop:vs.filter(v=>v.views<FLOP).length/vs.length*100,mk:marks(vs,f)}));
+  const rows=[...groups(f,L)].map(([name,vs])=>({name,n:vs.length,val:m.f(vs,wf),flop:vs.filter(v=>v.views<FLOP).length/vs.length*100,mk:marks(vs,f)}));
   rows.sort((a,b)=>(m.lowerBetter?a.val-b.val:b.val-a.val));
-  const overall=m.f(VIDEOS,wf),max=Math.max(overall,...rows.map(r=>r.val))*1.05||1;
-  $('#bars').innerHTML=`<div class="bars">${rows.map(r=>`<div class="bar-row">
+  const overall=m.f(L,wf),max=Math.max(overall,...rows.map(r=>r.val))*1.05||1;
+  $('#bars').innerHTML=`<div class="bars">${rows.map((r,i)=>`<div class="bar-row">
       <div class="name" title="${esc(r.name)}">${esc(r.name)}<small>${r.n} Videos${r.mk&&S.useWeights?` · ${r.mk}× markiert`:''}${S.groupMetric!=='flop'?` · ${pct(r.flop)} Flops`:''}</small></div>
-      <div class="track"><div class="fill ${r.n<MIN_N?'low':''}" style="width:${r.val/max*100}%"></div><div class="avg" style="left:${overall/max*100}%"></div></div>
+      <div class="track"><div class="fill ${r.n<MIN_N?'low':''}" style="width:${r.val/max*100}%;animation-delay:${Math.min(i,12)*30}ms"></div><div class="avg" style="left:${overall/max*100}%"></div></div>
       <div class="v">${m.fmt(r.val)}</div></div>`).join('')}</div>
     <div class="legend"><span><i style="background:var(--accent)"></i>${m.l}</span><span><i style="background:var(--ink);opacity:.6;width:2px"></i>Alle Videos: ${m.fmt(overall)}</span><span><i style="background:var(--faint);opacity:.4"></i>unter ${MIN_N} Videos</span></div>`;
 }
 function renderHeat(){
-  const A=catByKey(S.heatA),B=catByKey(S.heatB),m=METRICS[S.heatMetric];
-  const ga=[...groups(A)].sort((x,y)=>y[1].length-x[1].length),gbKeys=[...groups(B)].sort((x,y)=>y[1].length-x[1].length).map(x=>x[0]);
+  const L=analysisList(),A=catByKey(S.heatA),B=catByKey(S.heatB),m=METRICS[S.heatMetric];
+  const ga=[...groups(A,L)].sort((x,y)=>y[1].length-x[1].length),gbKeys=[...groups(B,L)].sort((x,y)=>y[1].length-x[1].length).map(x=>x[0]);
   const wf=v=>Math.max(W(v,A),W(v,B));
   const cells=[];
   for(const [an,avs] of ga)for(const bn of gbKeys){const vs=avs.filter(v=>B.g(v).includes(bn));if(vs.length)cells.push(m.f(vs,wf))}
@@ -908,8 +1254,8 @@ function renderHeat(){
   </tbody></table>`;
 }
 function renderScatter(){
-  const nf=NUM.find(n=>n.k===S.scatterX);
-  const list=VIDEOS.filter(v=>nf.g(v)!=null);
+  const nf=NUM.find(n=>n.k===S.scatterX)||NUM[0];
+  const list=analysisList().filter(v=>nf.g(v)!=null);
   if(list.length<3){$('#scatter').innerHTML='<p class="empty-msg">Noch zu wenig Videos mit diesem Wert.</p>';return}
   const xs=list.map(nf.g),ys=list.map(v=>v.views);
   const rho=spearman(xs,ys);
@@ -925,7 +1271,7 @@ function renderScatter(){
     ${yt.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${pl-8}" y="${y(t)+3.5}" text-anchor="end">${short(t)}</text>`).join('')}
     ${xt.map((t,i)=>`<text x="${x(t)}" y="${H-8}" text-anchor="${i===0?'start':i===4?'end':'middle'}">${dec(t,S.scatterX==='hour'?0:1)}</text>`).join('')}
     <line x1="${pl}" x2="${W-pr}" y1="${y(FLOP)}" y2="${y(FLOP)}" stroke="var(--bad)" stroke-dasharray="3 4" opacity=".7"/>
-    ${list.map(v=>`<circle cx="${x(nf.g(v)).toFixed(1)}" cy="${y(Math.max(1,v.views)).toFixed(1)}" r="4" fill="${col[status(v)]}" fill-opacity=".7" data-vid="${v.id}" style="cursor:pointer"><title>${esc(v.title)}: ${fmt(v.views)} Views</title></circle>`).join('')}
+    ${list.map(v=>`<circle class="pt" cx="${x(nf.g(v)).toFixed(1)}" cy="${y(Math.max(1,v.views)).toFixed(1)}" r="4" fill="${col[status(v)]}" fill-opacity=".7" data-vid="${v.id}" data-ptip="${esc(v.title)}|${fmt(v.views)} Views · ${esc(nf.l)}: ${dec(nf.g(v))}" style="cursor:pointer"></circle>`).join('')}
   </svg>
   <p style="margin-top:8px;font-size:13px"><b>${strength} Zusammenhang</b>${Math.abs(rho)>=.12?`: ${nf.phrase.toLowerCase()}, desto ${rho>0?'mehr':'weniger'} Views.`:' mit deinen Views.'} <span class="mono" style="color:var(--faint)">ρ = ${dec(rho,2)}</span></p>
   <div class="legend"><span><i style="background:var(--bad)"></i>Flop</span><span><i style="background:var(--accent)"></i>Gut</span><span><i style="background:var(--good)"></i>Viral</span></div>`;
@@ -933,6 +1279,7 @@ function renderScatter(){
 
 /* ---------- Streamer ---------- */
 function bestOf(vs,key){const m=new Map();for(const v of vs){if(!m.has(v[key]))m.set(v[key],[]);m.get(v[key]).push(v.views)}let b=null;for(const [k,a] of m)if(a.length>=2&&(!b||median(a)>b.m))b={k,m:median(a),n:a.length};return b}
+const sparkBars=(vs,lmax)=>vs.map(v=>`<i style="height:${Math.max(6,(Math.log10(Math.max(1,v.views))-2.5)/(lmax-2.5)*100)}%;background:${status(v)==='flop'?'var(--bad)':status(v)==='viral'?'var(--good)':'var(--faint)'};opacity:${status(v)==='gut'?.55:.85}" title="${dateStr(v.date)}: ${fmt(v.views)} Views"></i>`).join('');
 function renderStreamer(){
   if(!VIDEOS.length){$('#view-streamer').innerHTML=emptyState('Streamer');return}
   const g=[...groups(catByKey('streamer'))].sort((a,b)=>median(b[1].map(v=>v.views))-median(a[1].map(v=>v.views)));
@@ -947,19 +1294,45 @@ function renderStreamer(){
       return `<div class="card str" data-streamer="${esc(name)}" tabindex="0">
         <div class="str-top"><div><h3>${esc(name)}</h3><small>${vs.length} Video${vs.length===1?'':'s'}</small></div><span class="badge ${med>=overall?'viral':'flop'}">${med>=overall?'über':'unter'} Schnitt</span></div>
         <div class="str-stats"><div><b>${short(med)}</b><span>Median-Views</span></div><div><b>${pct(fl)}</b><span>Flops</span></div><div><b>${fmt(f)}</b><span>Follower</span></div></div>
-        <div class="spark" aria-label="Views pro Video">${sorted.map(v=>`<i style="height:${Math.max(6,(Math.log10(Math.max(1,v.views))-2.5)/(lmax-2.5)*100)}%;background:${status(v)==='flop'?'var(--bad)':status(v)==='viral'?'var(--good)':'var(--faint)'};opacity:${status(v)==='gut'?.55:.85}" title="${dateStr(v.date)}: ${fmt(v.views)}"></i>`).join('')}</div>
+        <div class="spark" aria-label="Views pro Video">${sparkBars(sorted,lmax)}</div>
         <dl><dt>Bester Hook</dt><dd>${best(bestOf(vs,'hook'))}</dd><dt>Beste Emotion</dt><dd>${best(bestOf(vs,'emotion'))}</dd><dt>Bestes Spiel</dt><dd>${best(bestOf(vs,'spiel'))}</dd></dl>
       </div>`}).join('')}</div>`;
+}
+function openStreamer(name){
+  const vs=VIDEOS.filter(v=>v.streamers.includes(name)).sort((a,b)=>a.date-b.date);if(!vs.length)return;
+  const overall=median(VIDEOS.map(v=>v.views)),med=median(vs.map(v=>v.views));
+  const lmax=Math.log10(Math.max(1000,...VIDEOS.map(v=>v.views)));
+  const kp=[['Videos',vs.length],['Median-Views',short(med)],['Neue Follower',fmt(vs.reduce((s,v)=>s+v.follower,0))],['Flop-Quote',pct(vs.filter(v=>v.views<FLOP).length/vs.length*100)],['Viral',vs.filter(v=>v.views>=VIRAL).length],['Engagement',dec(median(vs.map(eng)))+' %']];
+  const cats=[['hook','Hook'],['emotion','Emotion'],['spiel','Spiel'],['thema','Thema'],['overlay','Text-Overlay']].map(([k,l])=>{
+    const m=new Map();for(const v of vs){if(!m.has(v[k]))m.set(v[k],[]);m.get(v[k]).push(v.views)}
+    const rows=[...m].map(([val,a])=>({val,n:a.length,med:median(a)})).sort((a,b)=>b.med-a.med).slice(0,4);
+    const max=Math.max(1,...rows.map(r=>r.med));
+    return `<div class="cat-block"><p class="fac-head">${l}</p><div class="bars">${rows.map(r=>`<div class="bar-row"><div class="name" title="${esc(r.val)}">${esc(r.val)}<small>${r.n} Video${r.n===1?'':'s'}</small></div><div class="track"><div class="fill ${r.n<2?'low':''}" style="width:${r.med/max*100}%"></div><div class="avg" style="left:${Math.min(100,overall/max*100)}%"></div></div><div class="v">${short(r.med)}</div></div>`).join('')}</div></div>`;
+  }).join('');
+  const top5=[...vs].sort((a,b)=>b.views-a.views).slice(0,5);
+  openDrawer(name,`<span>${vs.length} Video${vs.length===1?'':'s'} · ${dateStr(vs[0].date)} bis ${dateStr(vs[vs.length-1].date)}</span><span class="badge ${med>=overall?'viral':'flop'}">${med>=overall?'über':'unter'} deinem Schnitt</span>`,`
+    <div class="mgrid">${kp.map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')}</div>
+    <div><div class="section-title"><h3>Views pro Video</h3></div><div class="spark big-spark">${sparkBars(vs,lmax)}</div>
+      <div class="legend" style="margin-top:8px"><span><i style="background:var(--bad)"></i>Flop</span><span><i style="background:var(--faint);opacity:.55"></i>Gut</span><span><i style="background:var(--good)"></i>Viral</span></div></div>
+    <div><div class="section-title"><h3>Was bei ${esc(name)} funktioniert</h3></div>${cats}
+      <p class="label" style="margin-top:8px">Median-Views je Wert · die Linie ist dein Schnitt über alle Videos</p></div>
+    <div><div class="section-title"><h3>Top-Videos</h3></div><div class="rows">${top5.map(v=>`<div class="row" data-vid="${v.id}"><div class="t">${esc(v.title)}<small>${dateStr(v.date)} · ${esc(v.hook)}</small></div><span class="num">${short(v.views)}</span>${badge(v)}</div>`).join('')}</div></div>
+    <div class="ctl-row"><button class="btn" data-strvideos="${esc(name)}">Alle Videos von ${esc(name)} anzeigen</button></div>`);
 }
 
 /* ---------- Drawer ---------- */
 let lastFocus=null;
 function openDrawer(title,sub,html){
-  lastFocus=document.activeElement;hideTip();
+  if($('#drawer').hidden)lastFocus=document.activeElement;
+  hideTip();
   $('#drawerTitle').textContent=title;$('#drawerSub').innerHTML=sub;$('#drawerBody').innerHTML=html;
   $('#drawer').hidden=false;$('#scrim').hidden=false;$('#drawerBody').scrollTop=0;$('#drawerClose').focus();
 }
-function closeDrawer(){hideTip();$('#drawer').hidden=true;$('#scrim').hidden=true;if(lastFocus&&document.contains(lastFocus))lastFocus.focus()}
+function closeDrawer(){
+  hideTip();$('#drawer').hidden=true;$('#scrim').hidden=true;FORM_EDIT=null;
+  if(lastFocus&&document.contains(lastFocus))lastFocus.focus();
+  if(PENDING_FLASH.length){const ids=PENDING_FLASH;PENDING_FLASH=[];setTimeout(()=>flashRows(ids),60)}
+}
 function whyHtml(v){
   const ex=explain(v);
   const li=a=>a.map(x=>`<li><div>${x.t}<small>${x.d}</small></div></li>`).join('');
@@ -973,7 +1346,7 @@ function whyHtml(v){
 let openId=null;
 function openVideo(id){
   const v=VIDEOS.find(x=>x.id===+id);if(!v)return;
-  openId=v.id;
+  openId=v.id;FORM_EDIT=null;
   const m=[['Views',fmt(v.views)],['Neue Follower',fmt(v.follower)],['Likes',fmt(v.likes)],['Kommentare',fmt(v.comments)],['Gespeichert',fmt(v.saves)],['Engagement',v.views?dec(eng(v))+' %':'–'],
     ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s']];
   const tags=[['Streamer',v.streamers.join(', ')],['Spiel',v.spiel],['Thema',v.thema],['Hook',v.hook],['Emotion',v.emotion],['Text-Overlay',v.overlay],['Untertitel',v.untertitel],['Audio',v.audio],['Sound',v.sound],['Kommentare',v.stimmung]];
@@ -982,7 +1355,7 @@ function openVideo(id){
     <div><div class="section-title"><h3>Zahlen nach 24 h</h3></div><div class="mgrid">${m.map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')}</div></div>
     <div><div class="section-title"><h3>Tags</h3></div><div class="tags">${tags.map(([a,b])=>`<span class="tagchip"><b>${a}</b>${esc(b)}</span>`).join('')}</div></div>
     <div><div class="section-title"><h3>Woran lag's deiner Meinung nach?</h3>${info('weightsVideo')}</div>${weightRows('dw_',v.weights||{},v)}</div>
-    <div class="ctl-row" id="vActions"><button class="btn" data-edit="${v.id}">Bearbeiten</button><button class="btn danger" data-del="${v.id}">Video löschen</button></div>`);
+    <div class="ctl-row" id="vActions"><button class="btn" data-edit="${v.id}">Bearbeiten</button><button class="btn danger" data-quickdel="${v.id}">Video löschen</button></div>`);
 }
 
 /* ---------- Formular ---------- */
@@ -995,63 +1368,124 @@ function recent(key,limit=10){
       if(x&&x!=='Unbekannt'&&!seen.has(x)){seen.add(x);out.push(x);if(out.length>=limit)return out}
   return out;
 }
+/* Tippfehler-Schutz: bekannte Schreibweise finden */
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+const known=key=>uniq(key).filter(x=>x!=='Unbekannt');
+function suggest(val,key){
+  if(!val)return null;const k=known(key);if(k.includes(val))return null;
+  const lv=val.toLowerCase(),exact=k.find(x=>x.toLowerCase()===lv);if(exact)return exact;
+  if(val.length<4)return null;
+  let best=null,bd=99;for(const x of k){const d=lev(lv,x.toLowerCase());if(d<bd&&d<=Math.min(2,Math.floor(x.length/4))){bd=d;best=x}}
+  return best;
+}
+const canon=(val,key)=>{if(!val)return val;const lv=val.toLowerCase();return known(key).find(x=>x.toLowerCase()===lv)||val};
+const COMBO_KEYS={fstr:'streamers',fspiel:'spiel',fthema:'thema',fhook:'hook',fsound:'sound'};
+function checkTypo(input){
+  const key=COMBO_KEYS[input.id],box=document.querySelector(`[data-typo-for="${input.id}"]`);if(!key||!box)return;
+  const parts=input.id==='fstr'?input.value.split(',').map(s=>s.trim()).filter(Boolean):[input.value.trim()];
+  const hits=parts.map(p=>[p,suggest(p,key)]).filter(([p,s])=>s&&s!==p);
+  box.hidden=!hits.length;
+  box.innerHTML=hits.map(([p,s])=>`Meintest du <button type="button" data-fix="${esc(input.id)}" data-from="${esc(p)}" data-to="${esc(s)}">${esc(s)}</button> statt „${esc(p)}“?`).join('<br>');
+}
 const DEF_EMO=['lustig','Rage','Schock','wholesome','Drama','Skill'],DEF_OV=['keins','Frage','Aussage','Spoiler'],DEF_MOOD=['positiv','gemischt','negativ'];
-const withDefaults=(defs,key,extra)=>[...new Set([...defs,...uniq(key),...(extra?[extra]:[])])];
-const flabel=(id,l,tipKey,suf)=>`<div class="flabel"><label for="${id}">${l}${suf?` <small>(${suf})</small>`:''}</label>${tipKey?info(tipKey):''}</div>`;
-const numF=(id,l,ph,suf,val,tipKey)=>`<div class="f">${flabel(id,l,tipKey,suf)}<input class="inp" type="number" id="${id}" name="${id}" min="0" step="any" placeholder="${ph}" inputmode="decimal" value="${val??''}"></div>`;
-const comboF=(id,l,key,ph,val,tipKey,multi)=>`<div class="f${multi?' full':''}">${flabel(id,l,tipKey)}<div class="combo"><input class="inp" type="text" id="${id}" name="${id}" placeholder="${ph}" value="${esc(val??'')}" autocomplete="off"><button type="button" class="combo-btn" data-combo="${id}" data-key="${key}" ${multi?'data-multi="1"':''} aria-label="Zuletzt verwendet" aria-expanded="false">${ICON.chev}</button><div class="combo-menu" hidden></div></div></div>`;
-const chipsF=(name,l,opts,sel,tipKey,addLabel)=>`<div class="f"><div class="flabel"><span>${l}</span>${tipKey?info(tipKey):''}</div><div class="opts" role="radiogroup" aria-label="${l}">${opts.map(o=>chip(name,o,o===sel)).join('')}${addLabel?`<button type="button" class="chip-add" data-add="${name}" data-ph="${addLabel.replace(' hinzufügen','')} …" aria-label="${addLabel}" title="${addLabel}">${ICON.plus}</button>`:''}</div></div>`;
-const chip=(name,o,checked)=>`<label><input type="radio" name="${name}" value="${esc(o)}" ${checked?'checked':''}><span>${esc(o)}</span></label>`;
+const DEFS={femo:DEF_EMO,fov:DEF_OV,fmood:DEF_MOOD};
+const withDefaults=(name,key,extra)=>{const hid=SETTINGS.hidden[name]||[];return [...new Set([...DEFS[name],...uniq(key),...(extra?[extra]:[])])].filter(o=>o===extra||!hid.includes(o))};
+const flabel=(id,l,tipKey,suf,req)=>`<div class="flabel"><label for="${id}">${l}${req?' <span class="req" title="Pflichtfeld">*</span>':''}${suf?` <small>(${suf})</small>`:''}</label>${tipKey?info(tipKey):''}</div>`;
+const numF=(id,l,ph,suf,val,tipKey,req)=>`<div class="f">${flabel(id,l,tipKey,suf,req)}<input class="inp" type="number" id="${id}" name="${id}" min="0" step="any" placeholder="${ph}" inputmode="decimal" value="${val??''}"></div>`;
+const comboF=(id,l,key,ph,val,tipKey,multi,req)=>`<div class="f${multi?' full':''}">${flabel(id,l,tipKey,'',req)}<div class="combo"><input class="inp" type="text" id="${id}" name="${id}" placeholder="${ph}" value="${esc(val??'')}" autocomplete="off"><button type="button" class="combo-btn" data-combo="${id}" data-key="${key}" ${multi?'data-multi="1"':''} aria-label="Zuletzt verwendet" aria-expanded="false">${ICON.chev}</button><div class="combo-menu" hidden></div></div><div class="typo" data-typo-for="${id}" hidden></div></div>`;
+const chip=(name,o,checked,removable)=>`<label><input type="radio" name="${name}" value="${esc(o)}" ${checked?'checked':''}><span>${esc(o)}${removable?`<button type="button" class="chip-x" data-hide="${name}" data-val="${esc(o)}" aria-label="Option „${esc(o)}“ entfernen" title="Option entfernen">×</button>`:''}</span></label>`;
+const chipsF=(name,l,opts,sel,tipKey,addLabel)=>`<div class="f"><div class="flabel"><span>${l}</span>${tipKey?info(tipKey):''}</div><div class="opts" role="radiogroup" aria-label="${l}">${opts.map(o=>chip(name,o,o===sel,!!DEFS[name]&&!DEFS[name].includes(o))).join('')}${addLabel?`<button type="button" class="chip-add" data-add="${name}" data-ph="${addLabel.replace(' hinzufügen','')} …" aria-label="${addLabel}" title="${addLabel}">${ICON.plus}</button>`:''}</div></div>`;
 const localInput=d=>{const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`};
-function openForm(edit){
-  const e0=edit||{};
+/* Entwurf (nur für neue Videos, nur auf diesem Gerät) */
+const DRAFT_KEY='clipradar-draft';let FORM_EDIT=null;
+function saveDraft(){
+  const f=$('#vform');if(!f||FORM_EDIT)return;
+  const d={inp:{},radio:{}};
+  f.querySelectorAll('input.inp').forEach(i=>{d.inp[i.id]=i.value});
+  f.querySelectorAll('input[type=radio]:checked').forEach(r=>{d.radio[r.name]=r.value});
+  if(!Object.entries(d.inp).some(([k,v])=>k!=='fdate'&&v))return;
+  remember(DRAFT_KEY,JSON.stringify({t:Date.now(),d}));
+}
+const loadDraft=()=>{try{return JSON.parse(localStorage.getItem(DRAFT_KEY)||'null')}catch(e){return null}};
+const clearDraft=()=>{try{localStorage.removeItem(DRAFT_KEY)}catch(e){}};
+function applyDraft(d){
+  for(const [id,val] of Object.entries(d.inp||{})){const el=document.getElementById(id);if(el)el.value=val}
+  for(const [name,val] of Object.entries(d.radio||{})){
+    let r=[...document.querySelectorAll(`#vform input[name="${name}"]`)].find(x=>x.value===val);
+    if(!r){const add=document.querySelector(`#vform [data-add="${name}"]`);if(add){add.insertAdjacentHTML('beforebegin',chip(name,val,true,true));r=add.previousElementSibling.querySelector('input')}}
+    if(r)r.checked=true;
+  }
+}
+/* Plausibilitäts-Check */
+function plausi(){
+  const box=$('#plausi');if(!box)return;
+  const g=id=>{const x=parseFloat(String(document.getElementById(id)?.value||'').replace(',','.'));return isFinite(x)?x:null};
+  const views=g('fviews'),L=g('flaenge'),avg=g('favg'),tot=g('ftotal'),w=[];
+  if(views!=null){
+    for(const [id,l] of [['flikes','Likes'],['fcomments','Kommentare'],['fsaves','Gespeichert'],['ffollower','neue Follower']]){const x=g(id);if(x!=null&&x>views)w.push(`Mehr ${l} (${fmt(x)}) als Views (${fmt(views)}).`)}
+    if(views===0)w.push('0 Views eingetragen.');
+  }
+  if(avg!=null&&L!=null&&L>0&&avg>L)w.push(`Ø Wiedergabedauer (${dec(avg)} s) ist länger als das Video (${dec(L)} s). Das geht nur, wenn viele das Video mehrfach schauen.`);
+  if(views&&avg&&tot){const est=views*avg/3600;if(est>0&&(tot/est>3||est/tot>3))w.push(`Gesamte Wiedergabezeit (${fmt(tot)} h) passt nicht zu Views × Ø Wiedergabedauer (≈ ${fmt(est)} h). Vielleicht Stunden und Minuten verwechselt?`)}
+  box.hidden=!w.length;
+  box.innerHTML=w.length?`<b>Bitte kurz prüfen</b><ul>${w.map(x=>`<li>${x}</li>`).join('')}</ul>`:'';
+}
+const MILESTONES=[1000,2500,5000,10000];
+function openForm(edit,opts={}){
+  const e0=edit||{};FORM_EDIT=edit||null;
   const now=new Date();now.setDate(now.getDate()-1);now.setMinutes(0);
+  const draft=!edit&&!opts.fresh?loadDraft():null;
   openDrawer(edit?'Video bearbeiten':'Video eintragen',edit?esc(edit.title):'Werte 24 Stunden nach dem Upload',`
   <form id="vform" novalidate>
+    ${draft?`<div class="draft-note"><span>Entwurf von ${timeStr(new Date(draft.t))} Uhr wiederhergestellt</span><button type="button" class="btn ghost" data-discard>Verwerfen</button></div>`:''}
     <fieldset><legend>${titled('h3','Video')}</legend><div class="fgrid">
       <div class="f full">${flabel('ftitle','Titel','fTitle')}<input class="inp" type="text" id="ftitle" name="ftitle" placeholder="z. B. Papaplatte verliert gegen Kind in Fortnite" value="${esc(e0.title||'')}"></div>
-      <div class="f">${flabel('fdate','Uploadzeitpunkt')}<input class="inp" type="datetime-local" id="fdate" name="fdate" value="${localInput(e0.date||now)}"></div>
+      <div class="f">${flabel('fdate','Uploadzeitpunkt','','',true)}<input class="inp" type="datetime-local" id="fdate" name="fdate" value="${localInput(e0.date||now)}"></div>
       ${numF('flaenge','Videolänge','28','s',e0.laenge,'fLaenge')}
     </div></fieldset>
     <fieldset><legend>${titled('h3','Zahlen aus TikTok Studio','fStudio')}</legend><div class="fgrid">
-      ${numF('fviews','Views','12000','',e0.views,'fViews').replace('class="f"','class="f full"')}
+      ${numF('fviews','Views','12000','',e0.views,'fViews',true).replace('class="f"','class="f full"')}
       ${numF('ffollower','Neue Follower','45','',e0.follower,'fFollower')}${numF('flikes','Likes','900','',e0.likes)}
       ${numF('fcomments','Kommentare','40','',e0.comments)}${numF('fsaves','Gespeichert','35','',e0.saves)}
       ${numF('favg','Ø Wiedergabedauer','14,5','s',e0.avgWatch,'fAvg')}${numF('ftotal','Gesamte Wiedergabezeit','48','h',e0.totalWatch,'fTotal')}
     </div></fieldset>
     <fieldset><legend>${titled('h3','Tags','fTags')}</legend>
       <div class="fgrid">
-        ${comboF('fstr','Streamer','streamers','Papaplatte, Trymacs',(e0.streamers||[]).join(', '),'fStreamer',true)}
+        ${comboF('fstr','Streamer','streamers','Papaplatte, Trymacs',(e0.streamers||[]).join(', '),'fStreamer',true,true)}
         ${comboF('fspiel','Spiel','spiel','Fortnite',e0.spiel,'fSpiel')}${comboF('fthema','Thema','thema','Fail',e0.thema,'fThema')}
         ${comboF('fhook','Hook','hook','Schockmoment zuerst',e0.hook,'fHook')}${comboF('fsound','Sound','sound','Originalton',e0.sound,'fSound')}
       </div>
-      ${chipsF('femo','Emotion',withDefaults(DEF_EMO,'emotion',e0.emotion),e0.emotion||'lustig','fEmotion','Neue Emotion hinzufügen')}
-      ${chipsF('fov','Text-Overlay',withDefaults(DEF_OV,'overlay',e0.overlay),e0.overlay||'keins','fOverlay','Neues Text-Overlay hinzufügen')}
+      ${chipsF('femo','Emotion',withDefaults('femo','emotion',e0.emotion),e0.emotion||'lustig','fEmotion','Neue Emotion hinzufügen')}
+      ${chipsF('fov','Text-Overlay',withDefaults('fov','overlay',e0.overlay),e0.overlay||'keins','fOverlay','Neues Text-Overlay hinzufügen')}
       <div class="fgrid">
         ${chipsF('fut','Untertitel',['ja','nein'],e0.untertitel||'ja','fUT')}
         ${chipsF('fau','Audio',['nur Original','mit Musik','Trend-Sound'],e0.audio||'nur Original','fAudio')}
       </div>
-      ${chipsF('fmood','Kommentarstimmung',withDefaults(DEF_MOOD,'stimmung',e0.stimmung),e0.stimmung||'gemischt','fMood','Neue Stimmung hinzufügen')}
+      ${chipsF('fmood','Kommentarstimmung',withDefaults('fmood','stimmung',e0.stimmung),e0.stimmung||'gemischt','fMood','Neue Stimmung hinzufügen')}
     </fieldset>
     <fieldset><legend>${titled('h3','Woran lag’s? <small style="color:var(--faint);font-weight:400">optional</small>','fWeights')}</legend>
       ${weightRows('w_',e0.weights||{})}
     </fieldset>
+    <div class="warn-box" id="plausi" hidden></div>
     <p class="err" id="ferr" hidden></p>
     <div class="form-actions"><button type="button" class="btn" id="fcancel">Abbrechen</button><button type="submit" class="btn primary" id="fsubmit">${edit?'Änderungen speichern':'Speichern und auswerten'}</button></div>
   </form>`);
+  if(draft)applyDraft(draft.d);
+  plausi();
   document.querySelectorAll('#vform input.inp').forEach(i=>i.enterKeyHint='next');
   $('#fcancel').onclick=()=>edit?openVideo(edit.id):closeDrawer();
   $('#vform').onsubmit=async e=>{
     e.preventDefault();
     document.querySelectorAll('#vform .chip-input').forEach(i=>finishAddChip(i,true));
     const fd=new FormData(e.target),raw=k=>String(fd.get(k)||'').trim(),n=k=>{const x=parseFloat(raw(k).replace(',','.'));return isFinite(x)?x:null};
-    const streamers=[...new Set(raw('fstr').split(',').map(s=>s.trim()).filter(Boolean))];
+    const streamers=[...new Set(raw('fstr').split(',').map(s=>canon(s.trim(),'streamers')).filter(Boolean))];
     const err=$('#ferr'),date=new Date(raw('fdate'));
     const problem=n('fviews')==null?'Bitte die Views eintragen.':!streamers.length?'Bitte mindestens einen Streamer eintragen.':isNaN(date)?'Bitte den Uploadzeitpunkt angeben.':'';
     if(problem){err.hidden=false;err.textContent=problem;return}
     const laenge=n('flaenge')??30;
+    const before={f:VIDEOS.reduce((s,x)=>s+x.follower,0),max:Math.max(0,...VIDEOS.filter(x=>x!==edit).map(x=>x.views)),viral:edit?edit.views>=VIRAL:false,count:VIDEOS.length};
     const v={...(edit||{}),title:raw('ftitle')||`${streamers.join(' & ')}: ${raw('fspiel')||'Clip'}`,date,streamers,
-      spiel:raw('fspiel')||'Unbekannt',thema:raw('fthema')||'Unbekannt',hook:raw('fhook')||'Unbekannt',sound:raw('fsound')||'Originalton',
+      spiel:canon(raw('fspiel'),'spiel')||'Unbekannt',thema:canon(raw('fthema'),'thema')||'Unbekannt',hook:canon(raw('fhook'),'hook')||'Unbekannt',sound:canon(raw('fsound'),'sound')||'Originalton',
       emotion:fd.get('femo')||'unbekannt',overlay:fd.get('fov')||'keins',untertitel:fd.get('fut'),audio:fd.get('fau'),stimmung:fd.get('fmood')||'gemischt',
       weights:Object.fromEntries(WKEYS.map(w=>{const x=fd.get('w_'+w.k);return [w.k,x==null?1:+x]}).filter(([,x])=>x!==1)),
       laenge,views:n('fviews'),follower:n('ffollower')??0,likes:n('flikes')??0,comments:n('fcomments')??0,saves:n('fsaves')??0,
@@ -1060,8 +1494,20 @@ function openForm(edit){
     const btn=$('#fsubmit');btn.disabled=true;btn.textContent='Speichert …';
     try{
       if(edit){Object.assign(edit,v);delete edit.link;await updateVideo(edit)}else await createVideo(v);
-      renderAll();openVideo(edit?edit.id:v.id);toast(DEMO?'Nur in der Vorschau geändert':edit?'Änderungen gespeichert':'Video gespeichert');
-    }catch(ex){btn.disabled=false;btn.textContent='Nochmal versuchen';err.hidden=false;err.textContent='Speichern hat nicht geklappt: '+ex.message}
+      const saved=edit||v;
+      clearTimeout(draftTimer);if(!edit)clearDraft();
+      btn.classList.add('done');btn.innerHTML='<svg class="ck" viewBox="0 0 16 16" width="14" height="14"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Gespeichert';
+      await sleep(RM?0:550);
+      /* Belohnungen */
+      const afterF=VIDEOS.reduce((s,x)=>s+x.follower,0),msgs=[];let party=false;
+      if(saved.views>=VIRAL&&!before.viral){msgs.push(`Viral! Über ${short(VIRAL)} Views`);party=true}
+      if(before.count>=2&&saved.views>before.max&&before.max>0){msgs.push('Neuer Rekord!');party=true}
+      for(const m of MILESTONES)if(before.f<m&&afterF>=m){msgs.push(`Meilenstein: ${fmt(m)} neue Follower`);party=true}
+      PENDING_FLASH=[saved.id];
+      renderAll();openVideo(saved.id);
+      toast(msgs.length?msgs.join(' · '):DEMO?'Nur in der Vorschau geändert':edit?'Änderungen gespeichert':'Video gespeichert');
+      if(party)confetti();
+    }catch(ex){btn.disabled=false;btn.classList.remove('done');btn.textContent='Nochmal versuchen';err.hidden=false;err.textContent='Speichern hat nicht geklappt: '+ex.message}
   };
 }
 /* Dropdown mit zuletzt verwendeten Antworten */
@@ -1082,6 +1528,7 @@ function pickCombo(item){
     const i=list.indexOf(val);if(i>=0)list.splice(i,1);else list.push(val);
     input.value=list.join(', ');toggleCombo(btn);toggleCombo(btn);
   }else{input.value=val;closeCombos();input.focus()}
+  checkTypo(input);saveDraft();
 }
 /* Neue Option per + anlegen */
 function startAddChip(btn){
@@ -1095,26 +1542,50 @@ function finishAddChip(inp,keep){
   if(keep&&val){
     const group=inp.parentElement,existing=[...group.querySelectorAll(`input[name="${name}"]`)].find(r=>r.value.toLowerCase()===val.toLowerCase());
     if(existing)existing.checked=true;
-    else{inp.insertAdjacentHTML('beforebegin',chip(name,val,true))}
+    else inp.insertAdjacentHTML('beforebegin',chip(name,val,true,true));
+    const hid=SETTINGS.hidden[name]||[];
+    if(hid.includes(val)){SETTINGS.hidden[name]=hid.filter(x=>x!==val);saveSetting('hidden').catch(fail)}
   }
-  inp.remove();btn.hidden=false;
+  inp.remove();btn.hidden=false;saveDraft();
 }
-function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,2600)}
+function hideOption(btn){
+  const name=btn.dataset.hide,val=btn.dataset.val,lab=btn.closest('label'),group=lab.parentElement;
+  const wasChecked=lab.querySelector('input').checked;
+  lab.remove();
+  if(wasChecked){const first=group.querySelector('input[type=radio]');if(first)first.checked=true}
+  if(VIDEOS.some(v=>v[{femo:'emotion',fov:'overlay',fmood:'stimmung'}[name]]===val)){
+    SETTINGS.hidden[name]=[...new Set([...(SETTINGS.hidden[name]||[]),val])];
+    saveSetting('hidden').catch(fail);
+  }
+  toast(`„${val}“ entfernt`);saveDraft();
+}
+function toast(msg,o={}){
+  const t=$('#toast');
+  t.innerHTML=`<span>${esc(msg)}</span>${o.undo?'<button class="toast-btn" data-undo>Rückgängig</button>':''}`;
+  t.hidden=false;clearTimeout(toast.t);
+  toast.t=setTimeout(()=>{t.hidden=true;if(o.undo)UNDO=null},o.undo?7000:2800);
+}
 
 /* ---------- Tooltips ---------- */
 const tipEl=$('#tip');let tipFor=null;
-function showTip(btn){
-  const html=tipHtml(btn.dataset.tip);if(!html)return;
-  if(tipFor&&tipFor!==btn)tipFor.setAttribute('aria-expanded','false');
-  tipEl.innerHTML=html;tipEl.hidden=false;tipFor=btn;btn.setAttribute('aria-expanded','true');
-  const r=btn.getBoundingClientRect(),tw=tipEl.offsetWidth,th=tipEl.offsetHeight,vw=document.documentElement.clientWidth,vh=window.innerHeight;
+function placeTip(anchor,html){
+  tipEl.innerHTML=html;tipEl.hidden=false;
+  const r=anchor.getBoundingClientRect(),tw=tipEl.offsetWidth,th=tipEl.offsetHeight,vw=document.documentElement.clientWidth,vh=window.innerHeight;
   const left=Math.min(Math.max(8,r.left+r.width/2-tw/2),vw-tw-8);
   let top=r.bottom+8;if(top+th>vh-8)top=Math.max(8,r.top-th-8);
   tipEl.style.left=left+'px';tipEl.style.top=top+'px';
 }
-function hideTip(){if(tipFor)tipFor.setAttribute('aria-expanded','false');tipFor=null;tipEl.hidden=true}
-document.addEventListener('mouseover',e=>{const b=e.target.closest('.info');if(b&&b!==tipFor)showTip(b)});
-document.addEventListener('mouseout',e=>{const b=e.target.closest('.info');if(b&&!b.contains(e.relatedTarget))hideTip()});
+function showTip(btn){
+  const html=tipHtml(btn.dataset.tip);if(!html)return;
+  if(tipFor&&tipFor!==btn&&tipFor.setAttribute)tipFor.setAttribute('aria-expanded','false');
+  tipFor=btn;btn.setAttribute('aria-expanded','true');placeTip(btn,html);
+}
+function hideTip(){if(tipFor&&tipFor.setAttribute)tipFor.setAttribute('aria-expanded','false');tipFor=null;tipEl.hidden=true}
+document.addEventListener('mouseover',e=>{
+  const b=e.target.closest('.info');if(b&&b!==tipFor)return showTip(b);
+  const pt=e.target.closest('[data-ptip]');if(pt&&pt!==tipFor){const [a,b2]=pt.dataset.ptip.split('|');tipFor=pt;placeTip(pt,`<b>${a}</b><br>${b2}`)}
+});
+document.addEventListener('mouseout',e=>{const b=e.target.closest('.info,[data-ptip]');if(b&&!b.contains(e.relatedTarget))hideTip()});
 document.addEventListener('focusin',e=>{const b=e.target.closest('.info');if(b)showTip(b)});
 document.addEventListener('focusout',e=>{if(e.target.closest('.info'))hideTip()});
 window.addEventListener('scroll',hideTip,true);
@@ -1124,13 +1595,18 @@ function fillInfoSlots(root=document){root.querySelectorAll('[data-info]').forEa
 /* ---------- Routing & Events ---------- */
 const TABS=['uebersicht','videos','analyse','streamer'];
 function show(tab){
-  if(!TABS.includes(tab))tab='uebersicht';S.tab=tab;hideTip();
+  if(!TABS.includes(tab))tab='uebersicht';
+  const changed=S.tab!==tab;S.tab=tab;hideTip();
   for(const t of TABS)$('#view-'+t).hidden=t!==tab;
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.tab===tab));
   remember('clipradar-tab',tab);
+  if(changed&&!RM){const el=$('#view-'+tab);el.classList.remove('enter');void el.offsetWidth;el.classList.add('enter')}
   window.scrollTo(0,0);
 }
 function renderAll(){
+  const top=[...VIDEOS].sort((a,b)=>b.views-a.views)[0];
+  RECORD_ID=VIDEOS.length>=2&&top?top.id:null;
+  for(const id of [...S.sel])if(!VIDEOS.some(v=>v.id===id))S.sel.delete(id);
   renderOverview();renderVideos();renderAnalyse();renderStreamer();
   $('#dataNote').textContent=DEMO?'Beispieldaten, nicht gespeichert':`${VIDEOS.length} Video${VIDEOS.length===1?'':'s'} gespeichert`;
   $('#demoBanner').hidden=!DEMO;
@@ -1138,44 +1614,58 @@ function renderAll(){
 }
 function openClear(){
   openDrawer(DEMO?'Beispieldaten ausblenden?':'Alle Daten löschen?','',`
-    <p>${DEMO?'Die Beispieldaten werden ausgeblendet. Deine gespeicherten Videos bleiben unverändert.':`Alle <b>${VIDEOS.length} Videos</b> mit ihren Zahlen, Tags und Gewichtungen werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.`}</p>
-    <div class="ctl-row"><button class="btn" id="clearNo">Abbrechen</button><button class="btn danger solid" id="clearYes">${DEMO?'Ausblenden':'Endgültig löschen'}</button></div>`);
+    <p>${DEMO?'Die Beispieldaten werden ausgeblendet. Deine gespeicherten Videos bleiben unverändert.':`Alle <b>${VIDEOS.length} Videos</b> mit ihren Zahlen, Tags und Gewichtungen werden gelöscht. Danach hast du ein paar Sekunden Zeit, das rückgängig zu machen.`}</p>
+    <div class="ctl-row"><button class="btn" id="clearNo">Abbrechen</button><button class="btn danger solid" id="clearYes">${DEMO?'Ausblenden':'Alles löschen'}</button></div>`);
 }
+function newVideo(){if(DEMO)exitDemo().then(()=>openForm()).catch(fail);else openForm()}
 window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
 
 document.addEventListener('click',e=>{
   const t=e.target;
   const ib=t.closest('.info');if(ib){e.preventDefault();e.stopPropagation();if(tipFor===ib)hideTip();else showTip(ib);return}
   if(!t.closest('.combo'))closeCombos();
+  if(!t.closest('.menu-wrap')){const p=$('#colsPop');if(p&&!p.hidden){p.hidden=true;$('[data-colsbtn]')?.setAttribute('aria-expanded','false')}}
+  if(t.closest('[data-undo]'))return undoDelete();
+  const hb=t.closest('[data-hide]');if(hb){e.preventDefault();return hideOption(hb)}
   const cb=t.closest('.combo-btn');if(cb)return toggleCombo(cb);
   const pk=t.closest('[data-pick]');if(pk)return pickCombo(pk);
+  const fx=t.closest('[data-fix]');if(fx){const inp=document.getElementById(fx.dataset.fix);inp.value=fx.dataset.fix==='fstr'?inp.value.split(',').map(s=>s.trim()===fx.dataset.from?fx.dataset.to:s.trim()).filter(Boolean).join(', '):fx.dataset.to;checkTypo(inp);saveDraft();return}
   const add=t.closest('.chip-add');if(add)return startAddChip(add);
-  if(t.closest('[data-new]')){if(DEMO)exitDemo().then(()=>openForm()).catch(fail);else openForm();return}
+  if(t.closest('[data-discard]')){clearDraft();return openForm(null,{fresh:true})}
+  if(t.closest('[data-new]'))return newVideo();
   if(t.closest('[data-sample]'))return startDemo();
   if(t.closest('[data-demo-off]')){exitDemo().then(()=>toast('Beispieldaten ausgeblendet')).catch(fail);return}
   if(t.closest('[data-clear]'))return openClear();
   if(t.id==='clearNo')return closeDrawer();
-  if(t.id==='clearYes'){t.disabled=true;const wasDemo=DEMO;deleteAll().then(()=>{renderAll();closeDrawer();location.hash='uebersicht';toast(wasDemo?'Beispieldaten ausgeblendet':'Alle Daten gelöscht')}).catch(fail);return}
+  if(t.id==='clearYes'){t.disabled=true;if(DEMO){exitDemo().then(()=>{closeDrawer();toast('Beispieldaten ausgeblendet')}).catch(fail);return}
+    closeDrawer();location.hash='uebersicht';removeVideos(VIDEOS.map(v=>v.id),'Alle Daten gelöscht').catch(fail);return}
   const ed=t.closest('[data-edit]');if(ed)return openForm(VIDEOS.find(v=>v.id===+ed.dataset.edit));
-  const del=t.closest('[data-del]');if(del){
-    $('#vActions').innerHTML=`<span style="font-size:13px">Dieses Video wirklich löschen?</span><button class="btn" data-keep="${del.dataset.del}">Abbrechen</button><button class="btn danger solid" data-delyes="${del.dataset.del}">Löschen</button>`;return}
-  const keep=t.closest('[data-keep]');if(keep)return openVideo(keep.dataset.keep);
-  const dy=t.closest('[data-delyes]');if(dy){dy.disabled=true;deleteVideo(+dy.dataset.delyes).then(()=>{renderAll();closeDrawer();toast('Video gelöscht')}).catch(fail);return}
+  const qd=t.closest('[data-quickdel]');if(qd){const id=+qd.dataset.quickdel;if(!$('#drawer').hidden)closeDrawer();removeVideos([id],'Video gelöscht').catch(fail);return}
+  if(t.closest('[data-colsbtn]')){const p=$('#colsPop');p.hidden=!p.hidden;t.closest('[data-colsbtn]').setAttribute('aria-expanded',String(!p.hidden));return}
+  if(t.closest('[data-colsreset]')){S.cols=VCOL_DEFAULT.slice();remember('clipradar-cols',JSON.stringify(S.cols));document.querySelectorAll('[data-col]').forEach(c=>{c.checked=S.cols.includes(c.dataset.col)});renderVideoTable();return}
+  if(t.closest('[data-bulktag]'))return openBulkTag();
+  if(t.closest('[data-bulkdel]')){const ids=[...S.sel];removeVideos(ids,`${ids.length} Video${ids.length===1?'':'s'} gelöscht`).catch(fail);return}
+  if(t.closest('[data-bulkclear]')){S.sel.clear();renderVideoTable();return}
+  if(t.closest('.selcell'))return;
+  const sv=t.closest('[data-strvideos]');if(sv){S.fStreamer=sv.dataset.strvideos;S.vAll=false;closeDrawer();renderVideos();location.hash='videos';return}
+  const row=t.closest('tr[data-row]');if(row){const id=+row.dataset.row;S.expanded=S.expanded===id?null:id;renderVideoTable();return}
   const vid=t.closest('[data-vid]');if(vid)return openVideo(vid.dataset.vid);
   const tr=t.closest('[data-trend]');if(tr){S.trendMetric=tr.dataset.trend;remember('clipradar-trend',JSON.stringify({m:S.trendMetric,r:S.trendRange}));document.querySelectorAll('[data-trend]').forEach(b=>b.classList.toggle('on',b===tr));renderTrend();return}
   if(t.closest('[data-vall]')){S.vAll=!S.vAll;renderVideoTable();return}
-  if(t.closest('[data-insall]')){S.insAll=!S.insAll;renderAnalyse();return}
+  if(t.closest('[data-insall]')){S.insAll=!S.insAll;S.revealIns=S.insAll;renderAnalyse();return}
+  if(t.closest('[data-gone]')){S.showGone=!S.showGone;renderAnalyse();return}
   const ins=t.closest('.ins');
   if(ins){
-    if(ins.dataset.field){S.groupField=ins.dataset.field;S.groupMetric=S.insMetric;location.hash='analyse';renderAnalyse();show('analyse');setTimeout(()=>$('#cmpCard').scrollIntoView({behavior:'smooth',block:'start'}),30)}
-    else{S.scatterX=ins.dataset.num;location.hash='analyse';renderAnalyse();show('analyse');setTimeout(()=>$('#scCard').scrollIntoView({behavior:'smooth',block:'start'}),30)}
+    if(ins.dataset.field){S.groupField=ins.dataset.field;S.groupMetric=S.insMetric;location.hash='analyse';renderAnalyse();show('analyse');setTimeout(()=>$('#cmpCard').scrollIntoView({behavior:RM?'auto':'smooth',block:'start'}),30)}
+    else{S.scatterX=ins.dataset.num;location.hash='analyse';renderAnalyse();show('analyse');setTimeout(()=>$('#scCard').scrollIntoView({behavior:RM?'auto':'smooth',block:'start'}),30)}
     return;
   }
   const insm=t.closest('[data-insm]');if(insm){S.insMetric=insm.dataset.insm;renderAnalyse();return}
-  const th=t.closest('th[data-sort]');if(th){const k=th.dataset.sort;if(S.sortKey===k)S.sortDir*=-1;else{S.sortKey=k;S.sortDir=k==='title'?1:-1}renderVideoTable();return}
-  const str=t.closest('[data-streamer]');if(str){S.fStreamer=str.dataset.streamer;S.vAll=false;renderVideos();location.hash='videos';return}
+  const th=t.closest('th[data-sort]');if(th){const k=th.dataset.sort;if(S.sortKey===k)S.sortDir*=-1;else{S.sortKey=k;S.sortDir=k==='title'||!(VCOLS.find(c=>c.k===k)||{}).n&&k!=='date'?1:-1}renderVideoTable();return}
+  const str=t.closest('[data-streamer]');if(str)return openStreamer(str.dataset.streamer);
   if(t.id==='scrim'||t.closest('#drawerClose'))closeDrawer();
 });
+const isTyping=t=>!!(t&&t.closest&&t.closest('input,textarea,select,[contenteditable="true"]'));
 document.addEventListener('keydown',e=>{
   const t=e.target;
   if(t.classList&&t.classList.contains('chip-input')){
@@ -1192,19 +1682,38 @@ document.addEventListener('keydown',e=>{
     else $('#fsubmit').focus();
     return;
   }
+  /* Taste N: neues Video */
+  if((e.key==='n'||e.key==='N')&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&!isTyping(t)&&$('#drawer').hidden){e.preventDefault();return newVideo()}
   if(e.key==='Escape'){
     if(!tipEl.hidden){hideTip();return}
     if(document.querySelector('.combo-menu:not([hidden])')){closeCombos();return}
+    const p=$('#colsPop');if(p&&!p.hidden){p.hidden=true;return}
     if(!$('#drawer').hidden)closeDrawer();
   }
-  if(e.key==='Enter'&&(t.classList.contains('ins')||t.dataset.streamer))t.click();
+  if(e.key==='Enter'&&t.matches&&(t.matches('.ins,[data-streamer],tr[data-row]')))t.click();
 });
 document.addEventListener('focusout',e=>{const t=e.target;if(t.classList&&t.classList.contains('chip-input'))finishAddChip(t,true)});
-document.addEventListener('input',e=>{if(e.target.id==='vq'){S.q=e.target.value;renderVideoTable()}});
+let draftTimer=null,typoTimer=null;
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='vq'){S.q=t.value;renderVideoTable();return}
+  if(t.closest&&t.closest('#vform')){
+    clearTimeout(draftTimer);draftTimer=setTimeout(saveDraft,300);
+    if(t.type==='number')plausi();
+    if(COMBO_KEYS[t.id]){clearTimeout(typoTimer);typoTimer=setTimeout(()=>checkTypo(t),350)}
+  }
+});
 document.addEventListener('change',e=>{
-  const id=e.target.id,v=e.target.value;
+  const t=e.target,id=t.id,v=t.value;
+  if(t.closest&&t.closest('#vform'))saveDraft();
+  if(t.dataset.sel){const sid=+t.dataset.sel;if(t.checked)S.sel.add(sid);else S.sel.delete(sid);renderVideoTable();return}
+  if(t.hasAttribute&&t.hasAttribute('data-selall')){const ids=[...document.querySelectorAll('[data-sel]')].map(c=>+c.dataset.sel);ids.forEach(i=>t.checked?S.sel.add(i):S.sel.delete(i));renderVideoTable();return}
+  if(t.dataset.col){const k=t.dataset.col;S.cols=t.checked?[...S.cols,k]:S.cols.filter(x=>x!==k);S.cols=VCOLS.map(c=>c.k).filter(k2=>S.cols.includes(k2));remember('clipradar-cols',JSON.stringify(S.cols));renderVideoTable();return}
   if(id==='vstatus'){S.fStatus=v;renderVideoTable()}
   else if(id==='vstreamer'){S.fStreamer=v;renderVideoTable()}
+  else if(id==='vrange'){S.fRange=v;renderVideoTable()}
+  else if(id==='bulkField'){$('#bulkList').innerHTML=bulkOptions(v).map(o=>`<option value="${esc(o)}">`).join('');$('#bulkVal').value=''}
+  else if(id==='anRange'){S.anRange=v;remember('clipradar-anrange',v);renderAnalyse()}
   else if(id==='trendRange'){S.trendRange=v;remember('clipradar-trend',JSON.stringify({m:S.trendMetric,r:S.trendRange}));renderTrend()}
   else if(id==='gField'){S.groupField=v;renderBars()}
   else if(id==='gMetric'){S.groupMetric=v;renderBars()}
@@ -1212,26 +1721,27 @@ document.addEventListener('change',e=>{
   else if(id==='hB'){S.heatB=v;renderHeat()}
   else if(id==='hM'){S.heatMetric=v;renderHeat()}
   else if(id==='sX'){S.scatterX=v;renderScatter()}
-  else if(id==='useW'){S.useWeights=e.target.checked;renderAll()}
-  else if(e.target.name&&e.target.name.startsWith('dw_')){
+  else if(id==='useW'){S.useWeights=t.checked;renderAll()}
+  else if(t.name&&t.name.startsWith('dw_')){
     const vv=VIDEOS.find(x=>x.id===openId);if(!vv)return;
-    const k=e.target.name.slice(3);
+    const k=t.name.slice(3);
     vv.weights=vv.weights||{};if(+v!==1)vv.weights[k]=+v;else delete vv.weights[k];
     renderAll();$('#whyBox').innerHTML=whyHtml(vv);updateVideo(vv).then(()=>toast(DEMO?'Nur in der Vorschau geändert':'Einschätzung gespeichert')).catch(fail);
   }
   else if(id==='flopInput'||id==='flopInput2'||id==='viralInput'||id==='viralInput2'){
     const n=parseInt(v,10),isFlop=id.startsWith('flop');
-    if(!(n>=0)||(isFlop?n>=VIRAL:n<=FLOP)){toast(isFlop?`Die Flop-Grenze muss unter der Viral-Grenze (${fmt(VIRAL)}) liegen.`:`Die Viral-Grenze muss über der Flop-Grenze (${fmt(FLOP)}) liegen.`);e.target.value=isFlop?FLOP:VIRAL;return}
+    if(!(n>=0)||(isFlop?n>=VIRAL:n<=FLOP)){toast(isFlop?`Die Flop-Grenze muss unter der Viral-Grenze (${fmt(VIRAL)}) liegen.`:`Die Viral-Grenze muss über der Flop-Grenze (${fmt(FLOP)}) liegen.`);t.value=isFlop?FLOP:VIRAL;return}
     if(isFlop){FLOP=n;remember('clipradar-flop',n)}else{VIRAL=n;remember('clipradar-viral',n)}
     $('#flopInput').value=FLOP;$('#viralInput').value=VIRAL;renderAll();
   }
 });
+document.addEventListener('focusout',e=>{const t=e.target;if(t.closest&&t.closest('#vform')&&COMBO_KEYS[t.id])checkTypo(t)});
 
 fillInfoSlots();
 $('#flopInput').value=FLOP;$('#viralInput').value=VIRAL;
 show(location.hash.slice(1)||S.tab);
-$('#view-'+S.tab).innerHTML='<p class="loading">Lade deine Videos …</p>';
-loadVideos().then(renderAll).catch(e=>{$('#view-'+S.tab).innerHTML=`<div class="card empty-state"><h2>Daten konnten nicht geladen werden</h2><p>${esc(e.message)}</p><button class="btn" onclick="location.reload()">Neu laden</button></div>`});
+$('#view-'+S.tab).innerHTML=SKELETON;
+Promise.all([loadVideos(),loadSettings()]).then(renderAll).catch(e=>{$('#view-'+S.tab).innerHTML=`<div class="card empty-state"><h2>Daten konnten nicht geladen werden</h2><p>${esc(e.message)}</p><button class="btn" onclick="location.reload()">Neu laden</button></div>`});
 </script>
 </body>
 </html>
