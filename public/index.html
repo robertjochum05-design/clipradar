@@ -489,6 +489,21 @@ table.st tbody tr{cursor:pointer}
 .peek b.t{font-size:13px}
 .peek .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:12px}
 .peek .kv span{opacity:.65}
+.th-field{position:relative;display:inline-flex;align-items:center}
+.field-mini .th-field{display:flex;width:100%}
+.th-field input{padding-right:30px!important;-moz-appearance:textfield}
+.th-field input::-webkit-outer-spin-button,.th-field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.thresholds .th-field .ctl{width:112px}
+.th-save{position:absolute;right:4px;top:50%;width:22px;height:22px;padding:0;border:none;border-radius:5px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;cursor:pointer;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(-50%) scale(.5) rotate(-12deg);transition:opacity .22s ease,transform .3s cubic-bezier(.34,1.56,.64,1),background-color .3s ease,color .3s ease,box-shadow .3s ease}
+.th-save.show{opacity:1;pointer-events:auto;transform:translateY(-50%) scale(1) rotate(0)}
+.th-save svg{width:13px;height:13px;position:relative;z-index:1}
+.th-save path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:14;stroke-dashoffset:14;transition:stroke-dashoffset .3s .12s ease-out}
+.th-save.show path{stroke-dashoffset:0}
+.th-save::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.65) 50%,transparent 75%);transform:translateX(-120%)}
+.th-save:hover::after{animation:sweep .9s ease-in-out infinite}
+.th-save:hover{box-shadow:0 0 0 3px var(--accent-soft),0 0 10px var(--accent-mid)}
+.th-save.saved{background:var(--good);color:#fff;box-shadow:0 0 0 4px var(--good-soft)}
+.th-save.saved::after{animation:none}
 .greet-sub b{color:var(--ink);font-weight:500}
 @media (max-width:1000px){
   .g-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -528,19 +543,19 @@ table.st tbody tr{cursor:pointer}
     <div class="side-foot">
       <div class="field-mini">
         <div class="title-row"><label class="label" for="flopInput">Flop-Grenze</label><span data-info="flop"></span></div>
-        <input id="flopInput" type="number" min="0" step="500" value="9000">
+        <span class="th-field"><input id="flopInput" type="number" min="0" step="500" value="9000"><button type="button" class="th-save" data-thsave="flopInput" aria-label="Flop-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>
       </div>
       <div class="field-mini">
         <div class="title-row"><label class="label" for="viralInput">Viral-Grenze</label><span data-info="viral"></span></div>
-        <input id="viralInput" type="number" min="0" step="5000" value="100000">
+        <span class="th-field"><input id="viralInput" type="number" min="0" step="5000" value="100000"><button type="button" class="th-save" data-thsave="viralInput" aria-label="Viral-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>
       </div>
       <div class="field-mini">
         <div class="title-row"><label class="label" for="outHiInput">Ausreißer ab</label><span data-info="outlier"></span></div>
-        <input id="outHiInput" type="number" min="0" step="10000" value="250000">
+        <span class="th-field"><input id="outHiInput" type="number" min="0" step="10000" value="250000"><button type="button" class="th-save" data-thsave="outHiInput" aria-label="Obere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>
       </div>
       <div class="field-mini">
         <div class="title-row"><label class="label" for="outLoInput">Ausreißer unter <small style="color:var(--faint)">(0 = aus)</small></label></div>
-        <input id="outLoInput" type="number" min="0" step="100" value="0">
+        <span class="th-field"><input id="outLoInput" type="number" min="0" step="100" value="0"><button type="button" class="th-save" data-thsave="outLoInput" aria-label="Untere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>
       </div>
       <p class="side-note" id="dataNote"></p>
       <div class="side-actions">
@@ -864,8 +879,8 @@ function explain(v){
 
 /* ---------- Erklärungen (ⓘ) ---------- */
 const TIPS={
-  flop:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>Flop</b> gilt. Aktuell: unter ${fmt(FLOP)} Views.</p><p>Die Grenze beeinflusst die Flop-Quote, die Einfärbung in allen Grafiken und die Status-Spalte. Ab ${fmt(VIRAL)} Views gilt ein Video als <b>viral</b>, alles dazwischen als <b>gut</b>.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
-  viral:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>viral</b> gilt. Aktuell: ab ${fmt(VIRAL)} Views.</p><p>Die Grenze beeinflusst die Verteilung in der Karte „Ergebnisse“, die grüne Einfärbung in den Grafiken und die Status-Spalte. Sie muss über der Flop-Grenze liegen.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p>`,
+  flop:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>Flop</b> gilt. Aktuell: unter ${fmt(FLOP)} Views.</p><p>Die Grenze beeinflusst die Flop-Quote, die Einfärbung in allen Grafiken und die Status-Spalte. Ab ${fmt(VIRAL)} Views gilt ein Video als <b>viral</b>, alles dazwischen als <b>gut</b>.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p><p>Nach dem Ändern erscheint im Feld ein <b>Häkchen</b>: Erst ein Klick darauf oder Enter übernimmt den Wert, Esc verwirft ihn.</p>`,
+  viral:()=>`<p>Ab welcher Viewzahl nach 24 Stunden ein Video als <b>viral</b> gilt. Aktuell: ab ${fmt(VIRAL)} Views.</p><p>Die Grenze beeinflusst die Verteilung in der Karte „Ergebnisse“, die grüne Einfärbung in den Grafiken und die Status-Spalte. Sie muss über der Flop-Grenze liegen.</p><p>Beide Grenzen kannst du hier oder in der Karte „Ergebnisse“ auf der Übersicht ändern. Die Einstellung merkt sich jedes Gerät einzeln.</p><p>Nach dem Ändern erscheint im Feld ein <b>Häkchen</b>: Erst ein Klick darauf oder Enter übernimmt den Wert, Esc verwirft ihn.</p>`,
   demo:`<p>Du siehst <b>72 erfundene Videos</b>, damit du ausprobieren kannst, wie Clipradar Zusammenhänge erkennt. In die Daten sind absichtlich Muster eingebaut, z. B. dass Untertitel helfen und Videos über 45 Sekunden schlechter laufen.</p><p>Die Beispieldaten landen <b>nie in deiner Datenbank</b>. Änderungen daran sind nur eine Vorschau. Sie verschwinden, wenn du sie ausblendest, die Seite neu lädst oder dein erstes eigenes Video einträgst.</p>`,
   empty:`<p>Trag jedes Video <b>24 Stunden nach dem Upload</b> ein. Die Zahlen findest du in TikTok Studio unter dem jeweiligen Video.</p><p>Ab etwa 10 Videos erscheinen erste Muster, ab 20 bis 50 Videos werden die Ergebnisse verlässlich.</p><p>Mit den <b>Beispieldaten</b> siehst du vorher, wie die Auswertung aussieht. Sie werden nicht gespeichert.</p>`,
   kpiFollower:`<p>Summe der <b>neuen Follower</b> aus allen eingetragenen Videos, jeweils der Wert nach 24 Stunden aus TikTok Studio.</p><p>Der Balken zeigt den Fortschritt zu deinem Ziel von <b>10.000 Followern</b>.</p><p>Follower, die später als 24 Stunden nach dem Upload oder direkt über dein Profil dazukommen, sind nicht enthalten. Deine echte Followerzahl kann deshalb höher sein.</p><p>Darunter: Vergleich der <b>letzten 7 Tage</b> mit den 7 Tagen davor, jeweils nach Upload-Datum. Grün heißt besser, rot schlechter.</p>`,
@@ -912,7 +927,7 @@ const TIPS={
   fUT:`<p>Ob das Video eingebrannte Untertitel hat.</p>`,
   fAudio:`<p><b>Nur Original:</b> nur der Ton aus dem Stream. <b>Mit Musik:</b> Musik zusätzlich unterlegt. <b>Trend-Sound:</b> ein gerade angesagter TikTok-Sound.</p>`,
   fMood:`<p>Überflieg nach 24 Stunden die Kommentare: Sind sie überwiegend positiv, gemischt oder negativ? Mit <b>+</b> legst du eine neue Stimmung an, z. B. „hitzig“.</p><p>Die Stimmung ist eine Folge des Videos, nicht die Ursache. Deshalb taucht sie nicht in den automatischen Erkenntnissen auf, du kannst sie aber im Tab Analyse vergleichen.</p>`,
-  outlier:()=>`<p>Ein einzelnes Mega-Video oder ein Totalausfall kann die Analyse verzerren. Deshalb werden <b>Ausreißer</b> dort anders behandelt:</p><ul><li><b>Nach oben</b> (ab ${OUT_HI?fmt(OUT_HI):'–'} Views): Das Video zählt weiter mit, aber nur mit ${OUT_HI?fmt(OUT_HI):'der Grenze'} Views. Follower, Likes, Kommentare usw. werden im gleichen Verhältnis gekürzt, damit Raten wie Engagement gleich bleiben.</li><li><b>Nach unten</b> (unter ${OUT_LO?fmt(OUT_LO):'–'} Views): Das Video wird ganz aus der Analyse genommen, z. B. wenn TikTok es wegen eines Fehlers kaum ausgespielt hat.</li></ul><p>Betroffen sind die Erkenntnisse, Vergleiche, Kombinationen, Zusammenhänge, Heatmaps, Streamer-Auswertungen, „Warum lief es so?“ und die Tages-Views im Entwicklungs-Diagramm (dort gestrichelt umrandet). Kennzahlen, Rekord und die Videoliste zeigen immer die echten Zahlen, Ausreißer haben dort ein gelbes Abzeichen.</p><p>0 schaltet eine Grenze aus. Mit „Ausreißer dämpfen“ im Tab Analyse siehst du die Ergebnisse ohne diese Behandlung.</p>`,
+  outlier:()=>`<p>Ein einzelnes Mega-Video oder ein Totalausfall kann die Analyse verzerren. Deshalb werden <b>Ausreißer</b> dort anders behandelt:</p><ul><li><b>Nach oben</b> (ab ${OUT_HI?fmt(OUT_HI):'–'} Views): Das Video zählt weiter mit, aber nur mit ${OUT_HI?fmt(OUT_HI):'der Grenze'} Views. Follower, Likes, Kommentare usw. werden im gleichen Verhältnis gekürzt, damit Raten wie Engagement gleich bleiben.</li><li><b>Nach unten</b> (unter ${OUT_LO?fmt(OUT_LO):'–'} Views): Das Video wird ganz aus der Analyse genommen, z. B. wenn TikTok es wegen eines Fehlers kaum ausgespielt hat.</li></ul><p>Betroffen sind die Erkenntnisse, Vergleiche, Kombinationen, Zusammenhänge, Heatmaps, Streamer-Auswertungen, „Warum lief es so?“ und die Tages-Views im Entwicklungs-Diagramm (dort gestrichelt umrandet). Kennzahlen, Rekord und die Videoliste zeigen immer die echten Zahlen, Ausreißer haben dort ein gelbes Abzeichen.</p><p>Geänderte Grenzen übernimmst du mit dem <b>Häkchen</b> im Feld oder mit Enter. 0 schaltet eine Grenze aus. Mit „Ausreißer dämpfen“ im Tab Analyse siehst du die Ergebnisse ohne diese Behandlung.</p>`,
   uptime:`<p>Zeigt, zu welcher <b>Uhrzeit an welchem Wochentag</b> deine Videos am besten laufen. Jedes Feld ist der Median der Views aller Videos, die in diesem Zeitfenster hochgeladen wurden, darunter die Anzahl.</p><p>Je kräftiger die Farbe, desto besser. Das grün umrandete Feld ist die beste Zeit mit mindestens 2 Videos.</p><p>Mit wenigen Videos ist das noch Zufall. Aussagekräftig wird es, wenn die meisten Felder mehrere Videos haben.</p>`,
   anRange:`<p>Welche Videos in die Analyse einfließen. Mit <b>Letzte 30 Tage</b> siehst du, was <b>aktuell</b> funktioniert, z. B. wenn sich der Algorithmus oder dein Stil geändert hat.</p><p>Weniger Videos heißt aber auch: weniger sichere Ergebnisse.</p>`,
   whatsnew:`<p>Vergleicht die Erkenntnisse mit dem Stand von <b>vor 7 Tagen</b>, also nur mit den Videos, die bis dahin hochgeladen waren.</p><p><b>Neu</b> markiert Muster, die es damals noch nicht gab. „Nicht mehr sichtbar“ sind Muster, die durch neue Videos verschwunden sind, weil sie sich als Zufall herausgestellt haben oder sich etwas verändert hat.</p>`,
@@ -979,6 +994,32 @@ function runCounts(root=document){
     requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.width=to+'%'}));
     PREV.prog=to;
   });
+}
+/* Grenzen erst mit Häkchen (oder Enter) übernehmen */
+const TH={flopInput:'flop',flopInput2:'flop',viralInput:'viral',viralInput2:'viral',outHiInput:'outHi',outHiInput2:'outHi',outLoInput:'outLo',outLoInput2:'outLo'};
+const thCur=k=>({flop:FLOP,viral:VIRAL,outHi:OUT_HI,outLo:OUT_LO})[k];
+function thDirty(inp){
+  const btn=inp.parentElement.querySelector('.th-save');if(!btn)return;
+  const n=parseInt(inp.value,10),dirty=inp.value!==''&&Number.isFinite(n)&&n!==thCur(TH[inp.id]);
+  btn.classList.toggle('show',dirty);if(!dirty)btn.classList.remove('saved');
+}
+function thRevert(inp){inp.value=thCur(TH[inp.id]);thDirty(inp)}
+function thCommit(inp){
+  const kind=TH[inp.id],n=parseInt(inp.value,10),btn=inp.parentElement.querySelector('.th-save');
+  if(!Number.isFinite(n)||n===thCur(kind))return thRevert(inp);
+  const err=kind==='flop'?(n<1||n>=VIRAL||(OUT_LO>0&&n<=OUT_LO)||(OUT_HI>0&&n>=OUT_HI)?`Die Flop-Grenze muss unter der Viral-Grenze (${fmt(VIRAL)})${OUT_HI?` und der oberen Ausreißer-Grenze (${fmt(OUT_HI)})`:''}${OUT_LO?` sowie über der unteren Ausreißer-Grenze (${fmt(OUT_LO)})`:''} liegen.`:'')
+    :kind==='viral'?(n<=FLOP?`Die Viral-Grenze muss über der Flop-Grenze (${fmt(FLOP)}) liegen.`:'')
+    :kind==='outHi'?(n<0||(n>0&&(n<=FLOP||n<=OUT_LO))?`Die obere Ausreißer-Grenze muss über der Flop-Grenze (${fmt(FLOP)}) liegen, 0 schaltet sie aus.`:'')
+    :(n<0||(n>0&&n>=FLOP)?`Die untere Ausreißer-Grenze muss unter der Flop-Grenze (${fmt(FLOP)}) liegen, 0 schaltet sie aus.`:'');
+  if(err){toast(err);inp.classList.remove('shake');void inp.offsetWidth;inp.classList.add('shake');inp.focus();return}
+  if(kind==='flop'){FLOP=n;remember('clipradar-flop',n)}else if(kind==='viral'){VIRAL=n;remember('clipradar-viral',n)}
+  else if(kind==='outHi'){OUT_HI=n;remember('clipradar-outhi',n)}else{OUT_LO=n;remember('clipradar-outlo',n)}
+  /* das andere Feld derselben Grenze angleichen */
+  for(const [id,k] of Object.entries(TH))if(k===kind&&id!==inp.id){const o=document.getElementById(id);if(o){o.value=n;thDirty(o)}}
+  btn.classList.add('saved');
+  setTimeout(()=>btn.classList.remove('show'),RM?0:480);
+  setTimeout(()=>{btn.classList.remove('saved');renderAll();
+    toast(kind==='outHi'||kind==='outLo'?`Gespeichert · ${VIDEOS.filter(isOut).length} Ausreißer erkannt`:'Grenze gespeichert')},RM?0:820);
 }
 /* Karten passen ihre Höhe weich an, wenn sich der Inhalt ändert */
 function smoothH(get,fn){
@@ -1319,7 +1360,7 @@ function renderOverview(){
       <div class="card">
         <div class="card-head">${titled('h2','Ergebnisse','dist')}</div>
         ${pieChart(pieParts,{animate:pieAnim})}
-        <div class="thresholds"><label for="flopInput2">Flop unter</label><input class="ctl num" id="flopInput2" type="number" min="0" step="500" value="${FLOP}"><label for="viralInput2">Viral ab</label><input class="ctl num" id="viralInput2" type="number" min="0" step="5000" value="${VIRAL}"><label for="outHiInput2">Ausreißer ab</label><input class="ctl num" id="outHiInput2" type="number" min="0" step="10000" value="${OUT_HI}"><label for="outLoInput2">unter</label><input class="ctl num" id="outLoInput2" type="number" min="0" step="100" value="${OUT_LO}">${info('outlier')}</div>
+        <div class="thresholds"><label for="flopInput2">Flop unter</label><span class="th-field"><input class="ctl num" id="flopInput2" type="number" min="0" step="500" value="${FLOP}"><button type="button" class="th-save" data-thsave="flopInput2" aria-label="Flop-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span><label for="viralInput2">Viral ab</label><span class="th-field"><input class="ctl num" id="viralInput2" type="number" min="0" step="5000" value="${VIRAL}"><button type="button" class="th-save" data-thsave="viralInput2" aria-label="Viral-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span><label for="outHiInput2">Ausreißer ab</label><span class="th-field"><input class="ctl num" id="outHiInput2" type="number" min="0" step="10000" value="${OUT_HI}"><button type="button" class="th-save" data-thsave="outHiInput2" aria-label="Obere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span><label for="outLoInput2">unter</label><span class="th-field"><input class="ctl num" id="outLoInput2" type="number" min="0" step="100" value="${OUT_LO}"><button type="button" class="th-save" data-thsave="outLoInput2" aria-label="Untere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>${info('outlier')}</div>
         ${best?`<p class="sub-head">Bestes Video der letzten 7 Tage</p>
         <div class="row" data-vid="${best.id}"><div class="t">${esc(best.title)}<small>${dateStr(best.date)} · ${timeStr(best.date)} Uhr</small></div><span class="num">${short(best.views)}</span>${badge(best)}</div>`:''}
         ${top&&top!==best?`<p class="sub-head">Bestes Video aller Zeiten</p>
@@ -2202,6 +2243,7 @@ document.addEventListener('click',e=>{
   const ib=t.closest('.info');if(ib){e.preventDefault();e.stopPropagation();if(tipFor===ib)hideTip();else showTip(ib);return}
   if(!t.closest('.combo'))closeCombos();
   if(!t.closest('.menu-wrap')){const p=$('#colsPop');if(p&&!p.hidden){p.hidden=true;$('[data-colsbtn]')?.setAttribute('aria-expanded','false')}}
+  const ths=t.closest('[data-thsave]');if(ths){thCommit(document.getElementById(ths.dataset.thsave));return}
   if(t.closest('#toTop'))return window.scrollTo({top:0,behavior:RM?'auto':'smooth'});
   if(t.closest('[data-undo]'))return undoDelete();
   const hb=t.closest('[data-hide]');if(hb){e.preventDefault();return hideOption(hb)}
@@ -2270,6 +2312,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   if(e.key==='Enter'&&t.id==='renameInp'){e.preventDefault();$('[data-renamego]')?.click();return}
+  if(TH[t.id]&&(e.key==='Enter'||e.key==='Escape')){e.preventDefault();if(e.key==='Enter')thCommit(t);else thRevert(t);return}
   /* Taste N: neues Video */
   if((e.key==='n'||e.key==='N')&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&!isTyping(t)&&$('#drawer').hidden){e.preventDefault();return newVideo()}
   if(e.key==='Escape'){
@@ -2288,6 +2331,7 @@ document.addEventListener('input',e=>{
   const t=e.target;
   if(t.id==='vq'){S.q=t.value;renderVideoTable();return}
   if(t.id==='renameInp'){renameHint(t);return}
+  if(TH[t.id]){thDirty(t);return}
   if(t.classList&&t.classList.contains('invalid'))t.classList.remove('invalid');
   if(t.closest&&t.closest('#vform')){
     clearTimeout(draftTimer);draftTimer=setTimeout(saveDraft,300);
@@ -2328,20 +2372,6 @@ document.addEventListener('change',e=>{
     renderAll();$('#whyBox').innerHTML=whyHtml(vv);updateVideo(vv).then(()=>toast(DEMO?'Nur in der Vorschau geändert':'Einschätzung gespeichert')).catch(fail);
   }
   else if(id==='dampen'){S.dampen=t.checked;remember('clipradar-dampen',t.checked?'1':'0');renderAll()}
-  else if(id==='outHiInput'||id==='outHiInput2'||id==='outLoInput'||id==='outLoInput2'){
-    const n=parseInt(v,10),hi=id.startsWith('outHi');
-    const ok=n>=0&&(hi?(n===0||(n>FLOP&&n>OUT_LO)):(n===0||(n<FLOP&&(OUT_HI===0||n<OUT_HI))));
-    if(!ok){toast(hi?`Die obere Ausreißer-Grenze muss über der Flop-Grenze (${fmt(FLOP)}) liegen, 0 schaltet sie aus.`:`Die untere Ausreißer-Grenze muss unter der Flop-Grenze (${fmt(FLOP)}) liegen, 0 schaltet sie aus.`);t.value=hi?OUT_HI:OUT_LO;return}
-    if(hi){OUT_HI=n;remember('clipradar-outhi',n)}else{OUT_LO=n;remember('clipradar-outlo',n)}
-    $('#outHiInput').value=OUT_HI;$('#outLoInput').value=OUT_LO;renderAll();
-    toast(`${VIDEOS.filter(isOut).length} Ausreißer erkannt`);
-  }
-  else if(id==='flopInput'||id==='flopInput2'||id==='viralInput'||id==='viralInput2'){
-    const n=parseInt(v,10),isFlop=id.startsWith('flop');
-    if(!(n>=0)||(isFlop?n>=VIRAL:n<=FLOP)){toast(isFlop?`Die Flop-Grenze muss unter der Viral-Grenze (${fmt(VIRAL)}) liegen.`:`Die Viral-Grenze muss über der Flop-Grenze (${fmt(FLOP)}) liegen.`);t.value=isFlop?FLOP:VIRAL;return}
-    if(isFlop){FLOP=n;remember('clipradar-flop',n)}else{VIRAL=n;remember('clipradar-viral',n)}
-    $('#flopInput').value=FLOP;$('#viralInput').value=VIRAL;renderAll();
-  }
 });
 document.addEventListener('focusout',e=>{const t=e.target;if(t.closest&&t.closest('#vform')&&COMBO_KEYS[t.id])checkTypo(t)});
 
