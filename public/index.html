@@ -504,10 +504,28 @@ table.st tbody tr{cursor:pointer}
 .th-save:hover{box-shadow:0 0 0 3px var(--accent-soft),0 0 10px var(--accent-mid)}
 .th-save.saved{background:var(--good);color:#fff;box-shadow:0 0 0 4px var(--good-soft)}
 .th-save.saved::after{animation:none}
+.g-heat{grid-template-columns:auto minmax(280px,1fr)}
+.topw-card{display:flex;flex-direction:column}
+.topw{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.topw-foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--faint)}
+.topw-row{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;align-items:center;padding:12px 8px;border-top:1px solid var(--line);cursor:pointer;border-radius:6px;transition:background-color .15s}
+.topw-row:first-child{border-top:none}
+.topw-row:hover{background:var(--hover)}
+.rk{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:13px;font-family:var(--mono)}
+.rk1{background:color-mix(in srgb,#D4A72C 20%,transparent);color:#C2961C;box-shadow:inset 0 0 0 1px color-mix(in srgb,#D4A72C 45%,transparent)}
+.rk2{background:color-mix(in srgb,#9AA3AF 20%,transparent);color:var(--muted);box-shadow:inset 0 0 0 1px color-mix(in srgb,#9AA3AF 45%,transparent)}
+.rk3{background:color-mix(in srgb,#C07A45 18%,transparent);color:#B06C38;box-shadow:inset 0 0 0 1px color-mix(in srgb,#C07A45 40%,transparent)}
+.topw-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+.topw-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.topw-line b{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topw-line .num{font-size:14px;font-weight:500}
+.topw-line.sub{font-size:12px;color:var(--muted)}
+.topw-bar{height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.topw-bar i{display:block;height:100%;border-radius:3px;background:var(--accent);transform-origin:left;animation:grow .6s cubic-bezier(.2,.8,.2,1) both}
 .greet-sub b{color:var(--ink);font-weight:500}
 @media (max-width:1000px){
   .g-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .g-2,.g-2e{grid-template-columns:minmax(0,1fr)}
+  .g-2,.g-2e,.g-heat{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:760px){
   #trendBody{min-height:0}
@@ -925,6 +943,7 @@ const TIPS={
   fAudio:`<p><b>Nur Original:</b> nur der Ton aus dem Stream. <b>Mit Musik:</b> Musik zusätzlich unterlegt. <b>Trend-Sound:</b> ein gerade angesagter TikTok-Sound.</p>`,
   fMood:`<p>Überflieg nach 24 Stunden die Kommentare: Sind sie überwiegend positiv, gemischt oder negativ? Mit <b>+</b> legst du eine neue Stimmung an, z. B. „hitzig“.</p><p>Die Stimmung ist eine Folge des Videos, nicht die Ursache. Deshalb taucht sie nicht in den automatischen Erkenntnissen auf, du kannst sie aber im Tab Analyse vergleichen.</p>`,
   outlier:()=>`<p>Ein einzelnes Mega-Video oder ein Totalausfall kann die Analyse verzerren. Deshalb werden <b>Ausreißer</b> dort anders behandelt:</p><p>Videos ab ${OUT_HI?fmt(OUT_HI):'–'} Views: Das Video zählt weiter mit, aber nur mit ${OUT_HI?fmt(OUT_HI):'der Grenze'} Views. Follower, Likes, Kommentare usw. werden im gleichen Verhältnis gekürzt, damit Raten wie Engagement gleich bleiben.</p><p>Betroffen sind die Erkenntnisse, Vergleiche, Kombinationen, Zusammenhänge, Heatmaps, Streamer-Auswertungen, „Warum lief es so?“ und die Tages-Views im Entwicklungs-Diagramm (dort gestrichelt umrandet). Kennzahlen, Rekord und die Videoliste zeigen immer die echten Zahlen, Ausreißer haben dort ein gelbes Abzeichen.</p><p>Geänderte Grenzen übernimmst du mit dem <b>Häkchen</b> im Feld oder mit Enter. 0 schaltet die Grenze aus. Mit „Ausreißer dämpfen“ im Tab Analyse siehst du die Ergebnisse ohne diese Behandlung.</p>`,
+  topWeek:`<p>Die drei Streamer, deren Videos in den <b>letzten 7 Tagen</b> die höchsten Median-Views hatten, gezählt nach Upload-Datum. Collab-Videos zählen bei jedem Beteiligten.</p><p>Der Balken zeigt den Abstand zum Ersten. Der Prozentwert vergleicht mit den Median-Views desselben Streamers in den 7 Tagen davor. „Neu diese Woche“ heißt: In der Vorwoche gab es kein Video von ihm.</p><p>Ein Klick öffnet die Detailseite des Streamers.</p>`,
   uptime:`<p>Zeigt, zu welcher <b>Uhrzeit an welchem Wochentag</b> deine Videos am besten laufen. Jedes Feld ist der Median der Views aller Videos, die in diesem Zeitfenster hochgeladen wurden, darunter die Anzahl.</p><p>Je kräftiger die Farbe, desto besser. Das grün umrandete Feld ist die beste Zeit mit mindestens 2 Videos.</p><p>Mit wenigen Videos ist das noch Zufall. Aussagekräftig wird es, wenn die meisten Felder mehrere Videos haben.</p>`,
   anRange:`<p>Welche Videos in die Analyse einfließen. Mit <b>Letzte 30 Tage</b> siehst du, was <b>aktuell</b> funktioniert, z. B. wenn sich der Algorithmus oder dein Stil geändert hat.</p><p>Weniger Videos heißt aber auch: weniger sichere Ergebnisse.</p>`,
   whatsnew:`<p>Vergleicht die Erkenntnisse mit dem Stand von <b>vor 7 Tagen</b>, also nur mit den Videos, die bis dahin hochgeladen waren.</p><p><b>Neu</b> markiert Muster, die es damals noch nicht gab. „Nicht mehr sichtbar“ sind Muster, die durch neue Videos verschwunden sind, weil sie sich als Zufall herausgestellt haben oder sich etwas verändert hat.</p>`,
@@ -1311,6 +1330,25 @@ function uploadHeat(list=AV()){
   </tbody></table></div>
   <p class="label" style="margin-top:10px">${best?`Beste Zeit bisher: <b style="color:var(--ink)">${best.l}, ${best.s[0]}–${best.s[1]} Uhr</b> · Median ${short(best.med)} Views · ${best.n} Videos`:'Noch kein Zeitfenster mit mindestens 2 Videos.'}</p>`;
 }
+/* Die drei Streamer mit den höchsten Median-Views der letzten 7 Tage */
+function topStreamersWeek(){
+  const now=Date.now(),cur=VIDEOS.filter(v=>v.date>now-7*DAY&&v.date<=now),prev=VIDEOS.filter(v=>v.date>now-14*DAY&&v.date<=now-7*DAY);
+  if(!cur.length)return '<p class="empty-msg">In den letzten 7 Tagen gibt es noch keine Videos.</p>';
+  const f=catByKey('streamer'),gp=groups(f,prev),g=groups(f,cur);
+  const rows=[...g].map(([name,vs])=>({name,n:vs.length,med:median(vs.map(v=>v.views)),fol:vs.reduce((s,v)=>s+v.follower,0),pm:gp.has(name)?median(gp.get(name).map(v=>v.views)):null}))
+    .sort((a,b)=>b.med-a.med||b.n-a.n).slice(0,3);
+  const max=Math.max(1,...rows.map(r=>r.med));
+  return `<ol class="topw">${rows.map((r,i)=>{
+    const ch=r.pm?(r.med-r.pm)/r.pm*100:null;
+    const d=ch==null?'<span class="kdelta flat">neu diese Woche</span>':`<span class="kdelta ${ch>0.5?'up':ch<-0.5?'down':'flat'}"><span class="karr">${ch>0.5?'↑':ch<-0.5?'↓':'→'}</span> ${dec(Math.abs(ch),0)} %</span>`;
+    return `<li class="topw-row" data-streamer="${esc(r.name)}" tabindex="0">
+      <span class="rk rk${i+1}">${i+1}</span>
+      <div class="topw-main"><div class="topw-line"><b>${esc(r.name)}</b><span class="num">${short(r.med)}</span></div>
+        <div class="topw-bar"><i style="width:${(r.med/max*100).toFixed(1)}%;animation-delay:${i*90}ms"></i></div>
+        <div class="topw-line sub"><span>${r.n} Video${r.n===1?'':'s'} · ${fmt(r.fol)} Follower</span>${d}</div></div>
+    </li>`}).join('')}</ol>
+    <p class="topw-foot">${g.size} Streamer · ${cur.length} Video${cur.length===1?'':'s'} in den letzten 7 Tagen${g.size>3?` · ${g.size-3} weitere`:''}</p>`;
+}
 function greeting(){
   const h=new Date().getHours();
   return h<5?'Gute Nacht':h<11?'Guten Morgen':h<17?'Guten Tag':h<22?'Guten Abend':'Gute Nacht';
@@ -1368,7 +1406,8 @@ function renderOverview(){
       <div class="card"><div class="card-head">${titled('h2','Letzte Videos','recent')}<a class="btn ghost" href="#videos">Alle Videos</a></div>
         <div class="rows">${[...vs].reverse().slice(0,6).map(v=>`<div class="row" data-vid="${v.id}"><div class="t">${esc(v.title)}<small>${dateStr(v.date)} · ${timeStr(v.date)} Uhr · ${fmt(v.follower)} Follower</small></div><span class="num">${short(v.views)}</span>${badge(v)}</div>`).join('')}</div></div>
     </div>
-    <div class="card"><div class="card-head">${titled('h2','Beste Uploadzeit','uptime')}</div>${uploadHeat()}</div>`;
+    <div class="grid g-heat"><div class="card"><div class="card-head">${titled('h2','Beste Uploadzeit','uptime')}</div>${uploadHeat()}</div>
+      <div class="card topw-card"><div class="card-head">${titled('h2','Top-Streamer der Woche','topWeek')}<a class="btn ghost" href="#streamer">Alle Streamer</a></div>${topStreamersWeek()}</div></div>`;
   runCounts($('#view-uebersicht'));
   renderTrend();
   initSegs($('#view-uebersicht'));bindShadows($('#view-uebersicht'));
