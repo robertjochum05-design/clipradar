@@ -331,6 +331,8 @@ input[type=number].inp{font-family:var(--mono)}
 .btn.primary.done,.btn.primary.done:hover{background:var(--good);border-color:var(--good);color:#fff;filter:none}
 .btn .ck path{stroke-dasharray:14;stroke-dashoffset:14;animation:check .32s .05s ease-out forwards}
 .track .fill{transform-origin:left center;animation:grow .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes growY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.tbar{transform-box:fill-box;transform-origin:bottom;animation:growY .55s cubic-bezier(.2,.8,.2,1) both}
 .flash,.flash>td{animation:flash .5s ease-out}
 .leaving{opacity:0!important;transform:translateX(14px);transition:opacity .25s ease,transform .25s ease}
 .ins.reveal{animation:fadeUp .3s ease-out both}
@@ -748,7 +750,7 @@ const TIPS={
   kpiMedian:`<p>Der <b>Median</b> ist der mittlere Wert: Die Hälfte deiner Videos hat mehr Views, die andere Hälfte weniger.</p><p>Anders als der Durchschnitt wird der Median nicht von einzelnen Viral-Hits verzerrt. Ein Video mit 400.000 Views würde den Durchschnitt stark nach oben ziehen, den Median kaum.</p><p>Darunter: Vergleich der <b>letzten 7 Tage</b> mit den 7 Tagen davor, jeweils nach Upload-Datum. Grün heißt besser, rot schlechter.</p>`,
   kpiFlop:()=>`<p>Anteil deiner Videos, die nach 24 Stunden unter der Flop-Grenze von <b>${fmt(FLOP)} Views</b> lagen.</p><p>Die Grenze kannst du in der Karte „Ergebnisse“ oder links in der Seitenleiste ändern.</p><p>Darunter: Flop-Quote der <b>letzten 7 Tage</b> im Vergleich zu den 7 Tagen davor, in Prozentpunkten (Pp.). Weniger Flops ist grün.</p>`,
   kpiVideos:`<p>Anzahl aller eingetragenen Videos.</p><p>Darunter: wie viele Videos du in den <b>letzten 7 Tagen</b> hochgeladen hast, im Vergleich zu den 7 Tagen davor.</p>`,
-  trend:`<p>Zeigt, wie sich <b>neue Follower</b>, <b>Views</b> oder <b>Likes</b> im gewählten Zeitraum aufsummieren. Die Linie steigt an den Tagen, an denen du Videos hochgeladen hast.</p><p>Gezählt wird jedes Video mit seinen Werten nach 24 Stunden, einsortiert nach dem <b>Upload-Datum</b>. Spätere Views nach den ersten 24 Stunden sind nicht enthalten, weil du nur den 24-Stunden-Stand einträgst.</p><p>Die Prozentzahl vergleicht mit dem gleich langen Zeitraum direkt davor, z. B. die letzten 30 Tage mit den 30 Tagen davor.</p><p>Fahr mit der Maus über das Diagramm (am Handy: mit dem Finger), um den Stand an jedem einzelnen Tag zu sehen.</p>`,
+  trend:`<p><b>Views:</b> ein Balken pro Tag mit den Views aller Videos, die an diesem Tag hochgeladen wurden. So siehst du direkt, ob es besser oder schlechter läuft als vorher. Rot heißt: Die Videos des Tages lagen im Schnitt unter der Flop-Grenze, grün: über der Viral-Grenze. Die gestrichelte Linie ist der Schnitt pro Upload-Tag.</p><p><b>Follower und Likes:</b> aufaddiert über den Zeitraum. Die Linie steigt an den Tagen, an denen du Videos hochgeladen hast.</p><p>Gezählt wird jedes Video mit seinen Werten nach 24 Stunden, einsortiert nach dem <b>Upload-Datum</b>. Spätere Views nach den ersten 24 Stunden sind nicht enthalten, weil du nur den 24-Stunden-Stand einträgst.</p><p>Die Prozentzahl vergleicht mit dem gleich langen Zeitraum direkt davor, z. B. die letzten 30 Tage mit den 30 Tagen davor.</p><p>Fahr mit der Maus über das Diagramm (am Handy: mit dem Finger), um den Stand an jedem einzelnen Tag zu sehen.</p>`,
   dist:()=>`<p>Verteilung deiner Videos nach ihrem Ergebnis nach 24 Stunden:</p><ul><li><b>Flop:</b> unter ${fmt(FLOP)} Views</li><li><b>Gut:</b> ${fmt(FLOP)} bis ${fmt(VIRAL-1)} Views</li><li><b>Viral:</b> ab ${fmt(VIRAL)} Views</li></ul><p>Beide Grenzen kannst du direkt darunter ändern, am PC auch links in der Seitenleiste.</p><p>Ganz unten siehst du dein bestes Video der letzten 7 Tage und dein <b>bestes Video aller Zeiten</b>. Dieses trägt überall das Abzeichen <b>Rekord</b>.</p>`,
   insightsShort:`<p>Die drei stärksten Muster, die Clipradar in deinen Daten gefunden hat. Ein grüner Pfeil bedeutet: Videos mit dieser Eigenschaft laufen besser als der Rest, ein roter: schlechter.</p><p>Wie die Erkennung genau funktioniert, steht im Tab <b>Analyse</b>.</p>`,
   recent:`<p>Deine zuletzt hochgeladenen Videos. Ein Klick öffnet die Details mit allen Zahlen, deinen Tags und der Auswertung „Warum lief es so?“.</p>`,
@@ -874,18 +876,21 @@ const SKELETON=`<div class="view-head"><div class="skel" style="width:220px;heig
   <div class="grid g-2"><div class="skel" style="height:310px"></div><div class="skel" style="height:310px"></div></div>`;
 const TRENDS={follower:{l:'Neue Follower',get:v=>v.follower},views:{l:'Views',get:v=>v.views},likes:{l:'Likes',get:v=>v.likes}};
 const RANGES=[['7','Letzte 7 Tage','7 Tagen'],['30','Letzte 30 Tage','30 Tagen'],['90','Letzte 3 Monate','3 Monaten'],['180','Letzte 6 Monate','6 Monaten'],['365','Letztes Jahr','12 Monaten']];
+/* Views: Balken pro Tag. Follower & Likes: aufaddierte Linie */
+const isDaily=()=>S.trendMetric==='views';
 function trendData(){
   const days=+S.trendRange,get=TRENDS[S.trendMetric].get;
   const end=new Date();end.setHours(0,0,0,0);end.setDate(end.getDate()+1);
   const start=new Date(end);start.setDate(start.getDate()-days);
   const prevStart=new Date(start);prevStart.setDate(prevStart.getDate()-days);
-  const buckets=new Array(days).fill(0);let prev=0,n=0;
+  const buckets=new Array(days).fill(0),cnt=new Array(days).fill(0);let prev=0,n=0;
   for(const v of VIDEOS){
-    if(v.date>=start&&v.date<end){buckets[Math.max(0,Math.min(days-1,Math.floor((v.date-start)/DAY)))]+=get(v);n++}
+    if(v.date>=start&&v.date<end){const i=Math.max(0,Math.min(days-1,Math.floor((v.date-start)/DAY)));buckets[i]+=get(v);cnt[i]++;n++}
     else if(v.date>=prevStart&&v.date<start)prev+=get(v);
   }
   let c=0;const cum=[0,...buckets.map(b=>c+=b)];
-  return {days,start,cum,total:c,prev,n};
+  const active=buckets.filter((b,i)=>cnt[i]);
+  return {days,start,cum,buckets,cnt,total:c,prev,n,peak:Math.max(0,...buckets),avg:active.length?active.reduce((a,b)=>a+b,0)/active.length:0};
 }
 function niceScale(max){
   if(max<=0)return {step:1,top:4};
@@ -895,38 +900,49 @@ function niceScale(max){
 }
 function trendGeo(d){
   const W=680,H=210,pl=46,pr=12,pt=10,pb=24;
-  return {W,H,pl,pr,pt,pb,...niceScale(d.total),x:i=>pl+i/d.days*(W-pl-pr),yF:top=>v=>pt+(1-v/top)*(H-pt-pb)};
+  return {W,H,pl,pr,pt,pb,...niceScale(isDaily()?d.peak:d.total),x:i=>pl+i/d.days*(W-pl-pr),yF:top=>v=>pt+(1-v/top)*(H-pt-pb)};
 }
 function trendPaths(g,cum,top,days){
   const y=g.yF(top),line=cum.map((v,i)=>`${i?'L':'M'}${g.x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
   return {line,area:`${line}L${g.x(days).toFixed(1)},${y(0).toFixed(1)}L${g.x(0).toFixed(1)},${y(0).toFixed(1)}Z`,dy:y(cum[cum.length-1])};
 }
 function trendChart(d,g){
-  const p=trendPaths(g,d.cum,g.top,d.days),y=g.yF(g.top);
+  const y=g.yF(g.top),daily=isDaily();
   const yt=[];for(let v=0;v<=g.top+1e-9;v+=g.step)yt.push(v);
   const nx=d.days<=7?d.days:5,xt=[];for(let i=0;i<nx;i++)xt.push(Math.round(i*(d.days-1)/(nx-1||1)));
   const lbl=i=>{const t=new Date(d.start);t.setDate(t.getDate()+i);return dateStr(t)};
+  let marks;
+  if(daily){
+    const slot=(g.W-g.pl-g.pr)/d.days,bw=Math.max(1,Math.min(slot*.72,26));
+    marks=`<g id="tBars">${d.buckets.map((b,i)=>d.cnt[i]?`<rect class="tbar" x="${(g.x(i)+(slot-bw)/2).toFixed(1)}" y="${y(b).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(1,y(0)-y(b)).toFixed(1)}" rx="${Math.min(2,bw/3).toFixed(1)}" fill="${b/d.cnt[i]<FLOP?'var(--bad)':b/d.cnt[i]>=VIRAL?'var(--good)':'var(--accent)'}" fill-opacity=".85" style="animation-delay:${Math.min(i*(400/d.days),400).toFixed(0)}ms"/>`:'').join('')}</g>
+      ${d.avg?`<line x1="${g.pl}" x2="${g.W-g.pr}" y1="${y(d.avg).toFixed(1)}" y2="${y(d.avg).toFixed(1)}" stroke="var(--ink)" stroke-opacity=".45" stroke-dasharray="4 4"/><text x="${g.W-g.pr}" y="${(y(d.avg)-5).toFixed(1)}" text-anchor="end">Ø ${short(d.avg)}</text>`:''}
+      <g id="tHover" style="display:none"><rect id="tHB" y="${g.pt}" height="${g.H-g.pt-g.pb}" fill="var(--ink)" fill-opacity=".06"/></g>`;
+  }else{
+    const p=trendPaths(g,d.cum,g.top,d.days);
+    marks=`<path id="tArea" d="${p.area}" fill="var(--accent-soft)"/>
+    <path id="tLine" d="${p.line}" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linejoin="round"/>
+    <circle id="tDot" cx="${g.x(d.days)}" cy="${p.dy.toFixed(1)}" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"/>
+    <g id="tHover" style="display:none"><line id="tHL" y1="${g.pt}" y2="${g.H-g.pb}" stroke="var(--line-2)" stroke-dasharray="3 3"/><circle id="tHC" r="4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/></g>`;
+  }
   return `<div class="chart-wrap" id="trendWrap"><svg id="trendSvg" viewBox="0 0 ${g.W} ${g.H}" width="100%" role="img" aria-label="${TRENDS[S.trendMetric].l}: ${fmt(d.total)} im Zeitraum">
     ${yt.map(t=>`<line x1="${g.pl}" x2="${g.W-g.pr}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="var(--line)"/><text x="${g.pl-8}" y="${(y(t)+3.5).toFixed(1)}" text-anchor="end">${short(t)}</text>`).join('')}
     ${xt.map((i,k)=>`<text x="${g.x(i+.5).toFixed(1)}" y="${g.H-6}" text-anchor="${k===0&&nx>2?'start':k===xt.length-1&&nx>2?'end':'middle'}">${lbl(i)}</text>`).join('')}
-    <path id="tArea" d="${p.area}" fill="var(--accent-soft)"/>
-    <path id="tLine" d="${p.line}" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linejoin="round"/>
-    <circle id="tDot" cx="${g.x(d.days)}" cy="${p.dy.toFixed(1)}" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"/>
-    <g id="tHover" style="display:none"><line id="tHL" y1="${g.pt}" y2="${g.H-g.pb}" stroke="var(--line-2)" stroke-dasharray="3 3"/><circle id="tHC" r="4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/></g>
+    ${marks}
     <rect x="${g.pl}" y="${g.pt}" width="${g.W-g.pl-g.pr}" height="${g.H-g.pt-g.pb}" fill="transparent"/>
   </svg><div class="ctip" id="tTip" hidden></div>${d.n?'':'<div class="chart-empty">Keine Videos in diesem Zeitraum</div>'}</div>`;
 }
 let TPREV=null;
 function renderTrend(){
   const body=$('#trendBody');if(!body)return;
-  const d=trendData(),r=RANGES.find(x=>x[0]===S.trendRange),g=trendGeo(d);
+  const d=trendData(),r=RANGES.find(x=>x[0]===S.trendRange),g=trendGeo(d),daily=isDaily();
   let delta='<span class="delta flat">kein Vergleichszeitraum</span>';
   if(d.prev>0){const ch=(d.total-d.prev)/d.prev*100;delta=`<span class="delta ${ch>0.5?'up':ch<-0.5?'down':'flat'}">${ch>0?'+':''}${dec(ch,0)} % ggü. den ${r[2]} davor</span>`}
-  body.innerHTML=`<div class="trend-total">${counter('trend',d.total,'fmt','big')}<span class="label">${TRENDS[S.trendMetric].l} · ${d.n} Video${d.n===1?'':'s'}</span>${delta}</div>${trendChart(d,g)}`;
+  body.innerHTML=`<div class="trend-total">${counter('trend',d.total,'fmt','big')}<span class="label">${TRENDS[S.trendMetric].l}${daily?' insgesamt':''} · ${d.n} Video${d.n===1?'':'s'}</span>${delta}</div>${trendChart(d,g)}`;
   runCounts(body);
-  const line=$('#tLine'),area=$('#tArea'),dot=$('#tDot');
-  if(!RM){
-    if(TPREV&&TPREV.days===d.days){
+  const mode=daily?'bars':'line';
+  if(!RM&&!daily){
+    const line=$('#tLine'),area=$('#tArea'),dot=$('#tDot');
+    if(TPREV&&TPREV.mode==='line'&&TPREV.days===d.days){
       const same=TPREV.top===g.top&&TPREV.cum.every((v,i)=>v===d.cum[i]);
       if(!same){
         const from=TPREV.cum,fromTop=TPREV.top,t0=performance.now(),dur=480;
@@ -943,17 +959,28 @@ function renderTrend(){
       dot.animate([{opacity:0},{opacity:0,offset:.8},{opacity:1}],{duration:850});
     }
   }
-  TPREV={days:d.days,cum:d.cum.slice(),top:g.top};
-  /* Fadenkreuz beim Drüberfahren */
-  const svg=$('#trendSvg'),hov=$('#tHover'),hl=$('#tHL'),hc=$('#tHC'),tip=$('#tTip');
+  /* Balken nur beim Wechsel neu wachsen lassen */
+  if(daily&&!RM&&TPREV&&TPREV.mode==='bars'&&TPREV.days===d.days&&TPREV.sig===d.buckets.join(','))document.querySelectorAll('.tbar').forEach(b=>b.style.animation='none');
+  TPREV={mode,days:d.days,cum:d.cum.slice(),top:g.top,sig:d.buckets.join(',')};
+  /* Fadenkreuz bzw. Tages-Markierung beim Drüberfahren */
+  const svg=$('#trendSvg'),hov=$('#tHover'),tip=$('#tTip');
   svg.addEventListener('pointermove',ev=>{
-    const rect=svg.getBoundingClientRect(),vx=(ev.clientX-rect.left)/rect.width*g.W;
-    const i=Math.max(0,Math.min(d.days,Math.round((vx-g.pl)/(g.W-g.pl-g.pr)*d.days)));
-    const X=g.x(i),Y=g.yF(g.top)(d.cum[i]),inc=i>0?d.cum[i]-d.cum[i-1]:0;
-    const day=new Date(d.start);day.setDate(day.getDate()+Math.max(0,i-1));
-    hov.style.display='';hl.setAttribute('x1',X);hl.setAttribute('x2',X);hc.setAttribute('cx',X);hc.setAttribute('cy',Y);
-    tip.hidden=false;tip.innerHTML=`${i===0?'Start':dateStr(day)} · <b>${fmt(d.cum[i])}</b>${inc>0?` <span>+${fmt(inc)}</span>`:''}`;
-    tip.style.left=(X/g.W*rect.width)+'px';tip.style.top=(Y/g.H*rect.height)+'px';
+    const rect=svg.getBoundingClientRect(),vx=(ev.clientX-rect.left)/rect.width*g.W,y=g.yF(g.top);
+    hov.style.display='';tip.hidden=false;
+    if(daily){
+      const i=Math.max(0,Math.min(d.days-1,Math.floor((vx-g.pl)/(g.W-g.pl-g.pr)*d.days)));
+      const day=new Date(d.start);day.setDate(day.getDate()+i);
+      const hb=$('#tHB'),slot=(g.W-g.pl-g.pr)/d.days;hb.setAttribute('x',g.x(i));hb.setAttribute('width',Math.max(1,slot));
+      tip.innerHTML=d.cnt[i]?`${dateStr(day)} · <b>${fmt(d.buckets[i])}</b> Views <span>· ${d.cnt[i]} Video${d.cnt[i]===1?'':'s'}</span>`:`${dateStr(day)} · <span>kein Upload</span>`;
+      tip.style.left=((g.x(i)+slot/2)/g.W*rect.width)+'px';tip.style.top=(y(d.buckets[i]||0)/g.H*rect.height)+'px';
+    }else{
+      const i=Math.max(0,Math.min(d.days,Math.round((vx-g.pl)/(g.W-g.pl-g.pr)*d.days)));
+      const X=g.x(i),Y=y(d.cum[i]),inc=i>0?d.cum[i]-d.cum[i-1]:0;
+      const day=new Date(d.start);day.setDate(day.getDate()+Math.max(0,i-1));
+      $('#tHL').setAttribute('x1',X);$('#tHL').setAttribute('x2',X);$('#tHC').setAttribute('cx',X);$('#tHC').setAttribute('cy',Y);
+      tip.innerHTML=`${i===0?'Start':dateStr(day)} · <b>${fmt(d.cum[i])}</b>${inc>0?` <span>+${fmt(inc)}</span>`:''}`;
+      tip.style.left=(X/g.W*rect.width)+'px';tip.style.top=(Y/g.H*rect.height)+'px';
+    }
   });
   svg.addEventListener('pointerleave',()=>{hov.style.display='none';tip.hidden=true});
 }
