@@ -552,10 +552,7 @@ table.st tbody tr{cursor:pointer}
         <div class="title-row"><label class="label" for="outHiInput">Ausreißer ab</label><span data-info="outlier"></span></div>
         <span class="th-field"><input id="outHiInput" type="number" min="0" step="10000" value="250000"><button type="button" class="th-save" data-thsave="outHiInput" aria-label="Obere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>
       </div>
-      <div class="field-mini">
-        <div class="title-row"><label class="label" for="outLoInput">Ausreißer unter <small style="color:var(--faint)">(0 = aus)</small></label></div>
-        <span class="th-field"><input id="outLoInput" type="number" min="0" step="100" value="0"><button type="button" class="th-save" data-thsave="outLoInput" aria-label="Untere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>
-      </div>
+      
       <p class="side-note" id="dataNote"></p>
       <div class="side-actions">
         <button class="btn danger" data-clear>Alles löschen</button>
@@ -926,7 +923,7 @@ const TIPS={
   fUT:`<p>Ob das Video eingebrannte Untertitel hat.</p>`,
   fAudio:`<p><b>Nur Original:</b> nur der Ton aus dem Stream. <b>Mit Musik:</b> Musik zusätzlich unterlegt. <b>Trend-Sound:</b> ein gerade angesagter TikTok-Sound.</p>`,
   fMood:`<p>Überflieg nach 24 Stunden die Kommentare: Sind sie überwiegend positiv, gemischt oder negativ? Mit <b>+</b> legst du eine neue Stimmung an, z. B. „hitzig“.</p><p>Die Stimmung ist eine Folge des Videos, nicht die Ursache. Deshalb taucht sie nicht in den automatischen Erkenntnissen auf, du kannst sie aber im Tab Analyse vergleichen.</p>`,
-  outlier:()=>`<p>Ein einzelnes Mega-Video oder ein Totalausfall kann die Analyse verzerren. Deshalb werden <b>Ausreißer</b> dort anders behandelt:</p><ul><li><b>Nach oben</b> (ab ${OUT_HI?fmt(OUT_HI):'–'} Views): Das Video zählt weiter mit, aber nur mit ${OUT_HI?fmt(OUT_HI):'der Grenze'} Views. Follower, Likes, Kommentare usw. werden im gleichen Verhältnis gekürzt, damit Raten wie Engagement gleich bleiben.</li><li><b>Nach unten</b> (unter ${OUT_LO?fmt(OUT_LO):'–'} Views): Das Video wird ganz aus der Analyse genommen, z. B. wenn TikTok es wegen eines Fehlers kaum ausgespielt hat.</li></ul><p>Betroffen sind die Erkenntnisse, Vergleiche, Kombinationen, Zusammenhänge, Heatmaps, Streamer-Auswertungen, „Warum lief es so?“ und die Tages-Views im Entwicklungs-Diagramm (dort gestrichelt umrandet). Kennzahlen, Rekord und die Videoliste zeigen immer die echten Zahlen, Ausreißer haben dort ein gelbes Abzeichen.</p><p>Geänderte Grenzen übernimmst du mit dem <b>Häkchen</b> im Feld oder mit Enter. 0 schaltet eine Grenze aus. Mit „Ausreißer dämpfen“ im Tab Analyse siehst du die Ergebnisse ohne diese Behandlung.</p>`,
+  outlier:()=>`<p>Ein einzelnes Mega-Video oder ein Totalausfall kann die Analyse verzerren. Deshalb werden <b>Ausreißer</b> dort anders behandelt:</p><p>Videos ab ${OUT_HI?fmt(OUT_HI):'–'} Views: Das Video zählt weiter mit, aber nur mit ${OUT_HI?fmt(OUT_HI):'der Grenze'} Views. Follower, Likes, Kommentare usw. werden im gleichen Verhältnis gekürzt, damit Raten wie Engagement gleich bleiben.</p><p>Betroffen sind die Erkenntnisse, Vergleiche, Kombinationen, Zusammenhänge, Heatmaps, Streamer-Auswertungen, „Warum lief es so?“ und die Tages-Views im Entwicklungs-Diagramm (dort gestrichelt umrandet). Kennzahlen, Rekord und die Videoliste zeigen immer die echten Zahlen, Ausreißer haben dort ein gelbes Abzeichen.</p><p>Geänderte Grenzen übernimmst du mit dem <b>Häkchen</b> im Feld oder mit Enter. 0 schaltet die Grenze aus. Mit „Ausreißer dämpfen“ im Tab Analyse siehst du die Ergebnisse ohne diese Behandlung.</p>`,
   uptime:`<p>Zeigt, zu welcher <b>Uhrzeit an welchem Wochentag</b> deine Videos am besten laufen. Jedes Feld ist der Median der Views aller Videos, die in diesem Zeitfenster hochgeladen wurden, darunter die Anzahl.</p><p>Je kräftiger die Farbe, desto besser. Das grün umrandete Feld ist die beste Zeit mit mindestens 2 Videos.</p><p>Mit wenigen Videos ist das noch Zufall. Aussagekräftig wird es, wenn die meisten Felder mehrere Videos haben.</p>`,
   anRange:`<p>Welche Videos in die Analyse einfließen. Mit <b>Letzte 30 Tage</b> siehst du, was <b>aktuell</b> funktioniert, z. B. wenn sich der Algorithmus oder dein Stil geändert hat.</p><p>Weniger Videos heißt aber auch: weniger sichere Ergebnisse.</p>`,
   whatsnew:`<p>Vergleicht die Erkenntnisse mit dem Stand von <b>vor 7 Tagen</b>, also nur mit den Videos, die bis dahin hochgeladen waren.</p><p><b>Neu</b> markiert Muster, die es damals noch nicht gab. „Nicht mehr sichtbar“ sind Muster, die durch neue Videos verschwunden sind, weil sie sich als Zufall herausgestellt haben oder sich etwas verändert hat.</p>`,
@@ -946,7 +943,6 @@ try{
   const f=parseInt(localStorage.getItem('clipradar-flop'),10);if(f>=0)FLOP=f;
   const vi=parseInt(localStorage.getItem('clipradar-viral'),10);if(vi>FLOP)VIRAL=vi;
   const oh=parseInt(localStorage.getItem('clipradar-outhi'),10);if(oh>=0)OUT_HI=oh;
-  const ol=parseInt(localStorage.getItem('clipradar-outlo'),10);if(ol>=0)OUT_LO=ol;
   if(localStorage.getItem('clipradar-dampen')==='0')S.dampen=false;
   const tr=JSON.parse(localStorage.getItem('clipradar-trend')||'null');if(tr){S.trendMetric=tr.m||S.trendMetric;S.trendRange=tr.r||S.trendRange}
   const cols=JSON.parse(localStorage.getItem('clipradar-cols')||'null');if(Array.isArray(cols))S.cols=cols;
@@ -995,7 +991,7 @@ function runCounts(root=document){
   });
 }
 /* Grenzen erst mit Häkchen (oder Enter) übernehmen */
-const TH={flopInput:'flop',flopInput2:'flop',viralInput:'viral',viralInput2:'viral',outHiInput:'outHi',outHiInput2:'outHi',outLoInput:'outLo',outLoInput2:'outLo'};
+const TH={flopInput:'flop',flopInput2:'flop',viralInput:'viral',viralInput2:'viral',outHiInput:'outHi',outHiInput2:'outHi'};
 const thCur=k=>({flop:FLOP,viral:VIRAL,outHi:OUT_HI,outLo:OUT_LO})[k];
 function thDirty(inp){
   const btn=inp.parentElement.querySelector('.th-save');if(!btn)return;
@@ -1359,7 +1355,7 @@ function renderOverview(){
       <div class="card">
         <div class="card-head">${titled('h2','Ergebnisse','dist')}</div>
         ${pieChart(pieParts,{animate:pieAnim})}
-        <div class="thresholds"><label for="flopInput2">Flop unter</label><span class="th-field"><input class="ctl num" id="flopInput2" type="number" min="0" step="500" value="${FLOP}"><button type="button" class="th-save" data-thsave="flopInput2" aria-label="Flop-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span><label for="viralInput2">Viral ab</label><span class="th-field"><input class="ctl num" id="viralInput2" type="number" min="0" step="5000" value="${VIRAL}"><button type="button" class="th-save" data-thsave="viralInput2" aria-label="Viral-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span><label for="outHiInput2">Ausreißer ab</label><span class="th-field"><input class="ctl num" id="outHiInput2" type="number" min="0" step="10000" value="${OUT_HI}"><button type="button" class="th-save" data-thsave="outHiInput2" aria-label="Obere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span><label for="outLoInput2">unter</label><span class="th-field"><input class="ctl num" id="outLoInput2" type="number" min="0" step="100" value="${OUT_LO}"><button type="button" class="th-save" data-thsave="outLoInput2" aria-label="Untere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>${info('outlier')}</div>
+        <div class="thresholds"><label for="flopInput2">Flop unter</label><span class="th-field"><input class="ctl num" id="flopInput2" type="number" min="0" step="500" value="${FLOP}"><button type="button" class="th-save" data-thsave="flopInput2" aria-label="Flop-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span><label for="viralInput2">Viral ab</label><span class="th-field"><input class="ctl num" id="viralInput2" type="number" min="0" step="5000" value="${VIRAL}"><button type="button" class="th-save" data-thsave="viralInput2" aria-label="Viral-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span><label for="outHiInput2">Ausreißer ab</label><span class="th-field"><input class="ctl num" id="outHiInput2" type="number" min="0" step="10000" value="${OUT_HI}"><button type="button" class="th-save" data-thsave="outHiInput2" aria-label="Obere Ausreißer-Grenze speichern" title="Speichern"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg></button></span>${info('outlier')}</div>
         ${best?`<p class="sub-head">Bestes Video der letzten 7 Tage</p>
         <div class="row" data-vid="${best.id}"><div class="t">${esc(best.title)}<small>${dateStr(best.date)} · ${timeStr(best.date)} Uhr</small></div><span class="num">${short(best.views)}</span>${badge(best)}</div>`:''}
         ${top&&top!==best?`<p class="sub-head">Bestes Video aller Zeiten</p>
@@ -2375,7 +2371,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('focusout',e=>{const t=e.target;if(t.closest&&t.closest('#vform')&&COMBO_KEYS[t.id])checkTypo(t)});
 
 fillInfoSlots();
-$('#flopInput').value=FLOP;$('#viralInput').value=VIRAL;$('#outHiInput').value=OUT_HI;$('#outLoInput').value=OUT_LO;
+$('#flopInput').value=FLOP;$('#viralInput').value=VIRAL;$('#outHiInput').value=OUT_HI;
 show(location.hash.slice(1)||S.tab);
 $('#view-'+S.tab).innerHTML=SKELETONS[S.tab]||SKELETON;
 Promise.all([loadVideos(),loadSettings()]).then(renderAll).catch(e=>{$('#view-'+S.tab).innerHTML=`<div class="card empty-state"><h2>Daten konnten nicht geladen werden</h2><p>${esc(e.message)}</p><button class="btn" onclick="location.reload()">Neu laden</button></div>`});
