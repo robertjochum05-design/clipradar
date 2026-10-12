@@ -24,6 +24,7 @@ TikTok-Analytics für einen Account mit Clips deutscher Streamer. Der Nutzer pro
 - Die Live-Datenbank enthält echte Daten des Nutzers. Nie remote Daten löschen oder destruktive Schema-Änderungen ohne Rückfrage (rein additive `CREATE TABLE IF NOT EXISTS` ist ok, aber erwähnen).
 - `POST /api/videos` nimmt auch ein Array (für Rückgängig nach dem Löschen).
 - Animationen kurz halten und `prefers-reduced-motion` respektieren (`RM`).
+- Umfrage pro Video: `umfrage` ('ja'/'nein', fehlt bei alten Videos = unbekannt) und `pollVotes` (Zahl oder null). Analysiert wird die Beteiligung `pollRate` = Stimmen/Views, nicht die reine Stimmenzahl.
 - Flop = unter 9.000, viral = ab 100.000 Views nach 24 h (beide einstellbar, pro Gerät in localStorage; Seitenleiste + Karte „Ergebnisse“).
 - Gewichtung: gespeichert als Stufe 0/2/3 pro Tag (1 = normal wird nicht gespeichert), Faktor 0,5 (nicht wichtig), 1,25 (wichtig), 1,75 (Hauptgrund), siehe `FACTOR` und `lvl()`. Achtung: Stufe 0 ist falsy, nie `|| 1` verwenden.
 - Design: ruhig und professionell (Geist/Geist Mono, neutrale Farben). Erklärungen nie als sichtbarer Fließtext, sondern ausführlich im ⓘ-Tooltip (`info('key')` + Eintrag in `TIPS`).

@@ -539,14 +539,15 @@ function makeSample(){
     const date=new Date(start.getTime()+Math.floor(i*35/72)*864e5);
     const hour=pick(HOURS).h;date.setHours(hour,Math.floor(rnd()*4)*15);
     const pointe=1+Math.floor(rnd()*11),laenge=12+Math.floor(rnd()*58);
-    const content=eff+game.e+thema.e+hook.e+emo.e+ov.e+ut.e+au.e-(pointe-3)*.07+(laenge>45?-.2:0);
+    const poll=rnd()<.82,pr=.008+rnd()*.03;
+    const content=eff+game.e+thema.e+hook.e+emo.e+ov.e+ut.e+au.e-(pointe-3)*.07+(laenge>45?-.2:0)+(poll?.12:0);
     const timeEff=hour<12?-.35:hour<17?-.05:hour<21?.25:.05;
     const views=Math.max(350,Math.round(Math.exp(Math.log(7000)+content+timeEff+gauss()*.7)));
     const ret3=Math.max(18,Math.min(88,Math.round(50+9*(hook.e+ov.e+ut.e)+gauss()*5-pointe*.7+content*3)));
     const completion=Math.max(5,Math.min(85,Math.round(68-laenge*.6+8*content+gauss()*6)));
     const c=completion/100;
     const avgWatch=Math.min(laenge,Math.round(laenge*(c+.3*(1-c))*10)/10);
-    const follower=Math.max(0,Math.round(views*.0045*Math.exp(gauss()*.4+(emo.n==='lustig'?.2:0))));
+    const follower=Math.max(0,Math.round(views*.0045*Math.exp(gauss()*.4+(emo.n==='lustig'?.2:0)+(poll?(pr-.02)*15:0))));
     const moodScore=content+gauss()*.45-(emo.n==='Drama'?.5:0);
     const weights={};
     if(rnd()<.35){const k=SAMPLE_WKEYS[Math.floor(rnd()*SAMPLE_WKEYS.length)];weights[k]=rnd()<.5?3:2}
@@ -557,6 +558,7 @@ function makeSample(){
       likes:Math.round(views*(.06+rnd()*.05)),comments:Math.round(views*(.003+rnd()*.004)),
       shares:Math.round(views*(.003+rnd()*.01)),saves:Math.round(views*(.002+rnd()*.006)),
       totalWatch:Math.round(views*avgWatch/3600),
+      umfrage:poll?'ja':'nein',pollVotes:poll?Math.round(views*pr):null,
       stimmung:moodScore>.45?'positiv':moodScore<-.2?'negativ':'gemischt'
     });
   }
@@ -578,6 +580,7 @@ const TEXT_DEFAULTS={title:'Ohne Titel',spiel:'Unbekannt',thema:'Unbekannt',hook
 const fromRow=r=>{
   const v={...TEXT_DEFAULTS,...r.data,id:r.id,date:new Date(r.data.date),weights:r.data.weights||{},streamers:r.data.streamers||[]};
   for(const k of NUM_FIELDS)v[k]=Number.isFinite(+v[k])?+v[k]:0;
+  v.pollVotes=v.pollVotes!=null&&v.pollVotes!==''&&Number.isFinite(+v.pollVotes)?+v.pollVotes:null;
   return v;
 };
 async function loadVideos(){const rows=await api('GET','/videos');VIDEOS.length=0;VIDEOS.push(...rows.map(fromRow))}
@@ -599,11 +602,12 @@ const WLABEL={0:'nicht wichtig',2:'wichtig',3:'Hauptgrund'};
 const FACTOR={0:.5,1:1,2:1.25,3:1.75};
 const lvl=(v,k)=>(v.weights&&v.weights[k]!=null)?v.weights[k]:1; // 0 = nicht wichtig, 1 = normal
 const WKEYS=[{k:'streamer',l:'Streamer'},{k:'spiel',l:'Spiel'},{k:'thema',l:'Thema'},{k:'hook',l:'Hook'},{k:'emotion',l:'Emotion'},{k:'overlay',l:'Text-Overlay'},
-  {k:'untertitel',l:'Untertitel'},{k:'audio',l:'Audio'},{k:'sound',l:'Sound'},{k:'upload',l:'Uploadzeitpunkt'},{k:'laenge',l:'Videolänge'}];
+  {k:'untertitel',l:'Untertitel'},{k:'audio',l:'Audio'},{k:'sound',l:'Sound'},{k:'upload',l:'Uploadzeitpunkt'},{k:'laenge',l:'Videolänge'},{k:'umfrage',l:'Umfrage'}];
 function tagValue(v,k){
   if(k==='streamer')return v.streamers.join(', ');
   if(k==='upload')return `${DAYS[v.date.getDay()]} ${timeStr(v.date)} Uhr`;
   if(k==='laenge')return v[k]+' s';
+  if(k==='umfrage')return v.umfrage==='ja'?`ja${v.pollVotes!=null?` · ${fmt(v.pollVotes)} Stimmen`:''}`:(v.umfrage||'–');
   return v[k];
 }
 function weightRows(prefix,weights,v){
@@ -622,6 +626,7 @@ const CAT=[
   {k:'overlay',l:'Text-Overlay',wk:'overlay',g:v=>[v.overlay]},
   {k:'untertitel',l:'Untertitel',wk:'untertitel',g:v=>[v.untertitel]},
   {k:'audio',l:'Audio',wk:'audio',g:v=>[v.audio]},
+  {k:'umfrage',l:'Umfrage',wk:'umfrage',g:v=>v.umfrage?[v.umfrage]:[]},
   {k:'sound',l:'Sound',wk:'sound',g:v=>[v.sound]},
   {k:'tageszeit',l:'Uploadzeit',wk:'upload',g:v=>[hourBucket(v.date.getHours())]},
   {k:'wochentag',l:'Wochentag',wk:'upload',g:v=>[DAYS[v.date.getDay()]]},
@@ -632,7 +637,8 @@ const catByKey=k=>CAT.find(f=>f.k===k);
 const NUM=[
   {k:'laenge',l:'Videolänge (s)',g:v=>v.laenge,phrase:'Je länger das Video ist'},
   {k:'hour',l:'Upload-Uhrzeit',g:v=>v.date.getHours()+v.date.getMinutes()/60,phrase:'Je später am Tag du hochlädst'},
-  {k:'avgWatch',l:'Ø Wiedergabedauer (s)',g:v=>v.avgWatch,phrase:'Je länger die durchschnittliche Wiedergabedauer'}
+  {k:'avgWatch',l:'Ø Wiedergabedauer (s)',g:v=>v.avgWatch,phrase:'Je länger die durchschnittliche Wiedergabedauer'},
+  {k:'pollRate',l:'Umfrage-Beteiligung (%)',g:v=>pollRate(v),phrase:'Je mehr Zuschauer bei der Umfrage abstimmen'}
 ];
 /* Gewichteter Median: ein Video mit Gewicht 1,75 zählt wie 1,75 Videos */
 function wmedian(vals,ws){
@@ -643,13 +649,17 @@ function wmedian(vals,ws){
 }
 const ONE=()=>1;
 const eng=v=>v.views?(v.likes+v.comments+v.saves)/v.views*100:0;
+/* Umfrage-Beteiligung: Stimmen im Verhältnis zu den Views (nur bei Videos mit Umfrage) */
+const pollRate=v=>v.umfrage==='ja'&&v.pollVotes!=null&&v.views?v.pollVotes/v.views*100:null;
+const pollText=v=>v.umfrage==='ja'?(v.pollVotes!=null?`${fmt(v.pollVotes)} Stimmen`:'ja'):v.umfrage==='nein'?'keine':'–';
 const W=(v,f)=>S.useWeights&&f&&f.wk?FACTOR[lvl(v,f.wk)]??1:1;
 const wm=(vs,get,wf)=>wmedian(vs.map(get),vs.map(wf));
 const METRICS={
   views:{l:'Median-Views (24 h)',f:(vs,wf=ONE)=>wm(vs,v=>v.views,wf),fmt:short},
   follower:{l:'Median neue Follower',f:(vs,wf=ONE)=>wm(vs,v=>v.follower,wf),fmt:fmt},
   flop:{l:'Flop-Quote',f:(vs,wf=ONE)=>{const t=vs.reduce((s,v)=>s+wf(v),0);return t?vs.reduce((s,v)=>s+(v.views<FLOP?wf(v):0),0)/t*100:0},fmt:pct,lowerBetter:true},
-  engagement:{l:'Engagement-Rate',f:(vs,wf=ONE)=>wm(vs,eng,wf),fmt:n=>dec(n)+' %'}
+  engagement:{l:'Engagement-Rate',f:(vs,wf=ONE)=>wm(vs,eng,wf),fmt:n=>dec(n)+' %'},
+  pollRate:{l:'Umfrage-Beteiligung',f:(vs,wf=ONE)=>{const p=vs.filter(v=>pollRate(v)!=null);return p.length?wm(p,pollRate,wf):NaN},fmt:n=>Number.isFinite(n)?dec(n,2)+' %':'–'}
 };
 const marks=(vs,f)=>vs.filter(v=>f.wk&&v.weights&&v.weights[f.wk]>1).length;
 function groups(f,list=VIDEOS){const m=new Map();for(const v of list)for(const val of f.g(v)){if(!m.has(val))m.set(val,[]);m.get(val).push(v)}return m}
@@ -669,7 +679,7 @@ function computeInsights(mk,list=VIDEOS){
     const wf=v=>W(v,f);
     let best=null;
     for(const [name,vs] of groups(f,list)){
-      const rest=list.filter(v=>!f.g(v).includes(name));
+      const rest=list.filter(v=>{const gv=f.g(v);return gv.length&&!gv.includes(name)});
       if(vs.length<MIN_N||rest.length<MIN_N)continue;
       const a=wm(vs,val,wf),b=wm(rest,val,wf);
       if(!a||!b)continue;
@@ -709,7 +719,7 @@ function explain(v){
     if(f.after)continue;
     const wf=x=>W(x,f);
     for(const val of f.g(v)){
-      const vs=VIDEOS.filter(x=>f.g(x).includes(val)),rest=VIDEOS.filter(x=>!f.g(x).includes(val));
+      const vs=VIDEOS.filter(x=>f.g(x).includes(val)),rest=VIDEOS.filter(x=>{const gx=f.g(x);return gx.length&&!gx.includes(val)});
       const ok=vs.length>=MIN_N&&rest.length>=MIN_N;
       const r=ok?wm(vs,x=>x.views,wf)/(wm(rest,x=>x.views,wf)||1):null;
       facs.push({f,txt:`${f.l} „${val}“`,r,n:vs.length,ok});
@@ -757,7 +767,7 @@ const TIPS={
   videos:`<p>Alle eingetragenen Videos mit ihren Werten nach 24 Stunden.</p><ul><li><b>Sortieren:</b> Klick auf eine Spaltenüberschrift, ein zweiter Klick dreht die Reihenfolge um.</li><li><b>Suchen</b> durchsucht Titel, Spiel, Sound, Hook, Thema und Emotion.</li><li><b>Engagement:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views. Zeigt, wie stark Zuschauer reagieren, unabhängig davon, wie viele es waren.</li></ul><ul><li><b>Zeile anklicken</b> klappt eine Kurzansicht auf. „Alle Details“ öffnet das Seitenfenster.</li><li><b>Häkchen links</b> wählen mehrere Videos aus, um sie gemeinsam zu taggen oder zu löschen.</li><li><b>Spalten</b> blendet zusätzliche Werte ein oder aus.</li><li>Der Balken unter den Views zeigt, wie das Video im Vergleich zu deinem besten Video lief (logarithmisch).</li><li>Gelöschte Videos kannst du ein paar Sekunden lang mit <b>Rückgängig</b> zurückholen.</li><li>Mit der Taste <b>N</b> trägst du jederzeit ein neues Video ein.</li></ul>`,
   insights:`<p>Clipradar vergleicht für jede Eigenschaft, z. B. Hook „Frage“, den <b>Median</b> aller Videos mit dieser Eigenschaft mit dem Median aller anderen Videos.</p><p>Angezeigt wird ein Muster nur, wenn</p><ul><li>beide Gruppen mindestens ${MIN_N} Videos haben und</li><li>der Unterschied mindestens 25 % beträgt.</li></ul><p>Pro Eigenschaft siehst du nur den stärksten Wert. Bei Zahlen wie der Videolänge wird geprüft, ob höhere Werte mit mehr oder weniger Views einhergehen (Rangkorrelation ρ ab 0,2).</p><p><b>Sicherheit:</b> berücksichtigt Größe des Unterschieds und Anzahl der Videos. „Stark“ ist ziemlich sicher kein Zufall, „schwach“ kann noch Zufall sein.</p><p>Ein Zusammenhang ist nicht automatisch die Ursache. Laufen z. B. Papaplatte-Clips besser, kann das auch daran liegen, dass du sie öfter abends postest. Mit den <b>Kombinationen</b> weiter unten kannst du das prüfen.</p><p>Ein Klick auf eine Zeile springt zur passenden Grafik.</p>`,
   weights:`<p>Bei jedem Video kannst du markieren, woran es deiner Meinung nach lag:</p><ul><li><b>nicht wichtig:</b> zählt nur 0,5-fach</li><li><b>wichtig:</b> zählt 1,25-fach</li><li><b>Hauptgrund:</b> zählt 1,75-fach</li></ul><p>Die Gewichtung gilt nur für die jeweilige Eigenschaft. Markierst du bei einem Video den Hook als Hauptgrund, zählt dieses Video beim Vergleich der Hooks 1,75-fach, bei allen anderen Eigenschaften normal.</p><p>Schalte die Gewichtung aus, um die reinen Daten zu sehen. Taucht ein Muster nur mit Gewichtung auf, beruht es vor allem auf deiner Einschätzung.</p>`,
-  compare:`<p>Wählt eine Eigenschaft und eine Kennzahl. Jeder Balken ist eine Gruppe, z. B. jeder Streamer.</p><ul><li>Die <b>senkrechte Linie</b> zeigt den Wert über alle Videos.</li><li><b>Graue Balken</b> beruhen auf weniger als ${MIN_N} Videos und sind noch nicht aussagekräftig.</li><li>Unter dem Namen stehen Anzahl der Videos und Flop-Quote.</li></ul><p><b>Kennzahlen:</b></p><ul><li><b>Median-Views / Median neue Follower:</b> mittlerer Wert der Gruppe</li><li><b>Flop-Quote:</b> Anteil unter der Flop-Grenze, niedriger ist besser</li><li><b>Engagement-Rate:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views</li></ul>`,
+  compare:`<p>Wählt eine Eigenschaft und eine Kennzahl. Jeder Balken ist eine Gruppe, z. B. jeder Streamer.</p><ul><li>Die <b>senkrechte Linie</b> zeigt den Wert über alle Videos.</li><li><b>Graue Balken</b> beruhen auf weniger als ${MIN_N} Videos und sind noch nicht aussagekräftig.</li><li>Unter dem Namen stehen Anzahl der Videos und Flop-Quote.</li></ul><p><b>Kennzahlen:</b></p><ul><li><b>Median-Views / Median neue Follower:</b> mittlerer Wert der Gruppe</li><li><b>Flop-Quote:</b> Anteil unter der Flop-Grenze, niedriger ist besser</li><li><b>Engagement-Rate:</b> (Likes + Kommentare + Gespeichert) geteilt durch Views</li><li><b>Umfrage-Beteiligung:</b> Umfrage-Stimmen geteilt durch Views, nur Videos mit Umfrage</li></ul>`,
   heat:`<p>Kombiniert zwei Eigenschaften, z. B. Streamer und Hook. Jedes Feld zeigt den Wert für alle Videos, die beides haben, und darunter die Anzahl der Videos.</p><p>Je kräftiger die Farbe, desto besser der Wert. Blasse Felder beruhen auf nur einem Video, ein Strich bedeutet: diese Kombination gibt es noch nicht.</p><p>So findest du z. B. heraus, ob ein Hook bei allen Streamern funktioniert oder nur bei einem.</p>`,
   scatter:`<p>Jeder Punkt ist ein Video. Waagerecht steht die gewählte Zahl, senkrecht die Views nach 24 Stunden.</p><p>Die Views-Achse ist <b>logarithmisch</b>: Jede Linie bedeutet zehnmal so viele Views. So passen kleine und virale Videos in dieselbe Grafik. Die gestrichelte Linie ist deine Flop-Grenze.</p><p><b>ρ (Rangkorrelation)</b> misst den Zusammenhang von −1 bis +1. Positiv heißt: mehr davon, mehr Views. Negativ: mehr davon, weniger Views. Ab 0,25 ist der Zusammenhang mittel, ab 0,45 deutlich.</p><p>Ein Klick auf einen Punkt öffnet das Video.</p>`,
   streamer:`<p>Alles zu deinen Streamern. Collab-Videos mit mehreren Streamern zählen bei jedem Beteiligten.</p><ul><li><b>Karten oder Tabelle:</b> oben umschalten. In der Tabelle sortierst du per Klick auf die Spaltenüberschrift.</li><li><b>Sortieren</b> nach Median-Views, Followern pro Video, Flop-Quote usw.</li><li><b>Filter</b> blendet Streamer mit wenigen Videos aus, deren Zahlen noch zufällig sind.</li><li><b>Vergleichen</b> stellt zwei Streamer nebeneinander.</li><li>Das <b>Ringdiagramm</b> auf jeder Karte zeigt, wie viele seiner Videos Flop, Gut oder Viral waren.</li><li><b>Bester Hook, Emotion, Spiel:</b> der Wert mit den höchsten Median-Views, mindestens 2 Videos nötig.</li></ul><p>Ein Klick auf eine Karte öffnet die Detailseite. Sieht Clipradar zwei Schreibweisen desselben Streamers, schlägt es oben das Zusammenführen vor.</p>`,
@@ -785,6 +795,8 @@ const TIPS={
   fSound:`<p>Welcher Sound läuft: „Originalton“ oder der Name des Songs oder Trend-Sounds.</p>`,
   fEmotion:`<p>Das Hauptgefühl, das der Clip auslöst. Mit <b>+</b> legst du eine neue Emotion an, sie steht danach bei jedem Video zur Auswahl.</p>`,
   fOverlay:`<p>Ob und welche Art Text am Anfang eingeblendet ist:</p><ul><li><b>Frage:</b> z. B. „Würdest du das machen?“</li><li><b>Aussage:</b> z. B. „Er rastet komplett aus“</li><li><b>Spoiler:</b> verrät, was passiert</li></ul><p>Mit <b>+</b> legst du eine neue Art an.</p>`,
+  fPoll:`<p>Ob du bei diesem Video eine <b>TikTok-Umfrage</b> eingebaut hast. Bei „nein“ wird das Feld für die Abstimmungen ausgegraut.</p><p>Die Analyse vergleicht Videos mit und ohne Umfrage und prüft, ob eine höhere Beteiligung mit mehr Views oder Followern zusammenhängt.</p>`,
+  fVotes:`<p>Wie viele Leute nach 24 Stunden abgestimmt haben. Du findest die Zahl direkt an der Umfrage im Video.</p><p>Clipradar rechnet daraus die <b>Beteiligung</b>: Stimmen geteilt durch Views. Die reine Stimmenzahl steigt automatisch mit den Views, deshalb wird die Beteiligung analysiert.</p>`,
   fUT:`<p>Ob das Video eingebrannte Untertitel hat.</p>`,
   fAudio:`<p><b>Nur Original:</b> nur der Ton aus dem Stream. <b>Mit Musik:</b> Musik zusätzlich unterlegt. <b>Trend-Sound:</b> ein gerade angesagter TikTok-Sound.</p>`,
   fMood:`<p>Überflieg nach 24 Stunden die Kommentare: Sind sie überwiegend positiv, gemischt oder negativ? Mit <b>+</b> legst du eine neue Stimmung an, z. B. „hitzig“.</p><p>Die Stimmung ist eine Folge des Videos, nicht die Ursache. Deshalb taucht sie nicht in den automatischen Erkenntnissen auf, du kannst sie aber im Tab Analyse vergleichen.</p>`,
@@ -1111,6 +1123,8 @@ const VCOLS=[
   {k:'avgWatch',l:'Ø Wiedergabe',n:1,v:v=>v.avgWatch,c:v=>dec(v.avgWatch)+' s'},
   {k:'totalWatch',l:'Wiedergabezeit',n:1,v:v=>v.totalWatch,c:v=>fmt(v.totalWatch)+' h'},
   {k:'laenge',l:'Länge',n:1,v:v=>v.laenge,c:v=>v.laenge+' s'},
+  {k:'pollVotes',l:'Umfrage',n:1,v:v=>v.umfrage==='ja'?(v.pollVotes??0):-1,c:v=>pollText(v)},
+  {k:'pollRate',l:'Beteiligung',n:1,v:v=>pollRate(v)??-1,c:v=>pollRate(v)!=null?dec(pollRate(v),2)+' %':'–'},
   {k:'streamer',l:'Streamer',v:v=>v.streamers.join(', ').toLowerCase(),c:v=>esc(v.streamers.join(', '))},
   {k:'spiel',l:'Spiel'},{k:'thema',l:'Thema'},{k:'hook',l:'Hook'},{k:'emotion',l:'Emotion'},{k:'overlay',l:'Text-Overlay'},{k:'sound',l:'Sound'},{k:'stimmung',l:'Stimmung'},
   {k:'status',l:'Status',v:v=>v.views,c:v=>badge(v)}
@@ -1154,14 +1168,14 @@ function expandHtml(v){
   const ex=explain(v);
   const li=a=>a.slice(0,3).map(x=>`<li><div>${x.t}<small>${x.d}</small></div></li>`).join('');
   const m=[['Views',fmt(v.views)],['Neue Follower',fmt(v.follower)],['Likes',fmt(v.likes)],['Kommentare',fmt(v.comments)],['Gespeichert',fmt(v.saves)],['Engagement',v.views?dec(eng(v))+' %':'–'],
-    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s']];
+    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s'],['Umfrage',v.umfrage||'–'],['Stimmen',v.umfrage==='ja'&&v.pollVotes!=null?fmt(v.pollVotes):'–'],['Beteiligung',pollRate(v)!=null?dec(pollRate(v),2)+' %':'–']];
   return `<div class="exp-in"><div class="exp-grid">
     <div><p class="verdict" style="font-size:14px;margin-bottom:10px">${fmt(v.views)} Views · ${ex.verdict}</p>
       ${ex.pos.length?`<p class="fac-head">Hat geholfen</p><ul class="fac pos" style="margin-bottom:10px">${li(ex.pos)}</ul>`:''}
       ${ex.neg.length?`<p class="fac-head">Hat gebremst</p><ul class="fac neg">${li(ex.neg)}</ul>`:''}
       ${!ex.pos.length&&!ex.neg.length?`<p style="color:var(--muted);font-size:13px">${VIDEOS.length<10?'Noch zu wenig Videos, um Muster zu erkennen.':'Keine Eigenschaft weicht deutlich von deinem Schnitt ab.'}</p>`:''}</div>
     <div><div class="mgrid sm">${m.map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')}</div>
-      <div class="tags" style="margin-top:10px">${[['Spiel',v.spiel],['Hook',v.hook],['Emotion',v.emotion],['Overlay',v.overlay],['Audio',v.audio]].map(([a,b])=>`<span class="tagchip"><b>${a}</b>${esc(b)}</span>`).join('')}</div></div>
+      <div class="tags" style="margin-top:10px">${[['Spiel',v.spiel],['Hook',v.hook],['Emotion',v.emotion],['Overlay',v.overlay],['Audio',v.audio],['Umfrage',pollText(v)]].map(([a,b])=>`<span class="tagchip"><b>${a}</b>${esc(b)}</span>`).join('')}</div></div>
   </div>
   <div class="ctl-row" style="margin-top:14px"><button class="btn" data-vid="${v.id}">Alle Details</button><button class="btn" data-edit="${v.id}">Bearbeiten</button><button class="btn danger" data-quickdel="${v.id}">Löschen</button></div></div>`;
 }
@@ -1184,10 +1198,10 @@ function renderVideoTable(){
       ${list.length>VLIMIT?`<button class="btn" data-vall>${S.vAll?'Weniger anzeigen':`Alle ${list.length} Videos anzeigen`}</button>`:''}</div>`;
 }
 const BULK_FIELDS=[['spiel','Spiel','spiel'],['thema','Thema','thema'],['hook','Hook','hook'],['sound','Sound','sound'],['emotion','Emotion','emotion'],['overlay','Text-Overlay','overlay'],
-  ['untertitel','Untertitel','untertitel'],['audio','Audio','audio'],['stimmung','Kommentarstimmung','stimmung'],['streamerAdd','Streamer hinzufügen','streamers']];
+  ['untertitel','Untertitel','untertitel'],['audio','Audio','audio'],['umfrage','Umfrage','umfrage'],['stimmung','Kommentarstimmung','stimmung'],['streamerAdd','Streamer hinzufügen','streamers']];
 function bulkOptions(field){
   const f=BULK_FIELDS.find(x=>x[0]===field);
-  const base={untertitel:['ja','nein'],audio:['nur Original','mit Musik','Trend-Sound'],emotion:DEF_EMO,overlay:DEF_OV,stimmung:DEF_MOOD}[field]||[];
+  const base={untertitel:['ja','nein'],umfrage:['ja','nein'],audio:['nur Original','mit Musik','Trend-Sound'],emotion:DEF_EMO,overlay:DEF_OV,stimmung:DEF_MOOD}[field]||[];
   return [...new Set([...base,...uniq(f[2])])].filter(x=>x!=='Unbekannt');
 }
 function openBulkTag(){
@@ -1292,12 +1306,13 @@ function renderAnalyse(){
 function renderBars(){
   const L=analysisList(),f=catByKey(S.groupField),m=METRICS[S.groupMetric];
   const wf=v=>W(v,f);
-  const rows=[...groups(f,L)].map(([name,vs])=>({name,n:vs.length,val:m.f(vs,wf),flop:vs.filter(v=>v.views<FLOP).length/vs.length*100,mk:marks(vs,f)}));
+  const rows=[...groups(f,L)].map(([name,vs])=>({name,n:vs.length,val:m.f(vs,wf),flop:vs.filter(v=>v.views<FLOP).length/vs.length*100,mk:marks(vs,f)})).filter(r=>Number.isFinite(r.val));
   rows.sort((a,b)=>(m.lowerBetter?a.val-b.val:b.val-a.val));
-  const overall=m.f(L,wf),max=Math.max(overall,...rows.map(r=>r.val))*1.05||1;
+  const overall=m.f(L,wf),max=Math.max(Number.isFinite(overall)?overall:0,...rows.map(r=>r.val))*1.05||1;
+  if(!rows.length){$('#bars').innerHTML='<p class="empty-msg">Für diese Kennzahl gibt es hier noch keine Daten.</p>';return}
   $('#bars').innerHTML=`<div class="bars">${rows.map((r,i)=>`<div class="bar-row">
       <div class="name" title="${esc(r.name)}">${esc(r.name)}<small>${r.n} Videos${r.mk&&S.useWeights?` · ${r.mk}× markiert`:''}${S.groupMetric!=='flop'?` · ${pct(r.flop)} Flops`:''}</small></div>
-      <div class="track"><div class="fill ${r.n<MIN_N?'low':''}" style="width:${r.val/max*100}%;animation-delay:${Math.min(i,12)*30}ms"></div><div class="avg" style="left:${overall/max*100}%"></div></div>
+      <div class="track"><div class="fill ${r.n<MIN_N?'low':''}" style="width:${r.val/max*100}%;animation-delay:${Math.min(i,12)*30}ms"></div>${Number.isFinite(overall)?`<div class="avg" style="left:${overall/max*100}%"></div>`:''}</div>
       <div class="v">${m.fmt(r.val)}</div></div>`).join('')}</div>
     <div class="legend"><span><i style="background:var(--accent)"></i>${m.l}</span><span><i style="background:var(--ink);opacity:.6;width:2px"></i>Alle Videos: ${m.fmt(overall)}</span><span><i style="background:var(--faint);opacity:.4"></i>unter ${MIN_N} Videos</span></div>`;
 }
@@ -1306,12 +1321,12 @@ function renderHeat(){
   const ga=[...groups(A,L)].sort((x,y)=>y[1].length-x[1].length),gbKeys=[...groups(B,L)].sort((x,y)=>y[1].length-x[1].length).map(x=>x[0]);
   const wf=v=>Math.max(W(v,A),W(v,B));
   const cells=[];
-  for(const [an,avs] of ga)for(const bn of gbKeys){const vs=avs.filter(v=>B.g(v).includes(bn));if(vs.length)cells.push(m.f(vs,wf))}
+  for(const [an,avs] of ga)for(const bn of gbKeys){const vs=avs.filter(v=>B.g(v).includes(bn));if(vs.length){const x=m.f(vs,wf);if(Number.isFinite(x))cells.push(x)}}
   if(!cells.length){$('#heat').innerHTML='<p class="empty-msg">Noch keine Daten.</p>';return}
   const lo=Math.min(...cells),hi=Math.max(...cells);
   const tone=val=>{let t=hi>lo?(S.heatMetric==='views'||S.heatMetric==='follower'?(Math.log(val+1)-Math.log(lo+1))/(Math.log(hi+1)-Math.log(lo+1)):(val-lo)/(hi-lo)):.5;if(m.lowerBetter)t=1-t;return Math.round(6+t*66)};
   $('#heat').innerHTML=`<table class="heat"><thead><tr><th></th>${gbKeys.map(b=>`<th>${esc(b)}</th>`).join('')}</tr></thead><tbody>
-    ${ga.map(([an,avs])=>`<tr><th>${esc(an)}</th>${gbKeys.map(bn=>{const vs=avs.filter(v=>B.g(v).includes(bn));if(!vs.length)return '<td class="empty">–</td>';const val=m.f(vs,wf),p=tone(val);
+    ${ga.map(([an,avs])=>`<tr><th>${esc(an)}</th>${gbKeys.map(bn=>{const vs=avs.filter(v=>B.g(v).includes(bn));if(!vs.length)return '<td class="empty">–</td>';const val=m.f(vs,wf);if(!Number.isFinite(val))return '<td class="empty">–</td>';const p=tone(val);
       return `<td style="background:color-mix(in srgb, var(--accent) ${p}%, var(--surface));${p>50?'color:var(--accent-ink)':''};${vs.length<2?'opacity:.5':''}" title="${esc(an)} × ${esc(bn)}: ${m.fmt(val)} (${vs.length} Videos)">${m.fmt(val)}<small>${vs.length} Vid.</small></td>`}).join('')}</tr>`).join('')}
   </tbody></table>`;
 }
@@ -1578,8 +1593,8 @@ function openVideo(id){
   const v=VIDEOS.find(x=>x.id===+id);if(!v)return;
   openId=v.id;FORM_EDIT=null;
   const m=[['Views',fmt(v.views)],['Neue Follower',fmt(v.follower)],['Likes',fmt(v.likes)],['Kommentare',fmt(v.comments)],['Gespeichert',fmt(v.saves)],['Engagement',v.views?dec(eng(v))+' %':'–'],
-    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s']];
-  const tags=[['Streamer',v.streamers.join(', ')],['Spiel',v.spiel],['Thema',v.thema],['Hook',v.hook],['Emotion',v.emotion],['Text-Overlay',v.overlay],['Untertitel',v.untertitel],['Audio',v.audio],['Sound',v.sound],['Kommentare',v.stimmung]];
+    ['Ø Wiedergabe',dec(v.avgWatch)+' s'],['Wiedergabezeit',fmt(v.totalWatch)+' h'],['Länge',v.laenge+' s'],['Umfrage',v.umfrage||'–'],['Stimmen',v.umfrage==='ja'&&v.pollVotes!=null?fmt(v.pollVotes):'–'],['Beteiligung',pollRate(v)!=null?dec(pollRate(v),2)+' %':'–']];
+  const tags=[['Streamer',v.streamers.join(', ')],['Spiel',v.spiel],['Thema',v.thema],['Hook',v.hook],['Emotion',v.emotion],['Text-Overlay',v.overlay],['Untertitel',v.untertitel],['Audio',v.audio],['Sound',v.sound],['Umfrage',pollText(v)],['Kommentare',v.stimmung]];
   openDrawer(v.title,`<span>${DAYS[v.date.getDay()]}, ${dateStr(v.date)} ${v.date.getFullYear()} · ${timeStr(v.date)} Uhr</span>${badge(v)}`,`
     <div class="why" id="whyBox">${whyHtml(v)}</div>
     <div><div class="section-title"><h3>Zahlen nach 24 h</h3></div><div class="mgrid">${m.map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')}</div></div>
@@ -1652,8 +1667,9 @@ function plausi(){
   const g=id=>{const x=parseFloat(String(document.getElementById(id)?.value||'').replace(',','.'));return isFinite(x)?x:null};
   const views=g('fviews'),L=g('flaenge'),avg=g('favg'),tot=g('ftotal'),w=[];
   if(views!=null){
-    for(const [id,l] of [['flikes','Likes'],['fcomments','Kommentare'],['fsaves','Gespeichert'],['ffollower','neue Follower']]){const x=g(id);if(x!=null&&x>views)w.push(`Mehr ${l} (${fmt(x)}) als Views (${fmt(views)}).`)}
+    for(const [id,l] of [['flikes','Likes'],['fcomments','Kommentare'],['fsaves','Gespeichert'],['ffollower','neue Follower'],['fvotes','Umfrage-Stimmen']]){const x=g(id);if(x!=null&&x>views)w.push(`Mehr ${l} (${fmt(x)}) als Views (${fmt(views)}).`)}
     if(views===0)w.push('0 Views eingetragen.');
+    const pv=g('fvotes');if(pv!=null&&views>0&&pv/views>.3)w.push(`Sehr hohe Umfrage-Beteiligung (${dec(pv/views*100,0)} % der Zuschauer). Stimmen und Views vertauscht?`);
   }
   if(avg!=null&&L!=null&&L>0&&avg>L)w.push(`Ø Wiedergabedauer (${dec(avg)} s) ist länger als das Video (${dec(L)} s). Das geht nur, wenn viele das Video mehrfach schauen.`);
   if(views&&avg&&tot){const est=views*avg/3600;if(est>0&&(tot/est>3||est/tot>3))w.push(`Gesamte Wiedergabezeit (${fmt(tot)} h) passt nicht zu Views × Ø Wiedergabedauer (≈ ${fmt(est)} h). Vielleicht Stunden und Minuten verwechselt?`)}
@@ -1678,6 +1694,8 @@ function openForm(edit,opts={}){
       ${numF('ffollower','Neue Follower','45','',e0.follower,'fFollower')}${numF('flikes','Likes','900','',e0.likes)}
       ${numF('fcomments','Kommentare','40','',e0.comments)}${numF('fsaves','Gespeichert','35','',e0.saves)}
       ${numF('favg','Ø Wiedergabedauer','14,5','s',e0.avgWatch,'fAvg')}${numF('ftotal','Gesamte Wiedergabezeit','48','h',e0.totalWatch,'fTotal')}
+      ${chipsF('fpoll','Umfrage gemacht?',['ja','nein'],e0.umfrage||(edit?'':'ja'),'fPoll')}
+      <div class="f">${flabel('fvotes','Abstimmungen nach 24 h','fVotes')}<input class="inp" type="number" id="fvotes" name="fvotes" min="0" step="1" placeholder="250" inputmode="numeric" value="${e0.umfrage==='nein'?'':(e0.pollVotes??'')}" ${(e0.umfrage||(edit?'':'ja'))==='ja'?'':'disabled'}></div>
     </div></fieldset>
     <fieldset><legend>${titled('h3','Tags','fTags')}</legend>
       <div class="fgrid">
@@ -1719,7 +1737,9 @@ function openForm(edit,opts={}){
       emotion:fd.get('femo')||'unbekannt',overlay:fd.get('fov')||'keins',untertitel:fd.get('fut'),audio:fd.get('fau'),stimmung:fd.get('fmood')||'gemischt',
       weights:Object.fromEntries(WKEYS.map(w=>{const x=fd.get('w_'+w.k);return [w.k,x==null?1:+x]}).filter(([,x])=>x!==1)),
       laenge,views:n('fviews'),follower:n('ffollower')??0,likes:n('flikes')??0,comments:n('fcomments')??0,saves:n('fsaves')??0,
-      avgWatch:n('favg')??laenge*.5,totalWatch:n('ftotal')??0};
+      avgWatch:n('favg')??laenge*.5,totalWatch:n('ftotal')??0,
+      umfrage:fd.get('fpoll')||(edit?edit.umfrage:undefined),pollVotes:fd.get('fpoll')==='ja'?n('fvotes'):fd.get('fpoll')==='nein'?null:(edit?edit.pollVotes:null)};
+    if(v.umfrage===undefined)delete v.umfrage;
     delete v.link;
     const btn=$('#fsubmit');btn.disabled=true;btn.textContent='Speichert …';
     try{
@@ -1947,6 +1967,7 @@ document.addEventListener('input',e=>{
 document.addEventListener('change',e=>{
   const t=e.target,id=t.id,v=t.value;
   if(t.closest&&t.closest('#vform'))saveDraft();
+  if(t.name==='fpoll'){const fv=$('#fvotes');fv.disabled=t.value!=='ja';if(fv.disabled)fv.value='';else fv.focus();plausi()}
   if(t.dataset.sel){const sid=+t.dataset.sel;if(t.checked)S.sel.add(sid);else S.sel.delete(sid);renderVideoTable();return}
   if(t.hasAttribute&&t.hasAttribute('data-selall')){const ids=[...document.querySelectorAll('[data-sel]')].map(c=>+c.dataset.sel);ids.forEach(i=>t.checked?S.sel.add(i):S.sel.delete(i));renderVideoTable();return}
   if(t.dataset.col){const k=t.dataset.col;S.cols=t.checked?[...S.cols,k]:S.cols.filter(x=>x!==k);S.cols=VCOLS.map(c=>c.k).filter(k2=>S.cols.includes(k2));remember('clipradar-cols',JSON.stringify(S.cols));renderVideoTable();return}
